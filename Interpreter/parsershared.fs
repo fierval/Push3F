@@ -35,3 +35,7 @@ module ParserShared =
     let (|FindType|_|) (types : string list) t = 
         types |> List.tryFind (fun (x:string) -> x.Equals(t))
         
+    let returnStringCI s x = pstringCI s >>% x
+
+    let openList : PushParser<string> = ws >>. str "(" .>> ws
+    let closeList : PushParser<string> = ws >>. str  ")" .>> ws

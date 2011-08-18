@@ -7,13 +7,14 @@ module Ast =
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Push = 
         Code of string
-        | Integer of int
+        | Integer of int64
         | Bool of bool
         | Float of float
         | PushList of Push list
         | Operation of string * string
         | Exec of string
         | Name of Map<string, Push>
+        | Identifier of string
 
         with 
             member private t.StructuredFormatDisplay = 
@@ -26,6 +27,7 @@ module Ast =
                 | Operation (t, o) -> box ("\"" + t + "." + o + "\"")
                 | Exec e -> box ("\"" + e + "\"")
                 | Name n -> Map.toList n :> obj
+                | Identifier i -> box ("\"" + i + "\"")
 
             
 

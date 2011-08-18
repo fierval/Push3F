@@ -34,11 +34,12 @@ module Parser =
     
     // values of simple types
     let pushFloat = pfloat |>> Float
-    let pushInt  = pint64 |>> Integer
+    let pushInt  = pint64 .>> notFollowedByString "." |>> Integer
     let pushTrue = returnStringCI "true" (Bool true) 
     let pushFalse = returnStringCI "false" (Bool false)
-
-    let pushSimpleValue = choice [pushFloat; pushInt; pushTrue; pushFalse; pushIdentifier; pushOperation]
+    
+    //need to try integer first, as pfloat parses integers!
+    let pushSimpleValue = choice [attempt pushInt;  pushFloat; pushTrue; pushFalse; attempt pushIdentifier; pushOperation]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.
     // however, pushList definition is part of defining pushProgram. To solve this catch 22,
@@ -52,7 +53,6 @@ module Parser =
     let pushList = commonListParser openList closeList pushProgram PushList
 
     do pushProgramRef := choice [pushSimpleValue
-                                 pushOperation
                                  pushList]
 
     let push = ws >>. pushProgram .>> ws .>> eof
@@ -64,3 +64,11 @@ module Parser =
     let parsePushStream stream encoding =
         runParserOnStream push () "" stream System.Text.Encoding.UTF8
    
+    let parsePushString str = run push str
+    
+    let extractResult = function  
+                            | Success(r,_,_) -> 
+                                printf "The AST is:\n%A\n" r
+                                box(r)
+                            | _ -> box(System.Int32.MinValue)
+                               

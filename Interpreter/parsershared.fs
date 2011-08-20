@@ -11,6 +11,8 @@ module ParserShared =
     let ws = spaces
     let str s = pstring s
 
+    let nodot : PushParser<unit> = notFollowedByString "."
+
     let stringLiteral : PushParser<string> =
         let escape =  anyOf "\"\\/bfnrt"
                       |>> function

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.FSharp.Core;
 using FParsec;
+
 using push.parser;
 
 namespace InterpreterTests
@@ -34,7 +35,7 @@ namespace InterpreterTests
         {
             str = "12345";
             var res = RunPushParser(str);
-            Assert.AreEqual<long>(res.Item, 12345L);
+            Assert.AreEqual<long>(12345L, res.Item);
         }
 
         [TestMethod]
@@ -43,7 +44,45 @@ namespace InterpreterTests
         {
             str = "   1234.53  ";
             var res = RunPushParser(str);
-            Assert.AreEqual<double>(res.Item, 1234.53d);
+            Assert.AreEqual<double>(1234.53d, res.Item);
+        }
+
+        [TestMethod]
+        [Description("Tests the pushType parser directly")]
+        public void SimpleTypeDirect()
+        {
+            this.str = "INTEGER";
+            dynamic res = CharParsers.run((FSharpFunc<CharStream<Unit>, Reply<string>>)(Parser.pushType), str);
+            Assert.AreEqual<string>(str, res.Item1);
+        }
+
+        [TestMethod]
+        [Description("Parses out a simple operation directly")]
+        public void SimpleOperationDirect()
+        {
+            this.str = "INTEGER.*";
+            dynamic res = CharParsers.run(Parser.pushOperation, str);
+
+            Assert.AreEqual<string>("INTEGER", res.Item1.Item1);
+            Assert.AreEqual<string>("*", res.Item1.Item2);
+        }
+
+        [TestMethod]
+        [Description("Parsing out a type")]
+        public void SimpleType()
+        {
+            str = "   INTEGER  ";
+            var res = RunPushParser(str);
+            Assert.AreEqual<string>(str.Trim(), res.Item);
+        }
+
+        [TestMethod]
+        [Description("Parses out a simple operation directly")]
+        public void SimpleOperation()
+        {
+            str = "\t   INTEGER.*  ";
+            var res = RunPushParser(str);
+            Assert.AreEqual<string>(str.Trim(), res.Item1 + "." + res.Item2);
         }
 
         dynamic RunPushParser(string str)

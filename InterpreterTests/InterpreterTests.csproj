@@ -36,6 +36,9 @@
     <Reference Include="FParsec, Version=0.9.1.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\Parser\fparsec-main-default\Build\VS10\bin\Debug\FParsec.dll</HintPath>
     </Reference>
+    <Reference Include="FParsecCS, Version=0.9.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Parser\fparsec-main-default\Build\VS10\bin\Debug\FParsecCS.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />

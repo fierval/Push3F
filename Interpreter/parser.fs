@@ -17,29 +17,43 @@ module Parser =
                                                             isAsciiIdContinue = isAsciiIdContinue))
 
     // is this a type?
-    let pushType = 
+    let pushType s = 
         let findType t = 
+            let mutable reply = new Reply<string>()
             match t with
-            | FindType stockTypes res -> str res
-            | _ -> failFatally ("unknown type: " + t)
+            | FindType stockTypes res -> 
+                reply.Status <- Ok
+                reply.Result <- res
+            | _ -> 
+                reply.Status <- Error
+                reply.Error <- messageError("Unknown type: " + t)
+            reply
 
-        commonIdentifier >>= findType
+        let identResult = commonIdentifier s
+        if identResult.Status <> Ok 
+        then 
+            identResult
+        else
+            findType identResult.Result
+
+        
                     
                     
+    // TODO: This is stubbed out for now.
     let op : PushParser<string> = choice [str "*" ; str "+"]
-    let pushIdentifier = commonIdentifier |>> Identifier
+    let pushIdentifier = commonIdentifier .>> nodot |>> Identifier
 
     // operation: identifier.op
     let pushOperation  = (tuple2 pushType (str "." >>. op)) |>> Operation
     
     // values of simple types
     let pushFloat = pfloat |>> Float
-    let pushInt  = pint64 .>> notFollowedByString "." |>> Integer
-    let pushTrue = returnStringCI "true" (Bool true) 
-    let pushFalse = returnStringCI "false" (Bool false)
+    let pushInt  = pint64 .>> nodot |>> Integer
+    let pushTrue = pstringCI "true" .>> nodot >>% Bool true 
+    let pushFalse = pstringCI "false" .>> nodot >>% Bool false
     
     //need to try integer first, as pfloat parses integers!
-    let pushSimpleValue = choice [attempt pushInt;  pushFloat; pushTrue; pushFalse; attempt pushIdentifier; pushOperation]
+    let pushSimpleValue = choice [attempt pushInt;  pushFloat; attempt pushTrue; attempt pushFalse; attempt pushIdentifier; pushOperation]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.
     // however, pushList definition is part of defining pushProgram. To solve this catch 22,

@@ -106,6 +106,21 @@ namespace InterpreterTests
             Assert.IsNotInstanceOfType(res, typeof(Int32));
         }
 
+        [TestMethod]
+        [Description("Incorrect type")]
+        public void IncorrectType()
+        {
+            this.str = "(12 32 DOUBLE.*)";
+            var res = RunPushParser(this.str);
+            Assert.AreEqual<string>(@"Error in Ln: 1 Col: 14
+(12 32 DOUBLE.*)
+             ^
+Unknown type: DOUBLE
+", 
+            res.Item1);
+
+        }
+
         dynamic RunPushParser(string str)
         {
             if(string.IsNullOrWhiteSpace(str))
@@ -114,11 +129,6 @@ namespace InterpreterTests
             }
             var pres = Parser.parsePushString(str);
             var res = Parser.extractResult(pres);
-
-            if(res.GetType() == typeof(Int32) && (Int32) res == Int32.MinValue)
-            {
-                throw new ApplicationException("Failed to parse string " + str);
-            }
 
             return res;
         }

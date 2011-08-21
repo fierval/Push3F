@@ -85,6 +85,27 @@ namespace InterpreterTests
             Assert.AreEqual<string>(str.Trim(), res.Item1 + "." + res.Item2);
         }
 
+        [TestMethod]
+        [Description("Parses out a simple a list of Push primitives")]
+        public void SimpleList()
+        {
+            this.str = "(12 35 INTEGER.* true false)";
+            var res = RunPushParser(this.str);
+
+            Assert.IsNotInstanceOfType(res, typeof(Int32));
+        }
+
+        [TestMethod]
+        [Description("Parses out a recursed list")]
+        public void RecursiveList()
+        {
+            this.str = @"( 12 (  35 61 INTEGER.+   )  (5.6 7.8 FLOAT.+)
+                            INTEGER.*  )";
+            var res = RunPushParser(this.str);
+
+            Assert.IsNotInstanceOfType(res, typeof(Int32));
+        }
+
         dynamic RunPushParser(string str)
         {
             if(string.IsNullOrWhiteSpace(str))

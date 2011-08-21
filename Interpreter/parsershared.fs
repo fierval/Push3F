@@ -39,5 +39,5 @@ module ParserShared =
         
     let returnStringCI s x = pstringCI s >>% x
 
-    let openList : PushParser<string> = ws >>. str "(" .>> ws
-    let closeList : PushParser<string> = ws >>. str  ")" .>> ws
+    let openList : PushParser<string> = str "(" .>> ws
+    let closeList : PushParser<string> = ws >>. str ")"

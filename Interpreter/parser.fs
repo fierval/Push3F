@@ -52,22 +52,29 @@ module Parser =
     let pushTrue = pstringCI "true" .>> nodot >>% Bool true 
     let pushFalse = pstringCI "false" .>> nodot >>% Bool false
     
-    //need to try integer first, as pfloat parses integers!
-    let pushSimpleValue = choice [attempt pushInt;  pushFloat; attempt pushTrue; attempt pushFalse; attempt pushIdentifier; pushOperation]
+    let pushSimple = choice [
+                            attempt pushInt
+                            pushFloat
+                            attempt pushTrue
+                            attempt pushFalse
+                            attempt pushIdentifier
+                            pushOperation
+                            ]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.
     // however, pushList definition is part of defining pushProgram. To solve this catch 22,
     // FParsec provides createParserForwardedToRef function.
     let pushProgram, pushProgramRef = createParserForwardedToRef()
 
-    let commonListParser sOpen sClose pElement f =
-        between sOpen sClose
-            (ws >>. sepBy pElement ws |>> f)    
-    
-    let pushList = commonListParser openList closeList pushProgram PushList
 
-    do pushProgramRef := choice [pushSimpleValue
-                                 pushList]
+    let listSeries = (sepBy pushProgram (spaces1 .>> notFollowedBy closeList)) |>> PushList
+
+    let pushList = between openList closeList listSeries
+
+    do pushProgramRef := choice [
+                                 pushSimple
+                                 pushList
+                                ]
 
     let push = ws >>. pushProgram .>> ws .>> eof
     
@@ -84,5 +91,5 @@ module Parser =
                             | Success(r,_,_) -> 
                                 printf "The AST is:\n%A\n" r
                                 box(r)
-                            | _ -> box(System.Int32.MinValue)
+                            | Failure(s, e, _) -> box((s,e))
                                

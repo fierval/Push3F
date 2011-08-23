@@ -5,7 +5,7 @@ module Type =
     open System.Runtime.CompilerServices
     open TypeAttributes
     open System.Reflection
-    open push.exceptions.PushException
+    open push.exceptions.PushExceptions
 
     [<assembly: InternalsVisibleTo ("SimpleSearchTest")>]
     do 

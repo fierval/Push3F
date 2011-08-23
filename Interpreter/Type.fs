@@ -5,6 +5,7 @@ module Type =
     open System.Runtime.CompilerServices
     open TypeAttributes
     open System.Reflection
+    open push.exceptions.PushException
 
     [<assembly: InternalsVisibleTo ("SimpleSearchTest")>]
     do 
@@ -25,14 +26,21 @@ module Type =
         types |>
         Seq.filter (fun (t:System.Type) -> t.GetCustomAttributes(attribute, false).Length > 0)
         
+    let internal extractName (mi : MethodInfo) =
+        (mi.GetCustomAttributes(typeof<PushOperationAttribute>, false) |> Seq.head :?> PushOperationAttribute).Name
+
+    // Class that wraps a PushType.
+    // All push types should inherit from this class
     [<AbstractClass>]
-    type PushTypeBase (name: string, operations : string list) =
+    type PushTypeBase<'a> (name: string) =
         let name = name
-        let operations = operations
+        let mutable operationsContainer : Map<string, MethodInfo> = Map.empty
 
         // returns the name of the class
         member this.Name with get() = name
 
+        abstract Operations : Map<string, MethodInfo> with get
+                
         static member internal DiscoverByAssemblyAttribute(attribute : System.Type, assembly : string option) =
             assembly 
             |> loadTypes
@@ -41,18 +49,23 @@ module Type =
 
         //static function to run through the assemblies and discover new types
         static member internal DiscoverPushTypes(?assembly : string) =
-            PushTypeBase.DiscoverByAssemblyAttribute(typeof<PushTypeAttribute>, assembly)
+            PushTypeBase<_>.DiscoverByAssemblyAttribute(typeof<PushTypeAttribute>, assembly)
 
         //for each of the members, we can discover its operations.
-        //TODO: Implement DiscoverMyOwnOperations to filter out operations belonging to this class only
-        static member internal DiscoverPushOperations(?assembly : string) =
-            PushTypeBase.DiscoverByAssemblyAttribute(typeof<PushOperationAttribute>, assembly)
+        static member internal DiscoverPushOperations(ptype : #PushTypeBase<_>) =
+            let opAttributes = ptype.GetType().GetMethods() 
+                                |> Seq.filter(
+                                    fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
+            if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type"))
+            Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty opAttributes
+ 
+        // implementation of the virtual Operations property
+        default this.Operations =
+            if operationsContainer.IsEmpty
+            then
+                operationsContainer <- PushTypeBase<_>.DiscoverPushOperations(this)
+            operationsContainer
              
-    and PushOperationBase (name: string) =
-        let name = name
-
-        member this.Name with get() = name
-
 
 
 

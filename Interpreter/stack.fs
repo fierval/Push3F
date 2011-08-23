@@ -3,11 +3,24 @@
 module Stack =
     open push.types.Type
     open push.exceptions.PushException
+    open System.Diagnostics;
 
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
+    [<DebuggerDisplay("{StructuredFormatDisplay}")>]
     type Stack<'a> =
         | EmptyStack
         | StackNode of 'a * 'a Stack
- 
+        with 
+            member private t.StructuredFormatDisplay = 
+                match t with
+                | EmptyStack -> box("[]")
+                | StackNode(hd, tl) -> 
+                    let rec strAcc stack acc =
+                        match stack with
+                        | EmptyStack -> acc
+                        | StackNode(hd, tl) -> strAcc tl acc + hd.ToString()
+                    box(strAcc (StackNode(hd, tl)) System.String.Empty)
+
     let hd = function
         | EmptyStack -> raise (PushException( "Empty stack"))
         | StackNode(hd, tl) -> hd

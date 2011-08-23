@@ -32,7 +32,7 @@ module Type =
     // Class that wraps a PushType.
     // All push types should inherit from this class
     [<AbstractClass>]
-    type PushTypeBase<'a> (name: string) =
+    type PushTypeBase (name: string) =
         let name = name
         let mutable operationsContainer : Map<string, MethodInfo> = Map.empty
 
@@ -40,7 +40,7 @@ module Type =
         member this.Name with get() = name
 
         abstract Operations : Map<string, MethodInfo> with get
-                
+        
         static member internal DiscoverByAssemblyAttribute(attribute : System.Type, assembly : string option) =
             assembly 
             |> loadTypes
@@ -49,10 +49,10 @@ module Type =
 
         //static function to run through the assemblies and discover new types
         static member internal DiscoverPushTypes(?assembly : string) =
-            PushTypeBase<_>.DiscoverByAssemblyAttribute(typeof<PushTypeAttribute>, assembly)
+            PushTypeBase.DiscoverByAssemblyAttribute(typeof<PushTypeAttribute>, assembly)
 
         //for each of the members, we can discover its operations.
-        static member internal DiscoverPushOperations(ptype : #PushTypeBase<_>) =
+        static member internal DiscoverPushOperations(ptype : #PushTypeBase) =
             let opAttributes = ptype.GetType().GetMethods() 
                                 |> Seq.filter(
                                     fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
@@ -63,7 +63,7 @@ module Type =
         default this.Operations =
             if operationsContainer.IsEmpty
             then
-                operationsContainer <- PushTypeBase<_>.DiscoverPushOperations(this)
+                operationsContainer <- PushTypeBase.DiscoverPushOperations(this)
             operationsContainer
              
 

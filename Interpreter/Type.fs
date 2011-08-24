@@ -7,7 +7,7 @@ module Type =
     open System.Reflection
     open push.exceptions.PushExceptions
 
-    [<assembly: InternalsVisibleTo ("SimpleSearchTest")>]
+    [<assembly: InternalsVisibleTo ("InterpreterTests")>]
     do 
         ()
 

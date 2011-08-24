@@ -88,5 +88,48 @@ namespace InterpreterTests
             Stack.Stack<int> stack = Stack.empty<int>();
             Stack.pop(stack);
         }
+
+        [TestMethod]
+        [Description("Testing reverse function")]
+        public void ReverseEmptyTest()
+        {
+            var stack = Stack.empty<int>();
+
+            var rev = Stack.reverse(stack);
+
+            Assert.AreEqual<int>(0, stack.length);
+        }
+
+        [TestMethod]
+        [Description("Testing length function")]
+        public void LengthTest()
+        {
+            var stack = Stack.empty<int>();
+            stack = Stack.push(1, stack);
+            stack = Stack.push(2, stack);
+            stack = Stack.push(3, stack);
+
+            Assert.AreEqual<int>(3, stack.length);
+
+            stack = Stack.push(4, stack);
+
+            Assert.AreEqual<int>(4, stack.length);
+
+        }
+
+        [TestMethod]
+        [Description("Testing reverse function")]
+        public void ReverseTest()
+        {
+            var stack = Stack.empty<int>();
+            stack = Stack.push(1, stack);
+            stack = Stack.push(2, stack);
+            stack = Stack.push(3, stack);
+
+            var rev = Stack.reverse(stack);
+
+            Assert.AreEqual<int>(1, Stack.peek(rev));
+            Assert.AreEqual<int>(3, rev.length);
+        }
     }
 }

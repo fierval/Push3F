@@ -20,6 +20,13 @@ module Stack =
                         | EmptyStack -> "[" + acc.Substring(2) + "]"
                         | StackNode(hd, tl) -> strAcc tl (acc + "; " + hd.ToString())
                     box(strAcc (StackNode(hd, tl)) System.String.Empty)
+            member t.length =
+                let rec lengthTail st acc =
+                    match st with
+                    | EmptyStack -> acc
+                    | StackNode(hd, tl) -> lengthTail tl acc + 1
+                lengthTail t 0
+
 
     let peek = function
         | EmptyStack -> raise EmptyStackException

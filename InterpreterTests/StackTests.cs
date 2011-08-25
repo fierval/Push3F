@@ -82,11 +82,10 @@ namespace InterpreterTests
 
         [TestMethod]
         [Description("Popping from an empty stack. Expect an empty stack exception")]
-        [ExpectedException(typeof(push.exceptions.PushExceptions.EmptyStackException))]
         public void PopEmptyTest()
         {
             Stack.Stack<int> stack = Stack.empty<int>();
-            Stack.pop(stack);
+            var res = Stack.pop(stack);
         }
 
         [TestMethod]
@@ -130,6 +129,38 @@ namespace InterpreterTests
 
             Assert.AreEqual<int>(1, Stack.peek(rev));
             Assert.AreEqual<int>(3, rev.length);
+        }
+
+        [TestMethod]
+        [Description("Testing duplication")]
+        public void DupTest()
+        {
+            var stack = Stack.empty<int>();
+            stack = Stack.push(1, stack);
+            stack = Stack.push(2, stack);
+            stack = Stack.push(3, stack);
+            stack = Stack.push(4, stack);
+
+            var dup = Stack.dup(2, stack);
+            Assert.AreEqual<int>(5, dup.length);
+            Assert.AreEqual<int>(2, Stack.peek(dup));
+            Assert.AreEqual<int>(Stack.peek(dup), dup.asList[3]);
+        }
+
+        [TestMethod]
+        [Description("Test yank")]
+        public void YankTest()
+        {
+            var stack = Stack.empty<int>();
+            stack = Stack.push(1, stack);
+            stack = Stack.push(2, stack);
+            stack = Stack.push(3, stack);
+            stack = Stack.push(4, stack);
+
+            var yank = Stack.yank(2, stack);
+            Assert.AreEqual<int>(4, yank.length);
+            Assert.AreEqual<int>(2, Stack.peek(yank));
+            Assert.IsFalse(Stack.pop(yank).Item2.asList.Contains(2));
         }
     }
 }

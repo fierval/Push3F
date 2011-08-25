@@ -7,79 +7,58 @@ module Stack =
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<DebuggerDisplay("{StructuredFormatDisplay}")>]
-    type Stack<'a> =
-        | EmptyStack
-        | StackNode of 'a * 'a Stack
-        with 
+    type Stack<'a> = 
+        | StackNode of 'a list
+        with
             member private t.StructuredFormatDisplay = 
-                match t with
-                | EmptyStack -> box("[]")
-                | StackNode(hd, tl) -> 
-                    let rec strAcc stack (acc:string) =
-                        match stack with
-                        | EmptyStack -> "[" + acc.Substring(2) + "]"
-                        | StackNode(hd, tl) -> strAcc tl (acc + "; " + hd.ToString())
-                    box(strAcc (StackNode(hd, tl)) System.String.Empty)
+                box(t.asList)
             member t.length =
-                let rec lengthTail st acc =
-                    match st with
-                    | EmptyStack -> acc
-                    | StackNode(hd, tl) -> lengthTail tl acc + 1
-                lengthTail t 0
-
+                match t with
+                | StackNode(x) -> x.Length
+            member t.asList = 
+                match t with StackNode(x) -> x
 
     let peek = function
-        | EmptyStack -> raise EmptyStackException
-        | StackNode(hd, tl) -> hd
+        | StackNode([]) -> Unchecked.defaultof<'a>
+        | StackNode(hd::tl) -> hd
  
     let tl = function
-        | EmptyStack -> raise EmptyStackException
-        | StackNode(hd, tl) -> tl
+        | StackNode([]) -> []
+        | StackNode(hd::tl) -> tl
  
-    let push hd tl = StackNode(hd, tl)
+    let push hd tl = 
+        match tl with
+        |StackNode(x) -> StackNode(hd::x)
  
-    let empty = EmptyStack
+    let empty = StackNode([])
 
     let pop = function
-        | EmptyStack -> raise EmptyStackException
-        | StackNode(hd, tl) -> hd, tl
+        | StackNode([]) -> Unchecked.defaultof<'a>, StackNode([])
+        | StackNode(hd::tl) -> hd, StackNode(tl)
     
-    
-    let rec internal reverseTail stack acc =
-            match stack with
-            | EmptyStack -> acc
-            | StackNode(h, t) -> reverseTail t (push h acc)
- 
     // reverses the stack
     let reverse = function
-        | EmptyStack -> EmptyStack
-        | StackNode (hd, tl) -> reverseTail (StackNode(hd, tl)) empty
+        | StackNode([]) -> StackNode([])
+        | StackNode (x) -> StackNode(List.rev x)
 
     // append expresses itself neatly in terms of reverse
     // it is an expensive operation, though.
-    let append st1 st2 = 
-        match st1 with
-        | EmptyStack -> st2
-        | StackNode(hd, tl) -> reverseTail (reverse st1) st2
+    let append (st1:Stack<'a>) (st2:Stack<'a>) = st1.asList @ st2.asList
 
-    let internal yankOrDup n shouldDup = function
-        | EmptyStack -> raise EmptyStackException       
-        | StackNode(hd, tl) -> 
-            if n < 0 
-            then 
-                raise EmptyStackException
-            let rec yankTail stack index headAcc tailAcc =
+    let dup n (stack : 'a Stack) = if n >= stack.length then stack else StackNode(stack.asList.[n]::stack.asList)
+    let yank n (stack : 'a Stack) = 
+        if n >= stack.length then stack
+        else
+            let newHd = stack.asList.[n]
+            let rec splitList lst1 index acc1 acc2 = 
                 match index with
-                | 0 -> 
-                    let mutable hd, tl = pop tailAcc
-                    let head = push hd (reverse headAcc)
-                    if shouldDup then tl <- push hd tl
-                    append head tl
-                | n -> 
-                    match stack with
-                    | EmptyStack -> raise EmptyStackException
-                    | StackNode(h, t) -> yankTail t (index - 1) (push h headAcc) t
-            yankTail (StackNode(hd, tl)) n empty (StackNode(hd, tl))
-
-    let dup n stack = yankOrDup n true stack
-    let yank n stack = yankOrDup n false stack
+                | 0 -> acc1, acc2
+                | x -> 
+                    match lst1 with 
+                    | [] -> acc1, acc2
+                    | hd::tl -> splitList tl (index - 1) (acc1 @ [hd]) tl
+            let listHead, listTail = splitList stack.asList n List.empty List.empty
+            if listTail.IsEmpty then StackNode(listHead) else
+            let head, tail = pop (StackNode(listTail))
+            let totalList = (head::listHead) @ tail.asList
+            StackNode(totalList)

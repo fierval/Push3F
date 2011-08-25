@@ -35,7 +35,7 @@ module TypeFactory =
         discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
 
     // stack of currently implemented types
-    let typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = map |> Map.map (fun key o -> empty)
+    let typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = map |> Map.fold (fun state key o -> Map.add (o.GetType().Name) empty state) Map.empty
 
     let appendMaps map1 map2 = ((map1 |> Map.toList) @ (map2 |> Map.toList)) |> Map.ofList
 
@@ -51,5 +51,29 @@ module TypeFactory =
             let newTypes = discoverPushTypes (Some assembly)
             ptypes <- appendMaps ptypes newTypes
             stacks <- typeStacks ptypes
+
+        // retrieves arguments from the appropriate stack
+        member t.popArguments (sysType : System.Type) n =
+            let key = sysType.Name
+            if not (stacks.ContainsKey(key)) then List.empty
+            else
+                let stack = stacks.[key]
+                if stack.length < n then List.empty
+                else
+                    [ 
+                        let st = ref stack
+                        for i = 1 to n do
+                            let hd, tl = pop !st
+                            st := tl
+                            yield hd
+                    ]
+
+        member t.pushResult resObj =
+            let key = resObj.GetType().Name
+            let stack = stacks.[key]
+            stacks <- stacks.Remove(key)
+            stacks <- stacks.Add(key, push resObj stack)
+
+    let stockTypes = new StockTypes()         
 
 

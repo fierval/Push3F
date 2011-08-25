@@ -8,9 +8,11 @@ module Type =
     open TypesShared
 
     [<AbstractClass>]
-    type PushTypeBase (name : string) =
-        let mutable name = name
+    type PushTypeBase (name: string) =
+        let mutable name = System.String.Empty
         let mutable operationsContainer : Map<string, MethodInfo> = Map.empty
+        
+        new() = PushTypeBase(System.String.Empty)
 
         member t.Name 
             with get() = name 

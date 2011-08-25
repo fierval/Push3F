@@ -46,12 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="exception.fs" />
-    <Compile Include="TypeAttributes.fs" />
-    <Compile Include="Type.fs" />
     <Compile Include="stack.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="parsershared.fs" />
     <Compile Include="parser.fs" />
+    <Compile Include="TypeAttributes.fs" />
+    <Compile Include="TypesShared.fs" />
+    <Compile Include="Type.fs" />
+    <Compile Include="TypeFactory.fs" />
+    <Compile Include="Integer.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

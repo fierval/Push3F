@@ -1,7 +1,6 @@
 ﻿namespace push.stack
 
 module Stack =
-    open push.types.Type
     open push.exceptions.PushExceptions
     open System.Diagnostics;
 
@@ -62,3 +61,5 @@ module Stack =
             let head, tail = pop (StackNode(listTail))
             let totalList = (head::listHead) @ tail.asList
             StackNode(totalList)
+
+    let stacksInit (map : Map<string, 'a>) = Map.map (fun t a -> empty) map

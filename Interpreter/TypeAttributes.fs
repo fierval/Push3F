@@ -15,16 +15,12 @@ module TypeAttributes =
 
 
     [<AttributeUsage(AttributeTargets.Method, AllowMultiple = false , Inherited = false) >]
-    type PushOperationAttribute(name:string, ptype:string)  =
+    type PushOperationAttribute(name:string)  =
         inherit Attribute()
         
         let mutable name = name
-        let mutable ptype = ptype
 
         member x.Name 
             with get() = name
             and set value = name <- value
 
-        member x.PushType
-            with get() = ptype
-            and set value = ptype <- value

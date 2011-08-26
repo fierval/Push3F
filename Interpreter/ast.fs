@@ -1,17 +1,17 @@
 ﻿namespace push.parser
 
 module Ast = 
-
-    let stockTypes = ["BOOLEAN"; "CODE"; "EXEC";  "FLOAT"; "INTEGER"; "NAME"]
+    open System.Reflection
+    open System.Diagnostics
+    open push.types.Type
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
+    [<DebuggerDisplay("{StructuredFormatDisplay}")>]
     type Push = 
         Code of string
-        | Integer of int64
-        | Bool of bool
-        | Float of float
+        | Value of PushTypeBase
         | PushList of Push list
-        | Operation of string * string
+        | Operation of MethodInfo
         | Exec of string
         | Name of Map<string, Push>
         | Identifier of string
@@ -20,11 +20,9 @@ module Ast =
             member private t.StructuredFormatDisplay = 
                 match t with
                 | Code c -> box ("\"" + c + "\"")
-                | Integer i -> box i
-                | Bool b -> box b
-                | Float f -> box f
+                | Value i -> i.StructuredFormatDisplay
                 | PushList l -> l :> obj
-                | Operation (t, o) -> box ("\"" + t + "." + o + "\"")
+                | Operation o -> box ("\"" + o.DeclaringType.Name + "." + o.Name + "\"")
                 | Exec e -> box ("\"" + e + "\"")
                 | Name n -> Map.toList n :> obj
                 | Identifier i -> box ("\"" + i + "\"")

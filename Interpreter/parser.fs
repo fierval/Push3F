@@ -5,23 +5,24 @@ module Parser =
     open FParsec
     open Ast
     open ParserShared
+    open push.types.Type
+    open push.types.stock.StockTypesInteger
+    open push.types.stock.StockTypesBool
+    open push.types.stock.StockTypesFloat
+    open push.types.TypeFactory
+    open System.Reflection
+    open System.Runtime.CompilerServices
+
+    // override this delegate to parse extended types
+    type ExtendedTypeParser = delegate of string -> PushTypeBase
 
     // identifier
-    let isAsciiIdStart c =    isAsciiLetter c || c = '_'
-
-    let isAsciiIdContinue c =
-        isAsciiLetter c || isDigit c || c = '_' || c = '\''
-
-    // push identifier is a regular identifer
-    let commonIdentifier = identifier (IdentifierOptions(isAsciiIdStart = isAsciiIdStart, 
-                                                            isAsciiIdContinue = isAsciiIdContinue))
-
     // is this a type?
-    let pushType s = 
+    let internal pushType s = 
         let findType t = 
             let mutable reply = new Reply<string>()
             match t with
-            | FindType stockTypes res -> 
+            | FindType res -> 
                 reply.Status <- Ok
                 reply.Result <- res
             | _ -> 
@@ -36,47 +37,69 @@ module Parser =
         else
             findType identResult.Result
 
-        
-                    
-                    
-    // TODO: This is stubbed out for now.
-    let op : PushParser<string> = choice [str "*" ; str "+"]
-    let pushIdentifier = commonIdentifier .>> nodot |>> Identifier
-
+    
+    let internal pushIdentifier = commonIdentifier .>> nodot |>> Identifier
+    
     // operation: identifier.op
-    let pushOperation  = (tuple2 pushType (str "." >>. op)) |>> Operation
-    
+    let internal pushOp s = 
+        let findOp tp op =
+            let mutable reply = new Reply<MethodInfo>()
+            match op with
+            | FindOperation tp res -> 
+                reply.Status <- Ok
+                reply.Result <- res
+            | _ -> 
+                reply.Status <- Error
+                reply.Error <- messageError("Unknown operation: " + tp)
+            reply
+
+        let typeParser = tuple2 (pushType .>> str ".") commonIdentifier
+        let typeResult = typeParser s
+        if typeResult.Status <> Ok 
+        then 
+            let mutable reply = new Reply<MethodInfo>()
+            reply.Status <- Error
+            reply.Error <- typeResult.Error
+            reply
+        else
+            findOp (fst typeResult.Result) (snd typeResult.Result)
+
+    let internal pushOperation = pushOp |>> Operation
+
     // values of simple types
-    let pushFloat = pfloat |>> Float
-    let pushInt  = pint64 .>> nodot |>> Integer
-    let pushTrue = pstringCI "true" .>> nodot >>% Bool true 
-    let pushFalse = pstringCI "false" .>> nodot >>% Bool false
+    let internal pushFloat = pfloat |>> createFloat |>> Value
+    let internal pushInt  = pint64 .>> nodot |>> createInteger |>> Value
+    let internal pushTrue = pstringCI "true" .>> nodot >>% Value (createBool true )
+    let internal pushFalse = pstringCI "false" .>> nodot >>% Value (createBool true )
     
-    let pushSimple = choice [
-                            attempt pushInt
-                            pushFloat
-                            attempt pushTrue
-                            attempt pushFalse
-                            attempt pushIdentifier
-                            pushOperation
-                            ]
+    //TODO: enable extending the parser with new tokens for new types
+    let internal pushExtended (dlg : ExtendedTypeParser) = stringToken |>> (dlg.Invoke >> Value)
+
+    let internal pushSimple = choice [
+                                attempt pushInt
+                                pushFloat
+                                attempt pushTrue
+                                attempt pushFalse
+                                attempt pushOperation
+                                pushIdentifier
+                                      ]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.
     // however, pushList definition is part of defining pushProgram. To solve this catch 22,
     // FParsec provides createParserForwardedToRef function.
-    let pushProgram, pushProgramRef = createParserForwardedToRef()
+    let internal pushProgram, internal pushProgramRef = createParserForwardedToRef()
 
 
-    let listSeries = (sepBy pushProgram (spaces1 .>> notFollowedBy closeList)) |>> PushList
+    let internal listSeries = (sepBy pushProgram (spaces1 .>> notFollowedBy closeList)) |>> PushList
 
-    let pushList = between openList closeList listSeries
+    let internal pushList = between openList closeList listSeries
 
     do pushProgramRef := choice [
                                  pushSimple
                                  pushList
                                 ]
 
-    let push = ws >>. pushProgram .>> ws .>> eof
+    let internal push = ws >>. pushProgram .>> ws .>> eof
     
     // UTF8 is the default, but it will detect UTF16 or UTF32 byte-order marks automatically
     let parsePushFile fileName encoding =

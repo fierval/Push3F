@@ -31,6 +31,25 @@ module Stack =
  
     let empty = StackNode([])
 
+    let popMany n (stack : Stack<'a>) =
+        let noopReturn = stack.asList, stack
+        if stack.length = 0 then noopReturn
+        else
+            match n with
+            | x when x <= 0 || stack.length < n -> noopReturn
+            | x -> 
+                let rec popManyTail n st acc =
+                    match n with
+                    | 0 -> acc
+                    | _ -> 
+                        let hd, tl = List.head st, List.tail st
+                        popManyTail (n - 1) tl (hd::fst acc, StackNode(tl))
+                popManyTail n stack.asList ([],empty)
+
+    let splitIntoLists n (stack : Stack<'a>) = 
+        let res = popMany n stack
+        fst res, (snd res).asList
+
     let pop = function
         | StackNode([]) -> Unchecked.defaultof<'a>, StackNode([])
         | StackNode(hd::tl) -> hd, StackNode(tl)
@@ -45,18 +64,11 @@ module Stack =
     let append (st1:Stack<'a>) (st2:Stack<'a>) = st1.asList @ st2.asList
 
     let dup n (stack : 'a Stack) = if n >= stack.length then stack else StackNode(stack.asList.[n]::stack.asList)
+    
     let yank n (stack : 'a Stack) = 
         if n >= stack.length then stack
         else
-            let newHd = stack.asList.[n]
-            let rec splitList lst1 index acc1 acc2 = 
-                match index with
-                | 0 -> acc1, acc2
-                | x -> 
-                    match lst1 with 
-                    | [] -> acc1, acc2
-                    | hd::tl -> splitList tl (index - 1) (acc1 @ [hd]) tl
-            let listHead, listTail = splitList stack.asList n List.empty List.empty
+            let listHead, listTail = splitIntoLists n stack
             if listTail.IsEmpty then StackNode(listHead) else
             let head, tail = pop (StackNode(listTail))
             let totalList = (head::listHead) @ tail.asList

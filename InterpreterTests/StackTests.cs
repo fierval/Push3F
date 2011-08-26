@@ -81,6 +81,26 @@ namespace InterpreterTests
         }
 
         [TestMethod]
+        [Description("Pop a few things from the stack")]
+        public void PopManyTest()
+        {
+            Stack.Stack<int> stack = Stack.empty<int>();
+
+            stack = Stack.push(1, stack);
+            stack = Stack.push(2, stack);
+            stack = Stack.push(3, stack);
+            stack = Stack.push(4, stack);
+            stack = Stack.push(5, stack);
+
+            var res = Stack.popMany(3, stack);
+
+            Assert.AreEqual<int>(3, res.Item1.Length);
+            Assert.AreEqual<int>(2, res.Item2.length);
+            Assert.AreEqual<int>(3, res.Item1.Head);
+            Assert.AreEqual<int>(2, res.Item2.asList.Head);
+        }
+
+        [TestMethod]
         [Description("Popping from an empty stack. Expect an empty stack exception")]
         public void PopEmptyTest()
         {

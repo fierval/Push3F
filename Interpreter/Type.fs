@@ -8,15 +8,11 @@ module Type =
     open TypesShared
 
     [<AbstractClass>]
-    type PushTypeBase (name: string) =
-        let mutable name = System.String.Empty
+    type PushTypeBase (value : obj) =
         let mutable operationsContainer : Map<string, MethodInfo> = Map.empty
-        
-        new() = PushTypeBase(System.String.Empty)
+        let value = value
 
-        member t.Name 
-            with get() = name 
-            and set value = name <- value
+        member t.Value with get() = value
 
         //for each of the members, we can discover its operations.
         static member internal DiscoverPushOperations(ptype) =
@@ -32,5 +28,13 @@ module Type =
             then
                 operationsContainer <- PushTypeBase.DiscoverPushOperations(this)
             operationsContainer
+        
+        member t.Raw<'a> () =
+            match t.Value with
+            | :? 'a as raw -> raw
+            | _ -> failwithf "could not convert to the right type"
 
-   
+        abstract StructuredFormatDisplay : obj
+        default t.StructuredFormatDisplay =
+            box t.Value
+

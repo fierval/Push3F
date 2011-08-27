@@ -6,7 +6,9 @@ module Type =
     open push.exceptions.PushExceptions
     open TypeAttributes
     open TypesShared
+    open System.Diagnostics
 
+    [<DebuggerDisplay("Value = {Value}")>]
     type PushTypeBase () = 
         [<DefaultValue>] 
         val mutable private value : obj

@@ -5,7 +5,7 @@ module StockTypesFloat =
     open push.types.TypeAttributes
     open push.types.TypeFactory
 
-    [<PushType("Float")>]
+    [<PushType("FLOAT")>]
     type Float () =
         inherit PushTypeBase()
 

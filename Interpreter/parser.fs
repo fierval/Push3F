@@ -80,8 +80,8 @@ module Parser =
                                 pushFloat
                                 attempt pushTrue
                                 attempt pushFalse
+                                attempt pushIdentifier
                                 attempt pushOperation
-                                pushIdentifier
                                       ]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.

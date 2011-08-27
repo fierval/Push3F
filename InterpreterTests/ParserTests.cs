@@ -112,12 +112,7 @@ namespace InterpreterTests
         {
             this.str = "(12 32 DOUBLE.*)";
             var res = RunPushParser(this.str);
-            Assert.AreEqual<string>(@"Error in Ln: 1 Col: 14
-(12 32 DOUBLE.*)
-             ^
-Unknown type: DOUBLE
-", 
-            res.Item1);
+            Assert.AreNotEqual<int>(-1, res.Item1.IndexOf("Unknown type: DOUBLE"));
 
         }
 

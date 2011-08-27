@@ -7,12 +7,16 @@ module Type =
     open TypeAttributes
     open TypesShared
 
-    [<AbstractClass>]
-    type PushTypeBase (value : obj) =
+    type PushTypeBase () = 
+        [<DefaultValue>] 
+        val mutable private value : obj
+        
         let mutable operationsContainer : Map<string, MethodInfo> = Map.empty
-        let value = value
 
-        member t.Value with get() = value
+        new (v) as this = PushTypeBase()
+                            then this.value <- v
+
+        member t.Value with get() = t.value
 
         //for each of the members, we can discover its operations.
         static member internal DiscoverPushOperations(ptype) =

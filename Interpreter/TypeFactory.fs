@@ -78,3 +78,19 @@ module TypeFactory =
     let appendStacksFromAssembly assembly = stockTypes.appendStacksFromAssembly assembly
     let popArguments sysType n = stockTypes.popArguments sysType n
     let pushResult resObj = stockTypes.pushResult resObj
+
+    // retrieves arguments for a binary operation
+    let processArgs2 =
+        let args = popArguments typeof<PushTypeBase> 2
+        if not (args.Length = 2) then (None, None)
+        else
+            let arg1, arg2 = List.head args , List.head (List.tail args)
+            Some arg1, Some arg2
+
+    // retrieve arguments for a unary operation
+    let processArgs1 : PushTypeBase option =
+        let args = popArguments typeof<PushTypeBase> 1
+        if not (args.Length = 1) then None
+        else
+            let arg = List.head args
+            Some arg

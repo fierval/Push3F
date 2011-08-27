@@ -22,11 +22,11 @@ namespace InterpreterTests
             str = "true";
 
             var res = RunPushParser(str);
-            Assert.IsTrue(res.Item);
+            Assert.IsTrue(res.Item.Value);
 
             str = "FALSE";
             res = RunPushParser(str);
-            Assert.IsFalse(res.Item);
+            Assert.IsFalse(res.Item.Value);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace InterpreterTests
         {
             str = "12345";
             var res = RunPushParser(str);
-            Assert.AreEqual<long>(12345L, res.Item);
+            Assert.AreEqual<long>(12345L, res.Item.Value);
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace InterpreterTests
         {
             str = "   1234.53  ";
             var res = RunPushParser(str);
-            Assert.AreEqual<double>(1234.53d, res.Item);
+            Assert.AreEqual<double>(1234.53d, res.Item.Value);
         }
 
         [TestMethod]

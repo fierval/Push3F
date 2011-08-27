@@ -6,12 +6,12 @@ module StockTypesInteger =
     open push.types.TypeFactory
 
     [<PushType("INTEGER")>]
-    type Integer ()  =
-        inherit PushTypeBase()
+    type Integer  =
+        inherit PushTypeBase
 
-        new (n : int64) = Integer()
-                               then
-                                   PushTypeBase() |> ignore
+        new () = {inherit PushTypeBase ()}
+
+        new (n : int64) = {inherit PushTypeBase(n)}
 
         [<PushOperation("+")>]
         static member Add() =

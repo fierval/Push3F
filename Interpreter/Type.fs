@@ -9,6 +9,8 @@ module Type =
     open System.Diagnostics
 
     [<DebuggerDisplay("Value = {Value}")>]
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
+    [<AbstractClass>]
     type PushTypeBase () = 
         [<DefaultValue>] 
         val mutable private value : obj

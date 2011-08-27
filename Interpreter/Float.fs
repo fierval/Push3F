@@ -6,12 +6,12 @@ module StockTypesFloat =
     open push.types.TypeFactory
 
     [<PushType("FLOAT")>]
-    type Float () =
-        inherit PushTypeBase()
+    type Float =
+        inherit PushTypeBase
 
-        new (f : float) = Float()
-                            then
-                            PushTypeBase() |> ignore
+        new () = {inherit PushTypeBase ()}
+
+        new (f : float) = {inherit PushTypeBase(f)}
 
         [<PushOperation("+")>]
         static member Add() =

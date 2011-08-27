@@ -85,7 +85,11 @@ namespace InterpreterTests
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types).ToList();
 
-            var obj = TypeFactory.createPushObject<push.types.Type.PushTypeBase>(sysTypes[0]);           
+            var names = sysTypes.Select(t => (t.GetCustomAttributes(typeof(push.types.TypeAttributes.PushTypeAttribute), false).Single() as push.types.TypeAttributes.PushTypeAttribute).Name).ToList();
+
+            var obj = TypeFactory.createPushObject<push.types.Type.PushTypeBase>(sysTypes[0]);
+
+            Assert.IsTrue(names.Where(n => n == obj.Item2).Count() == 1);
         }
     }
 }

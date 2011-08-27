@@ -6,9 +6,9 @@ module StockTypesBool =
     open push.types.TypeFactory
 
     [<PushType("BOOL")>]
-    type Bool () =
-        inherit PushTypeBase()
+    type Bool =
+        inherit PushTypeBase
 
-        new (b : bool) = Bool() 
-                               then
-                               PushTypeBase() |> ignore
+        new () = {inherit PushTypeBase ()}
+
+        new (b : bool) = {inherit PushTypeBase(b)}

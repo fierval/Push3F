@@ -70,7 +70,7 @@ module Parser =
     let internal pushFloat = pfloat |>> createFloat |>> Value
     let internal pushInt  = pint64 .>> nodot |>> createInteger |>> Value
     let internal pushTrue = pstringCI "true" .>> nodot >>% Value (createBool true )
-    let internal pushFalse = pstringCI "false" .>> nodot >>% Value (createBool true )
+    let internal pushFalse = pstringCI "false" .>> nodot >>% Value (createBool false )
     
     //TODO: enable extending the parser with new tokens for new types
     let internal pushExtended (dlg : ExtendedTypeParser) = stringToken |>> (dlg.Invoke >> Value)

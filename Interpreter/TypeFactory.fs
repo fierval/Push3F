@@ -73,6 +73,10 @@ module TypeFactory =
             stacks <- stacks.Remove(key)
             stacks <- stacks.Add(key, push resObj stack)
 
+        // good for test to clean up the stacks
+        member t.cleanAllStacks() =
+            stacks <- typeStacks ptypes
+
     let internal stockTypes = new StockTypes()         
 
     let appendStacksFromAssembly assembly = stockTypes.appendStacksFromAssembly assembly

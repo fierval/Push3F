@@ -61,8 +61,10 @@ namespace InterpreterTests
         // public void MyTestInitialize() { }
         //
         // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
+        //[TestCleanup()]
+        //public void CleanupStacks()
+        //{
+        //}
         //
         #endregion
 
@@ -112,9 +114,11 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        [Description("stacks creation")]
+        [Description("execute a simple operation")]
         public void PerformOperationTest()
         {
+            TypeFactory.stockTypes.cleanAllStacks();
+
             TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
             TypeFactory.pushResult(new StockTypesInteger.Integer(64L));
 
@@ -123,6 +127,35 @@ namespace InterpreterTests
             Assert.AreEqual<long>(32L, (long)res.Value);
         }
 
+        [TestMethod]
+        [Description("execute a simple operation")]
+        public void PerformOperationOneArgMissingTest()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
+
+            StockTypesInteger.Integer.Subtract();
+
+            // make sure that whatever is on the stack still remains there after
+            // the operation has been executed
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
+            Assert.AreEqual<long>(32L, (long)res.Value);
+        }
+
+        [TestMethod]
+        [Description("execute a simple operation")]
+        public void PerformOperationArgsMissingTest()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            StockTypesInteger.Integer.Subtract();
+
+            // make sure that whatever is on the stack still remains there after
+            // the operation has been executed
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
+            Assert.IsTrue(res == default(push.types.Type.PushTypeBase));
+        }
 
     }
 }

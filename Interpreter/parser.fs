@@ -34,7 +34,7 @@ module Parser =
 
     let internal pushSimple = choice [
                                 attempt pushInt
-                                pushFloat
+                                attempt pushFloat
                                 attempt pushTrue
                                 attempt pushFalse
                                 attempt pushIdentifier
@@ -47,7 +47,7 @@ module Parser =
     let internal pushProgram, internal pushProgramRef = createParserForwardedToRef()
 
 
-    let internal listSeries = (sepBy pushProgram (spaces1 .>> notFollowedBy closeList)) |>> PushList
+    let internal listSeries = (sepEndBy pushProgram spaces1) |>> PushList
 
     let internal pushList = between openList closeList listSeries
 

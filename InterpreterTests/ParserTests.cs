@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.FSharp.Core;
 using FParsec;
+using Microsoft.FSharp.Reflection;
+using push.exceptions;
 
 using push.parser;
 
@@ -106,7 +108,11 @@ namespace InterpreterTests
                             INTEGER.*  )";
             var res = RunPushParser(this.str);
 
-            Assert.IsNotInstanceOfType(res, typeof(Int32));
+            Type type = res.GetType();
+            if (FSharpType.IsTuple(type))
+            {
+                throw new PushExceptions.PushException(res.Item1);
+            }
         }
 
         [TestMethod]
@@ -126,7 +132,7 @@ namespace InterpreterTests
                 throw new ArgumentNullException("Please set str argument to something meaningful");
             }
             var pres = Parser.parsePushString(str);
-            var res = Parser.extractResult(pres);
+            dynamic res = Parser.extractResult(pres);
 
             return res;
         }

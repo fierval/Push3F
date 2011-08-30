@@ -52,7 +52,9 @@ module ParserShared =
 
     let internal isAllowedChar c = 
         let num = System.Char.ConvertToUtf32(c.ToString(), 0)
-        isAsciiLetter c || isDigit c || c = '_' || System.Char.IsPunctuation(c) || (num >= 33 && num <= 64)
+        if c = '.' || c = '(' || c= ')' then false
+        else 
+            isAsciiLetter c || isDigit c || c = '_' || System.Char.IsPunctuation(c) || (num >= 33 && num <= 64)
 
     let internal stringToken : PushParser<string> = manySatisfy isAllowedChar
   

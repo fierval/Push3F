@@ -13,7 +13,6 @@ module Ast =
         | PushList of Push list
         | Operation of MethodInfo
         | Exec of string
-        | Name of Map<string, Push>
         | Identifier of string
 
         with 
@@ -24,7 +23,6 @@ module Ast =
                 | PushList l -> l :> obj
                 | Operation o -> box ("\"" + o.DeclaringType.Name + "." + o.Name + "\"")
                 | Exec e -> box ("\"" + e + "\"")
-                | Name n -> Map.toList n :> obj
                 | Identifier i -> box ("\"" + i + "\"")
 
             

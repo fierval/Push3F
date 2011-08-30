@@ -63,7 +63,7 @@ module TypeFactory =
                 if stack.length < n then List.empty
                 else
                     stacks <- stacks.Remove(key)
-                    let result, leftOver = popMany 2 stack 
+                    let result, leftOver = popManyReverse 2 stack 
                     stacks <- stacks.Add(key, leftOver)
                     result
 
@@ -80,16 +80,16 @@ module TypeFactory =
     let pushResult resObj = stockTypes.pushResult resObj
 
     // retrieves arguments for a binary operation
-    let processArgs2 =
-        let args = popArguments typeof<PushTypeBase> 2
+    let processArgs2 sysType=
+        let args = popArguments sysType 2
         if not (args.Length = 2) then (None, None)
         else
             let arg1, arg2 = List.head args , List.head (List.tail args)
             Some arg1, Some arg2
 
     // retrieve arguments for a unary operation
-    let processArgs1 : PushTypeBase option =
-        let args = popArguments typeof<PushTypeBase> 1
+    let processArgs1 sysType : PushTypeBase option =
+        let args = popArguments sysType 1
         if not (args.Length = 1) then None
         else
             let arg = List.head args

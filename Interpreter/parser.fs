@@ -16,54 +16,11 @@ module Parser =
     // override this delegate to parse extended types
     type ExtendedTypeParser = delegate of string -> PushTypeBase
 
-    // identifier
-    // is this a type?
-    let internal pushType s = 
-        let findType t = 
-            let mutable reply = new Reply<string>()
-            match t with
-            | FindType res -> 
-                reply.Status <- Ok
-                reply.Result <- res
-            | _ -> 
-                reply.Status <- Error
-                reply.Error <- messageError("Unknown type: " + t)
-            reply
-
-        let identResult = commonIdentifier s
-        if identResult.Status <> Ok 
-        then 
-            identResult
-        else
-            findType identResult.Result
-
-    
     let internal pushIdentifier = commonIdentifier .>> nodot |>> Identifier
-    
-    // operation: identifier.op
-    let internal pushOp s = 
-        let findOp tp op =
-            let mutable reply = new Reply<MethodInfo>()
-            match op with
-            | FindOperation tp res -> 
-                reply.Status <- Ok
-                reply.Result <- res
-            | _ -> 
-                reply.Status <- Error
-                reply.Error <- messageError("Unknown operation: " + tp)
-            reply
 
-        let typeParser = tuple2 (pushType .>> str ".") commonIdentifier
-        let typeResult = typeParser s
-        if typeResult.Status <> Ok 
-        then 
-            let mutable reply = new Reply<MethodInfo>()
-            reply.Status <- Error
-            reply.Error <- typeResult.Error
-            reply
-        else
-            findOp (fst typeResult.Result) (snd typeResult.Result)
-
+    // parsing out an operation
+    let internal pushType = commonIdentifier >>= findType
+    let internal pushOp = tuple2 (pushType .>> str ".") stringLiteral >>= findOp
     let internal pushOperation = pushOp |>> Operation
 
     // values of simple types

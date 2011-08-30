@@ -32,7 +32,7 @@ module Stack =
     let empty = StackNode([])
 
     let popMany n (stack : Stack<'a>) =
-        let noopReturn = stack.asList, stack
+        let noopReturn = [], stack
         if stack.length = 0 then noopReturn
         else
             match n with
@@ -58,6 +58,11 @@ module Stack =
     let reverse = function
         | StackNode([]) -> StackNode([])
         | StackNode (x) -> StackNode(List.rev x)
+
+    let popManyReverse n stack = 
+        match popMany n stack with
+        | [], _ -> [], stack
+        | lst, _ -> List.rev lst, stack
 
     // append expresses itself neatly in terms of reverse
     // it is an expensive operation, though.

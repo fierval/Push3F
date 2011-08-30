@@ -61,15 +61,40 @@ module ParserShared =
         | None -> None
 
     let (|FindOperation|_|) (tp : string) op =
-        stockTypes.Types.[tp].Operations.TryFind(op)
+        let pushType = stockTypes.Types.[tp]
+        PushTypeBase.GetOperations(pushType).TryFind(op)
      
     let createInteger n = new Integer(n) :> PushTypeBase
     let createFloat f = new Float(f) :> PushTypeBase
     let createBool b = new Bool(b) :> PushTypeBase
     
-    let createOperation (tp, op) = stockTypes.Types.[tp], stockTypes.Types.[tp].Operations.[op]
+    let createOperation (tp, op) = stockTypes.Types.[tp], PushTypeBase.GetOperations(stockTypes.Types.[tp]).[op]
             
     let returnStringCI s x = pstringCI s >>% x
 
     let openList : PushParser<string> = str "(" .>> ws
     let closeList : PushParser<string> = ws >>. str ")"
+
+    let findType t = 
+        fun stream ->
+            let mutable reply = new Reply<string>()
+            match t with
+            | FindType res -> 
+                reply.Status <- Ok
+                reply.Result <- res
+            | _ -> 
+                reply.Status <- Error
+                reply.Error <- messageError("Unknown type: " + t)
+            reply
+
+    let findOp (tp, op) =
+        fun stream ->
+            let mutable reply = new Reply<MethodInfo>()
+            match op with
+            | FindOperation tp res -> 
+                reply.Status <- Ok
+                reply.Result <- res
+            | _ -> 
+                reply.Status <- Error
+                reply.Error <- messageError("Unknown operation: " + tp)
+            reply

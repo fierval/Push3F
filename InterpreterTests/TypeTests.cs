@@ -79,7 +79,7 @@ namespace InterpreterTests
 
         [TestMethod]
         [Description("create a push object")]
-        public void CreatePushObject()
+        public void CreatePushObjectTest()
         {
             var types = TypesShared.loadTypes(FSharpOption<string>.Some("Interpreter.dll"));
 
@@ -91,5 +91,38 @@ namespace InterpreterTests
 
             Assert.IsTrue(names.Where(n => n == obj.Item2).Count() == 1);
         }
+
+        [TestMethod]
+        [Description("Extract operations from a type")]
+        public void GetOperationsForTypeTest()
+        {
+            var integer = new StockTypesInteger.Integer(35L);
+            var ops = StockTypesInteger.Integer.GetOperations(integer);
+            Assert.IsTrue(ops.ContainsKey("+"));
+            Assert.AreEqual<string>("Add", ops["+"].Name);
+        }
+
+        [TestMethod]
+        [Description("stacks creation")]
+        public void CreateStacksTest()
+        {
+            var ptypes = TypeFactory.stockTypes.ptypes;
+            var stacks = TypeFactory.stockTypes.stacks;
+            Assert.AreEqual<int>(3, stacks.Count);
+        }
+
+        [TestMethod]
+        [Description("stacks creation")]
+        public void PerformOperationTest()
+        {
+            TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
+            TypeFactory.pushResult(new StockTypesInteger.Integer(64L));
+
+            StockTypesInteger.Integer.Subtract();
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
+            Assert.AreEqual<long>(32L, (long)res.Value);
+        }
+
+
     }
 }

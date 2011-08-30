@@ -20,7 +20,7 @@ module Parser =
 
     // parsing out an operation
     let internal pushType = commonIdentifier >>= findType
-    let internal pushOp = tuple2 (pushType .>> str ".") stringLiteral >>= findOp
+    let internal pushOp = tuple2 (pushType .>> str ".") stringToken >>= findOp
     let internal pushOperation = pushOp |>> Operation
 
     // values of simple types

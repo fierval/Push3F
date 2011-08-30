@@ -63,8 +63,9 @@ namespace InterpreterTests
             this.str = "INTEGER.*";
             dynamic res = CharParsers.run(Parser.pushOperation, str);
 
-            Assert.AreEqual<string>("INTEGER", res.Item1.Item1);
-            Assert.AreEqual<string>("*", res.Item1.Item2);
+
+            Assert.AreEqual<string>("Multiply", res.Item1.Item.Name);
+            Assert.AreEqual<string>("Integer", res.Item1.Item.DeclaringType.Name);
         }
 
         [TestMethod]
@@ -82,7 +83,9 @@ namespace InterpreterTests
         {
             str = "\t   INTEGER.*  ";
             var res = RunPushParser(str);
-            Assert.AreEqual<string>(str.Trim(), res.Item1 + "." + res.Item2);
+
+            Assert.AreEqual<string>("Multiply", res.Item.Name);
+            Assert.AreEqual<string>("Integer", res.Item.DeclaringType.Name);
         }
 
         [TestMethod]

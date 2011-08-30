@@ -50,10 +50,11 @@ module ParserShared =
     let internal commonIdentifier : PushParser<string> = identifier (IdentifierOptions(isAsciiIdStart = isAsciiIdStart, 
                                                                         isAsciiIdContinue = isAsciiIdContinue))
 
-    let internal isAllowedChar c = isAsciiLetter c || isDigit c || c = '_'
+    let internal isAllowedChar c = 
+        let num = System.Char.ConvertToUtf32(c.ToString(), 0)
+        isAsciiLetter c || isDigit c || c = '_' || System.Char.IsPunctuation(c) || (num >= 33 && num <= 64)
 
-    let internal stringToken = stringLiteral <|> identifier (IdentifierOptions(isAsciiIdStart = isAllowedChar , 
-                                                                isAsciiIdContinue = isAllowedChar))
+    let internal stringToken : PushParser<string> = manySatisfy isAllowedChar
   
     let (|FindType|_|) t = 
         match stockTypes.Types.TryFind(t) with

@@ -59,9 +59,9 @@
     <Compile Include="TypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Interpreter\Interpreter.fsproj">
+    <ProjectReference Include="..\Interpreter\Push.Parser.fsproj">
       <Project>{90365AB0-39D6-4217-9056-AA3D18147E30}</Project>
-      <Name>Interpreter</Name>
+      <Name>Push.Parser</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

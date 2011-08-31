@@ -7,10 +7,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{90365ab0-39d6-4217-9056-aa3d18147e30}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Interpreter</RootNamespace>
-    <AssemblyName>Interpreter</AssemblyName>
+    <RootNamespace>push.parser</RootNamespace>
+    <AssemblyName>Push.Parser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Name>Interpreter</Name>
+    <Name>Push.Parser</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

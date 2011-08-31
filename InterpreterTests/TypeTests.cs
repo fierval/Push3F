@@ -1,15 +1,11 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+﻿using System.Linq;
 using System.Reflection;
+using Microsoft.FSharp.Collections;
+using Microsoft.FSharp.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.types;
 using push.types.stock;
-using Microsoft.FSharp;
-using Microsoft.FSharp.Core;
-using Microsoft.FSharp.Collections;
+using Type = push.types.Type;
 
 namespace InterpreterTests
 {
@@ -19,30 +15,11 @@ namespace InterpreterTests
     [TestClass]
     public class TypeTests
     {
-        public TypeTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -72,24 +49,24 @@ namespace InterpreterTests
         [Description("load push types using shared functions")]
         public void LoadPushTypesSharedTest()
         {
-            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Interpreter.dll"));
+            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Parser.dll"));
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types);
 
-            Assert.AreEqual<int>(5, sysTypes.Count());
+            Assert.AreEqual(5, sysTypes.Count());
         }
 
         [TestMethod]
         [Description("create a push object")]
         public void CreatePushObjectTest()
         {
-            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Interpreter.dll"));
+            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Parser.dll"));
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types).ToList();
 
             var names = sysTypes.Select(t => (t.GetCustomAttributes(typeof(push.types.TypeAttributes.PushTypeAttribute), false).Single() as push.types.TypeAttributes.PushTypeAttribute).Name).ToList();
 
-            var obj = TypeFactory.createPushObject<push.types.Type.PushTypeBase>(sysTypes[0]);
+            var obj = TypeFactory.createPushObject<Type.PushTypeBase>(sysTypes[0]);
 
             Assert.IsTrue(names.Where(n => n == obj.Item2).Count() == 1);
         }
@@ -99,18 +76,17 @@ namespace InterpreterTests
         public void GetOperationsForTypeTest()
         {
             var integer = new StockTypesInteger.Integer(35L);
-            var ops = StockTypesInteger.Integer.GetOperations(integer);
+            FSharpMap<string, MethodInfo> ops = Type.PushTypeBase.GetOperations(integer);
             Assert.IsTrue(ops.ContainsKey("+"));
-            Assert.AreEqual<string>("Add", ops["+"].Name);
+            Assert.AreEqual("Add", ops["+"].Name);
         }
 
         [TestMethod]
         [Description("stacks creation")]
         public void CreateStacksTest()
         {
-            var ptypes = TypeFactory.stockTypes.ptypes;
             var stacks = TypeFactory.stockTypes.stacks;
-            Assert.AreEqual<int>(5, stacks.Count);
+            Assert.AreEqual(5, stacks.Count);
         }
 
         [TestMethod]
@@ -124,7 +100,7 @@ namespace InterpreterTests
 
             StockTypesInteger.Integer.Subtract();
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
-            Assert.AreEqual<long>(32L, (long)res.Value);
+            Assert.AreEqual(32L, (long)res.Value);
         }
 
         [TestMethod]
@@ -135,7 +111,11 @@ namespace InterpreterTests
             var ops = StockTypesInteger.Integer.GetOperations(new StockTypesInteger.Integer());
             var opsFloat = StockTypesFloat.Float.GetOperations(new StockTypesFloat.Float());
             Assert.IsTrue(opsFloat.ContainsKey("*"));
-            Assert.AreEqual<string>("Float", opsFloat["*"].DeclaringType.Name);
+            Assert.AreEqual("Float", opsFloat["*"].DeclaringType.Name);
+
+            Assert.IsTrue(ops.ContainsKey("*"));
+            Assert.AreEqual("Integer", ops["*"].DeclaringType.Name);
+
         }
 
         [TestMethod]
@@ -151,7 +131,7 @@ namespace InterpreterTests
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
-            Assert.AreEqual<long>(32L, (long)res.Value);
+            Assert.AreEqual(32L, (long)res.Value);
         }
 
         [TestMethod]
@@ -165,7 +145,7 @@ namespace InterpreterTests
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
-            Assert.IsTrue(res == default(push.types.Type.PushTypeBase));
+            Assert.IsTrue(res == default(Type.PushTypeBase));
         }
 
     }

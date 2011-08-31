@@ -94,10 +94,10 @@ namespace InterpreterTests
 
             var res = Stack.popMany(3, stack);
 
-            Assert.AreEqual<int>(3, res.Item1.Length);
-            Assert.AreEqual<int>(2, res.Item2.length);
-            Assert.AreEqual<int>(3, res.Item1.Head);
-            Assert.AreEqual<int>(2, res.Item2.asList.Head);
+            Assert.AreEqual(3, res.Item1.Length);
+            Assert.AreEqual(2, res.Item2.length);
+            Assert.AreEqual(3, res.Item1.Head);
+            Assert.AreEqual(2, res.Item2.asList.Head);
         }
 
         [TestMethod]
@@ -162,9 +162,9 @@ namespace InterpreterTests
             stack = Stack.push(4, stack);
 
             var dup = Stack.dup(2, stack);
-            Assert.AreEqual<int>(5, dup.length);
-            Assert.AreEqual<int>(2, Stack.peek(dup));
-            Assert.AreEqual<int>(Stack.peek(dup), dup.asList[3]);
+            Assert.AreEqual(5, dup.length);
+            Assert.AreEqual(2, Stack.peek(dup));
+            Assert.AreEqual(Stack.peek(dup), dup.asList[3]);
         }
 
         [TestMethod]
@@ -178,8 +178,8 @@ namespace InterpreterTests
             stack = Stack.push(4, stack);
 
             var yank = Stack.yank(2, stack);
-            Assert.AreEqual<int>(4, yank.length);
-            Assert.AreEqual<int>(2, Stack.peek(yank));
+            Assert.AreEqual(4, yank.length);
+            Assert.AreEqual(2, Stack.peek(yank));
             Assert.IsFalse(Stack.pop(yank).Item2.asList.Contains(2));
         }
     }

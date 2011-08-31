@@ -108,8 +108,9 @@ namespace InterpreterTests
         public void PerformOperationFloatTest()
         {
             TypeFactory.stockTypes.cleanAllStacks();
-            var ops = StockTypesInteger.Integer.GetOperations(new StockTypesInteger.Integer());
-            var opsFloat = StockTypesFloat.Float.GetOperations(new StockTypesFloat.Float());
+            var ops = new StockTypesInteger.Integer().Operations;
+            var opsFloat = new StockTypesFloat.Float().Operations;
+
             Assert.IsTrue(opsFloat.ContainsKey("*"));
             Assert.AreEqual("Float", opsFloat["*"].DeclaringType.Name);
 

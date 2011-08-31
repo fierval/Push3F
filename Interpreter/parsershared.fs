@@ -65,8 +65,7 @@ module ParserShared =
         | None -> None
 
     let (|FindOperation|_|) (tp : string) op =
-        let pushType = stockTypes.Types.[tp]
-        PushTypeBase.GetOperations(pushType).TryFind(op)
+        stockTypes.Types.[tp].Operations.TryFind(op)
      
     let createInteger n = new Integer(n) :> PushTypeBase
     let createFloat f = new Float(f) :> PushTypeBase

@@ -17,7 +17,7 @@ module StockTypesIdentifier =
             with get() = 
                 if Unchecked.defaultof<Map<string, MethodInfo>> = Identifier.operations 
                     then 
-                        Identifier.operations <- PushTypeBase.GetOperations(new Identifier())
+                        Identifier.operations <- PushTypeBase.GetOperations(t)
                 Identifier.operations
 
         new () = {inherit PushTypeBase ()}

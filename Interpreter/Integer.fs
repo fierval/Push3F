@@ -21,7 +21,7 @@ module StockTypesInteger =
             with get() = 
                 if Unchecked.defaultof<Map<string, MethodInfo>> = Integer.operations 
                     then 
-                        Integer.operations <- PushTypeBase.GetOperations(new Integer())
+                        Integer.operations <- PushTypeBase.GetOperations(t)
                 Integer.operations
 
         override t.ToString() =

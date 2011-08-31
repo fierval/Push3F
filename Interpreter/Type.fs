@@ -21,7 +21,7 @@ module Type =
         member t.Value with get() = t.value
 
         //for each of the members, we can discover its operations.
-        static member internal GetOperations(ptype : #PushTypeBase) =
+        static member GetOperations(ptype : #PushTypeBase) =
             let opAttributes = ptype.GetType().GetMethods() 
                                 |> Seq.filter(
                                     fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    

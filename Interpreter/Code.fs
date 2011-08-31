@@ -17,7 +17,7 @@ module StockTypesCode =
             with get() = 
                 if Unchecked.defaultof<Map<string, MethodInfo>> = Code.operations 
                     then 
-                        Code.operations <- PushTypeBase.GetOperations(new Code())
+                        Code.operations <- PushTypeBase.GetOperations(t)
                 Code.operations
 
         new () = {inherit PushTypeBase ()}

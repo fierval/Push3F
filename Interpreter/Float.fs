@@ -17,7 +17,7 @@ module StockTypesFloat =
             with get() = 
                 if Unchecked.defaultof<Map<string, MethodInfo>> = Float.operations 
                     then 
-                        Float.operations <- PushTypeBase.GetOperations(new Float())
+                        Float.operations <- PushTypeBase.GetOperations(t)
                 Float.operations
 
         new () = {inherit PushTypeBase ()}

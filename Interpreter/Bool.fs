@@ -17,7 +17,7 @@ module StockTypesBool =
             with get() = 
                 if Unchecked.defaultof<Map<string, MethodInfo>> = Bool.operations 
                     then 
-                        Bool.operations <- PushTypeBase.GetOperations(new Bool())
+                        Bool.operations <- PushTypeBase.GetOperations(t)
                 Bool.operations
 
         new () = {inherit PushTypeBase ()}

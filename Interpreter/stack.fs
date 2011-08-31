@@ -10,7 +10,8 @@ module Stack =
         | StackNode of 'a list
         with
             member private t.StructuredFormatDisplay = 
-                box(t.asList)
+                let str = t.asList |> List.fold (fun st e -> st + e.ToString() + "; ") "("
+                str.Substring(0, str.Length - 2) + ")" 
             member t.length =
                 match t with
                 | StackNode(x) -> x.Length

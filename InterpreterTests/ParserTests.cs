@@ -21,7 +21,7 @@ namespace InterpreterTests
         [Description("Tests parsing a single boolean")]
         public void SimpleBoolean()
         {
-            str = "true";
+            str = "TRUE";
 
             var res = RunPushParser(str);
             Assert.IsTrue(res.Item.Value);
@@ -72,11 +72,18 @@ namespace InterpreterTests
 
         [TestMethod]
         [Description("Parsing out a type")]
-        public void SimpleType()
+        public void SimpleTypeUsedAsIdentifierFailTest()
         {
             str = "   INTEGER  ";
             var res = RunPushParser(str);
-            Assert.AreEqual<string>(str.Trim(), res.Item);
+
+            Type type = res.GetType();
+            if (!FSharpType.IsTuple(type))
+            {
+                Assert.Fail("The parser should not have succeeded");
+            }
+
+            Assert.IsTrue(res.Item1.IndexOf("Reserved keyword") > -1);
         }
 
         [TestMethod]
@@ -88,6 +95,14 @@ namespace InterpreterTests
 
             Assert.AreEqual<string>("Multiply", res.Item.Name);
             Assert.AreEqual<string>("Integer", res.Item.DeclaringType.Name);
+        }
+
+        [TestMethod]
+        public void SimpleNameTest()
+        {
+            str = " SOMENAME  ";
+            var res = RunPushParser(str);
+            Assert.AreEqual<string>("SOMENAME", res.Item.Value);
         }
 
         [TestMethod]

@@ -54,6 +54,8 @@
     <Compile Include="Integer.fs" />
     <Compile Include="Bool.fs" />
     <Compile Include="Float.fs" />
+    <Compile Include="Identifier.fs" />
+    <Compile Include="Code.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="parsershared.fs" />
     <Compile Include="parser.fs" />

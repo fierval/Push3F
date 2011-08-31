@@ -43,3 +43,5 @@ module Type =
         default t.StructuredFormatDisplay =
             box t.Value
 
+        override t.ToString() =
+            t.Value.ToString()

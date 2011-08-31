@@ -76,7 +76,7 @@ namespace InterpreterTests
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types);
 
-            Assert.AreEqual<int>(3, sysTypes.Count());
+            Assert.AreEqual<int>(5, sysTypes.Count());
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace InterpreterTests
         {
             var ptypes = TypeFactory.stockTypes.ptypes;
             var stacks = TypeFactory.stockTypes.stacks;
-            Assert.AreEqual<int>(3, stacks.Count);
+            Assert.AreEqual<int>(5, stacks.Count);
         }
 
         [TestMethod]

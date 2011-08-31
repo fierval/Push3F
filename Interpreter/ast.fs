@@ -13,8 +13,6 @@ module Ast =
         | PushList of Push list
         | Operation of MethodInfo
         | Exec of string
-        | Identifier of string
-
         with 
             member private t.StructuredFormatDisplay = 
                 match t with
@@ -23,7 +21,6 @@ module Ast =
                 | PushList l -> l :> obj
                 | Operation o -> box ("\"" + o.DeclaringType.Name + "." + o.Name + "\"")
                 | Exec e -> box ("\"" + e + "\"")
-                | Identifier i -> box ("\"" + i + "\"")
 
             
 

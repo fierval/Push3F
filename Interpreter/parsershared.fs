@@ -10,6 +10,7 @@ module ParserShared =
     open push.types.stock.StockTypesInteger
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesFloat
+    open push.types.stock.StockTypesIdentifier
 
     open System.Reflection
 
@@ -70,7 +71,8 @@ module ParserShared =
     let createInteger n = new Integer(n) :> PushTypeBase
     let createFloat f = new Float(f) :> PushTypeBase
     let createBool b = new Bool(b) :> PushTypeBase
-    
+    let createIdentifier ident = new Identifier(ident) :> PushTypeBase
+
     let createOperation (tp, op) = stockTypes.Types.[tp], PushTypeBase.GetOperations(stockTypes.Types.[tp]).[op]
             
     let returnStringCI s x = pstringCI s >>% x
@@ -78,6 +80,18 @@ module ParserShared =
     let openList : PushParser<string> = str "(" .>> ws
     let closeList : PushParser<string> = ws >>. str ")"
 
+    let validIdentifier t =
+        fun stream ->
+            let mutable reply = new Reply<string>()
+            match t with
+            | FindType res -> 
+                reply.Status <- Error
+                reply.Error <- messageError("Reserved keyword " + t)
+            | _ -> 
+                reply.Status <- Ok
+                reply.Result <- t
+            reply
+        
     let findType t = 
         fun stream ->
             let mutable reply = new Reply<string>()

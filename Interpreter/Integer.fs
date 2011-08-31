@@ -12,6 +12,8 @@ module StockTypesInteger =
         new () = {inherit PushTypeBase ()}
 
         new (n : int64) = {inherit PushTypeBase(n)}
+        override t.ToString() =
+            base.ToString()
 
         [<PushOperation("+")>]
         static member Add() =

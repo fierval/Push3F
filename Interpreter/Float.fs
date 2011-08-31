@@ -13,6 +13,9 @@ module StockTypesFloat =
 
         new (f : float) = {inherit PushTypeBase(f)}
 
+        override t.ToString() =
+            base.ToString()
+
         [<PushOperation("+")>]
         static member Add() =
             match processArgs2 typeof<Float> with

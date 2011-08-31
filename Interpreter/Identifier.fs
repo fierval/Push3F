@@ -1,17 +1,18 @@
 ﻿namespace push.types.stock
 
-module StockTypesBool =
+module StockTypesIdentifier =
     open push.types.Type
     open push.types.TypeAttributes
     open push.types.TypeFactory
 
-    [<PushType("BOOL")>]
-    type Bool =
+    [<PushType("NAME")>]
+    type Identifier =
         inherit PushTypeBase
 
         new () = {inherit PushTypeBase ()}
 
-        new (b : bool) = {inherit PushTypeBase(b)}
+        new (s : string) = {inherit PushTypeBase(s)}
 
         override t.ToString() =
-            base.ToString()
+          base.ToString()
+

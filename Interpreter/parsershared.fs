@@ -65,16 +65,12 @@ module ParserShared =
         | None -> None
 
     let (|FindOperation|_|) (tp : string) op =
-        stockTypes.Types.[tp].Operations.TryFind(op)
+        stockTypes.Operations.[tp].TryFind(op)
      
     let createInteger n = new Integer(n) :> PushTypeBase
     let createFloat f = new Float(f) :> PushTypeBase
     let createBool b = new Bool(b) :> PushTypeBase
     let createIdentifier ident = new Identifier(ident) :> PushTypeBase
-
-    let createOperation (tp, op) = stockTypes.Types.[tp], PushTypeBase.GetOperations(stockTypes.Types.[tp]).[op]
-            
-    let returnStringCI s x = pstringCI s >>% x
 
     let openList : PushParser<string> = str "(" .>> ws
     let closeList : PushParser<string> = ws >>. str ")"

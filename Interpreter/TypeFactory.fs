@@ -45,9 +45,11 @@ module TypeFactory =
     type internal StockTypes(? assembly : string) = 
         let mutable ptypes = discoverPushTypes assembly
         let mutable stacks = typeStacks ptypes
+        let mutable operations = getOperations ptypes
 
         member t.Stacks with get() = stacks
         member t.Types with get() = ptypes
+        member t.Operations with get() = operations
 
         member t.appendStacksFromAssembly (assembly : string) =
             let newTypes = discoverPushTypes (Some assembly)

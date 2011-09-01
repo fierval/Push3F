@@ -76,7 +76,7 @@ namespace InterpreterTests
         public void GetOperationsForTypeTest()
         {
             var integer = new StockTypesInteger.Integer(35L);
-            FSharpMap<string, MethodInfo> ops = Type.PushTypeBase.GetOperations(integer);
+            FSharpMap<string, MethodInfo> ops = TypeFactory.stockTypes.Operations["INTEGER"];
             Assert.IsTrue(ops.ContainsKey("+"));
             Assert.AreEqual("Add", ops["+"].Name);
         }
@@ -108,8 +108,8 @@ namespace InterpreterTests
         public void PerformOperationFloatTest()
         {
             TypeFactory.stockTypes.cleanAllStacks();
-            var ops = new StockTypesInteger.Integer().Operations;
-            var opsFloat = new StockTypesFloat.Float().Operations;
+            var ops = TypeFactory.stockTypes.Operations["INTEGER"];
+            var opsFloat = TypeFactory.stockTypes.Operations["FLOAT"];
 
             Assert.IsTrue(opsFloat.ContainsKey("*"));
             Assert.AreEqual("Float", opsFloat["*"].DeclaringType.Name);

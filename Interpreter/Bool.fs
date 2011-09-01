@@ -13,16 +13,11 @@ module StockTypesBool =
 
         [<DefaultValue>]static val mutable private operations : Map<string, MethodInfo>
 
-        override t.Operations 
-            with get() = 
-                if Unchecked.defaultof<Map<string, MethodInfo>> = Bool.operations 
-                    then 
-                        Bool.operations <- PushTypeBase.GetOperations(t)
-                Bool.operations
-
         new () = {inherit PushTypeBase ()}
-
         new (b : bool) = {inherit PushTypeBase(b)}
 
         override t.ToString() =
             base.ToString()
+
+        [<PushOperation("NOOP")>]
+        static member Noop() = ()

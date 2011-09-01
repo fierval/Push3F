@@ -11,20 +11,8 @@ module StockTypesFloat =
     type Float =
         inherit PushTypeBase
 
-        [<DefaultValue>]static val mutable private operations : Map<string, MethodInfo>
-
-        override t.Operations 
-            with get() = 
-                if Unchecked.defaultof<Map<string, MethodInfo>> = Float.operations 
-                    then 
-                        Float.operations <- PushTypeBase.GetOperations(t)
-                Float.operations
-
         new () = {inherit PushTypeBase ()}
-
-
         new (f : float) = {inherit PushTypeBase(f)}
-
 
         override t.ToString() =
             base.ToString()

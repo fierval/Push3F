@@ -11,18 +11,11 @@ module StockTypesCode =
     type Code =
         inherit PushTypeBase
 
-        [<DefaultValue>]static val mutable private operations : Map<string, MethodInfo>
-
-        override t.Operations 
-            with get() = 
-                if Unchecked.defaultof<Map<string, MethodInfo>> = Code.operations 
-                    then 
-                        Code.operations <- PushTypeBase.GetOperations(t)
-                Code.operations
-
         new () = {inherit PushTypeBase ()}
-
         new (s : string) = {inherit PushTypeBase(s)}
 
         override t.ToString() =
           base.ToString()
+
+        [<PushOperation("NOOP")>]
+        static member Noop() = ()

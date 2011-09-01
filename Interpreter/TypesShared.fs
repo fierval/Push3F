@@ -5,6 +5,7 @@ module TypesShared =
     open System.Reflection
     open System.Runtime.CompilerServices
     open push.types.TypeAttributes
+    open push.exceptions.PushExceptions
 
     [<assembly: InternalsVisibleTo ("InterpreterTests")>]
     do 
@@ -29,3 +30,15 @@ module TypesShared =
         (mi.GetCustomAttributes(typeof<PushOperationAttribute>, false) |> Seq.head :?> PushOperationAttribute).Name
 
 
+    //for each of the members, we can discover its operations.
+    let getOperationsForType ptype =
+        let opAttributes = ptype.GetType().GetMethods() 
+                            |> Seq.filter(
+                                fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
+        if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type")) 
+        else
+            opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
+
+    // groups all operations into a map of: Map(typeName, Map(operationName, operation))
+    let getOperations (ptypes : Map<string, 'b>) =
+        ptypes |> Map.fold (fun map typeName ptype -> map |> Map.add typeName (getOperationsForType ptype)) Map.empty

@@ -11,18 +11,8 @@ module StockTypesInteger =
     type Integer  =
         inherit PushTypeBase
 
-        [<DefaultValue>]static val mutable private operations : Map<string, MethodInfo>
-        
         new () = {inherit PushTypeBase() }
-
         new (n : int64) = {inherit PushTypeBase(n)}
-
-        override t.Operations 
-            with get() = 
-                if Unchecked.defaultof<Map<string, MethodInfo>> = Integer.operations 
-                    then 
-                        Integer.operations <- PushTypeBase.GetOperations(t)
-                Integer.operations
 
         override t.ToString() =
             base.ToString()

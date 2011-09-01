@@ -31,7 +31,7 @@ module TypesShared =
 
 
     //for each of the members, we can discover its operations.
-    let getOperationsForType ptype =
+    let internal getOperationsForType ptype =
         let opAttributes = ptype.GetType().GetMethods() 
                             |> Seq.filter(
                                 fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
@@ -40,5 +40,5 @@ module TypesShared =
             opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
 
     // groups all operations into a map of: Map(typeName, Map(operationName, operation))
-    let getOperations (ptypes : Map<string, 'b>) =
+    let internal getOperations (ptypes : Map<string, 'b>) =
         ptypes |> Map.fold (fun map typeName ptype -> map |> Map.add typeName (getOperationsForType ptype)) Map.empty

@@ -16,6 +16,13 @@ module StockTypesIdentifier =
 
         override t.ToString() =
           base.ToString()
+        
+        // custom parsing.
+        // in this case custom parsing is disabled.
+        // Push will parse these values
+        override t.Parser 
+            with get() = 
+                Unchecked.defaultof<ExtendedTypeParser>
 
         [<PushOperation("NOOP")>]
         static member Noop() = ()

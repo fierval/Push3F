@@ -14,6 +14,19 @@ module StockTypesInteger =
         new () = {inherit PushTypeBase() }
         new (n : int64) = {inherit PushTypeBase(n)}
 
+        // custom parsing
+        static member parse s =
+            let result = ref Unchecked.defaultof<int64>
+            if not (System.Int64.TryParse(s, result)) 
+            then 
+                Unchecked.defaultof<PushTypeBase> 
+            else 
+                new Integer(!result) :> PushTypeBase
+
+        override t.Parser 
+            with get() = 
+                ExtendedTypeParser(Integer.parse)
+        
         override t.ToString() =
             base.ToString()
 

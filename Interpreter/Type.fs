@@ -31,3 +31,8 @@ module Type =
 
         override t.ToString() =
             t.Value.ToString()
+
+        abstract Parser : ExtendedTypeParser with get
+    
+    and     // override this delegate to parse extended types
+        ExtendedTypeParser = delegate of string -> PushTypeBase

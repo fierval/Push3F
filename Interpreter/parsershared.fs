@@ -51,14 +51,19 @@ module ParserShared =
     let internal commonIdentifier : PushParser<string> = identifier (IdentifierOptions(isAsciiIdStart = isAsciiIdStart, 
                                                                         isAsciiIdContinue = isAsciiIdContinue))
 
-    let internal isAllowedChar c = 
+    let internal isAllowedCharNoDot c = 
         let num = System.Char.ConvertToUtf32(c.ToString(), 0)
         if c = '.' || c = '(' || c= ')' then false
         else 
             isAsciiLetter c || isDigit c || c = '_' || System.Char.IsPunctuation(c) || (num >= 33 && num <= 64)
 
-    let internal stringToken : PushParser<string> = manySatisfy isAllowedChar
-  
+    let isDot c = if c = '.' then true else false
+
+    let isAllowedChar c = isDot c || isAllowedCharNoDot c
+
+    let internal stringTokenNoDot : PushParser<string> = manySatisfy isAllowedCharNoDot
+    let internal stringToken : PushParser<string> = manySatisfy isAllowedChar 
+      
     let (|FindType|_|) t = 
         match stockTypes.Types.TryFind(t) with
         | Some s -> Some t
@@ -71,6 +76,18 @@ module ParserShared =
     let createFloat f = new Float(f) :> PushTypeBase
     let createBool b = new Bool(b) :> PushTypeBase
     let createIdentifier ident = new Identifier(ident) :> PushTypeBase
+
+    let createValue (value : #PushTypeBase) =
+        fun stream ->
+            let mutable reply = new Reply<Push>()
+            if Unchecked.defaultof<#PushTypeBase> = value
+            then 
+                reply.Status <- Error
+                reply.Error <- messageError("Delegate parser returned null")
+            else
+                reply.Status <- Ok
+                reply.Result <- Value(value)
+            reply    
 
     let openList : PushParser<string> = str "(" .>> ws
     let closeList : PushParser<string> = ws >>. str ")"
@@ -110,3 +127,27 @@ module ParserShared =
                 reply.Status <- Error
                 reply.Error <- messageError("Unknown operation: " + tp)
             reply
+
+    let filterMembers m obj =
+        if(m.GetType() = typeof<ExtendedTypeParser>) then true else false
+
+    // takes the map of types, returns the parsers for these types
+    let discoverParsers =
+        stockTypes.Types |> Map.map (fun key value -> value.GetType())
+        |> Map.map (fun key value -> 
+            value.FindMembers(
+                MemberTypes.Property,
+                BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance,
+                new MemberFilter(filterMembers),
+                null).[0] :?> PropertyInfo)
+
+    
+    let internal pushExtended (dlgt : ExtendedTypeParser) = attempt (stringToken >>= (dlgt.Invoke >> createValue))
+
+    // dynamically create the list of simple type parsers
+    let pushSimpleTypes =
+        let parsers = 
+            discoverParsers 
+            |> Map.fold(fun lst key value -> value.GetValue(stockTypes.Types.[key], null) :?> ExtendedTypeParser :: lst) List.empty
+            |> List.map(fun callback -> pushExtended callback)
+        choice parsers

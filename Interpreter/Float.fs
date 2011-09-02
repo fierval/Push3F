@@ -17,6 +17,19 @@ module StockTypesFloat =
         override t.ToString() =
             base.ToString()
 
+        // custom parsing
+        static member parse s =
+            let result = ref Unchecked.defaultof<float>
+            if not (System.Double.TryParse(s, result)) 
+            then 
+                Unchecked.defaultof<PushTypeBase> 
+            else 
+                new Float(!result) :> PushTypeBase
+
+        override t.Parser 
+            with get() = 
+                ExtendedTypeParser(Float.parse)
+
         [<PushOperation("+")>]
         static member Add() =
             match processArgs2 typeof<Float> with

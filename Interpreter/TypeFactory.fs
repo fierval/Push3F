@@ -32,7 +32,13 @@ module TypeFactory =
 
     //static function to run through the assemblies and discover new types
     let internal discoverPushTypes (assembly : string option) =
-        discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
+        let ptypes = discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
+        //verify that these types do derive from PushTypeBase
+        for t in ptypes do
+            match t.Value.GetType().BaseType.Name with
+            | "PushTypeBase" -> ()
+            | _ -> raise (PushException("Type " + t.GetType().Name + " not derived from PushTypeBase"))
+        ptypes
 
     // stack of currently implemented types
     let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = map |> Map.fold (fun state key o -> Map.add (o.GetType().Name) empty state) Map.empty

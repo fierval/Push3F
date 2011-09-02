@@ -37,7 +37,11 @@ module TypesShared =
                                 fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
         if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type")) 
         else
-            opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
+            let ops = opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
+
+            for op in ops do
+                if not op.Value.IsStatic then raise (PushException("Operation must be declared static"))
+            ops
 
     // groups all operations into a map of: Map(typeName, Map(operationName, operation))
     let internal getOperations (ptypes : Map<string, 'b>) =

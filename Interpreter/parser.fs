@@ -13,29 +13,16 @@ module Parser =
     open System.Reflection
     open System.Runtime.CompilerServices
 
-    // override this delegate to parse extended types
-    type ExtendedTypeParser = delegate of string -> PushTypeBase
-
     // parsing out an operation
     let internal pushType = commonIdentifier >>= findType
-    let internal pushOp = tuple2 (pushType .>> str ".") stringToken >>= findOp
+    let internal pushOp = tuple2 (pushType .>> str ".") stringTokenNoDot >>= findOp
     let internal pushOperation = pushOp |>> Operation
 
     // values of simple types
-    let internal pushFloat = pfloat |>> createFloat |>> Value
-    let internal pushInt  = pint64 .>> nodot |>> createInteger |>> Value
-    let internal pushTrue = pstring "TRUE" .>> nodot >>% Value (createBool true )
-    let internal pushFalse = pstring "FALSE" .>> nodot >>% Value (createBool false )
     let internal pushIdentifier = commonIdentifier >>= validIdentifier .>> nodot |>> createIdentifier |>> Value
     
-    //TODO: enable extending the parser with new tokens for new types
-    let internal pushExtended (dlg : ExtendedTypeParser) = stringToken |>> (dlg.Invoke >> Value)
-
     let internal pushSimple = choice [
-                                attempt pushInt
-                                attempt pushFloat
-                                attempt pushTrue
-                                attempt pushFalse
+                                pushSimpleTypes
                                 attempt pushIdentifier
                                 attempt pushOperation
                                       ]

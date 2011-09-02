@@ -145,9 +145,11 @@ module ParserShared =
     let internal pushExtended (dlgt : ExtendedTypeParser) = attempt (stringToken >>= (dlgt.Invoke >> createValue))
 
     // dynamically create the list of simple type parsers
+    // also, filter out types that do not implement a parser
     let pushSimpleTypes =
         let parsers = 
             discoverParsers 
             |> Map.fold(fun lst key value -> value.GetValue(stockTypes.Types.[key], null) :?> ExtendedTypeParser :: lst) List.empty
+            |> List.filter(fun callback -> not (callback = Unchecked.defaultof<ExtendedTypeParser>))
             |> List.map(fun callback -> pushExtended callback)
         choice parsers

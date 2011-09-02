@@ -19,6 +19,11 @@ module TypeAttributes =
         inherit Attribute()
         
         let mutable name = name
+        let mutable description = ""
+
+        member x.Description 
+            with get () = description 
+            and set value = description <- value
 
         member x.Name 
             with get() = name

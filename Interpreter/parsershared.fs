@@ -125,23 +125,12 @@ module ParserShared =
                 reply.Error <- messageError("Unknown operation: " + tp)
             reply
 
-    // callback to flash out extended type parsers in the type,
-    // if they exist
-    let filterExtendedTypeParser (m:MemberInfo) obj = 
-        match m with
-        | :? PropertyInfo as p -> p.PropertyType = typeof<ExtendedTypeParser>
-        | _ -> false
-
     // takes the map of types, returns the parsers for these types
     let discoverParsers =
-        stockTypes.Types |> Map.map (fun key value -> value.GetType())
+        stockTypes.Types
         |> Map.map (fun key value -> 
-            value.FindMembers(
-                MemberTypes.Property,
-                BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance,
-                new MemberFilter(filterExtendedTypeParser),
-                null).[0] :?> PropertyInfo)
-
+            value.GetType().GetProperties(BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance)
+            |> Array.find (fun p -> p.PropertyType = typeof<ExtendedTypeParser>))
     
     let internal pushExtended (dlgt : ExtendedTypeParser) = attempt (stringToken >>= (dlgt.Invoke >> createValue))
 

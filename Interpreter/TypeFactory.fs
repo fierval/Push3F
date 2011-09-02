@@ -52,11 +52,21 @@ module TypeFactory =
         let mutable ptypes = discoverPushTypes assembly
         let mutable stacks = typeStacks ptypes
         let mutable operations = getOperations ptypes
+        let mutable bindings : Map<string, string> = Map.empty
 
+        // stores the stacks currently in use
         member t.Stacks with get() = stacks
+
+        // stores stock and extended types
         member t.Types with get() = ptypes
+
+        // stores operations
         member t.Operations with get() = operations
 
+        // stores NAME bindings
+        member t.Bindings with get() = bindings
+
+        // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
             let newTypes = discoverPushTypes (Some assembly)
             ptypes <- appendMaps ptypes newTypes
@@ -81,6 +91,21 @@ module TypeFactory =
             stacks <- stacks.Remove(key)
             stacks <- stacks.Add(key, push resObj stack)
 
+        member t.flush (tp : System.Type) =
+            stacks <- stacks.Remove(tp.Name)
+            stacks <- stacks.Add(tp.Name, empty)
+
+        member t.define (tp : System.Type) =
+            let stack = stacks.["Identifier"]
+            if stack.length = 0 then ()
+            else
+                let name = (peek stack).Value :?> string
+                bindings <- bindings.Add(name, tp.Name)
+
+        member t.dup (tp : System.Type) =
+            if stacks.[tp.Name].length = 0 then ()
+            else t.pushResult (peek stacks.[tp.Name])
+                
         // good for test to clean up the stacks
         member t.cleanAllStacks() =
             stacks <- typeStacks ptypes
@@ -90,6 +115,9 @@ module TypeFactory =
     let appendStacksFromAssembly assembly = stockTypes.appendStacksFromAssembly assembly
     let popArguments sysType n = stockTypes.popArguments sysType n
     let pushResult resObj = stockTypes.pushResult resObj
+    let flush tp = stockTypes.flush tp
+    let define tp = stockTypes.define tp
+    let dup tp = stockTypes.dup tp
 
     // retrieves arguments for a binary operation
     let processArgs2 sysType=

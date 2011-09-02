@@ -125,8 +125,12 @@ module ParserShared =
                 reply.Error <- messageError("Unknown operation: " + tp)
             reply
 
-    let filterMembers m obj =
-        if(m.GetType() = typeof<ExtendedTypeParser>) then true else false
+    // callback to flash out extended type parsers in the type,
+    // if they exist
+    let filterExtendedTypeParser (m:MemberInfo) obj = 
+        match m with
+        | :? PropertyInfo as p -> p.PropertyType = typeof<ExtendedTypeParser>
+        | _ -> false
 
     // takes the map of types, returns the parsers for these types
     let discoverParsers =
@@ -135,7 +139,7 @@ module ParserShared =
             value.FindMembers(
                 MemberTypes.Property,
                 BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance,
-                new MemberFilter(filterMembers),
+                new MemberFilter(filterExtendedTypeParser),
                 null).[0] :?> PropertyInfo)
 
     

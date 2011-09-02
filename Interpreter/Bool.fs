@@ -46,18 +46,6 @@ module StockTypesBool =
                 pushResult(new Bool(a1.Raw<bool>() && a2.Raw<bool>()))
             | _ -> ()
 
-        [<PushOperation("DEFINE", Description="Top of the NAME stack is an instruction that will push the top item of the BOOLEAN stack onto the EXEC stack.")>]
-        static member Define() =
-            define typeof<Bool>
-
-        [<PushOperation("DUP", Description="Duplicates top of the stack")>]
-        static member Dup() =
-            dup typeof<Bool>
-
-        [<PushOperation("FLUSH", Description = "Flushes the boolean stack")>]
-        static member Flush() = 
-            flush typeof<Bool>
-
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
             match processArgs2 typeof<Bool> with

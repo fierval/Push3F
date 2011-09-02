@@ -72,9 +72,6 @@ module ParserShared =
     let (|FindOperation|_|) (tp : string) op =
         stockTypes.Operations.[tp].TryFind(op)
      
-    let createInteger n = new Integer(n) :> PushTypeBase
-    let createFloat f = new Float(f) :> PushTypeBase
-    let createBool b = new Bool(b) :> PushTypeBase
     let createIdentifier ident = new Identifier(ident) :> PushTypeBase
 
     let createValue (value : #PushTypeBase) =

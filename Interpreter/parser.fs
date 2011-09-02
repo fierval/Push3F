@@ -19,7 +19,7 @@ module Parser =
     let internal pushOperation = pushOp |>> Operation
 
     // values of simple types
-    let internal pushIdentifier = commonIdentifier >>= validIdentifier .>> nodot |>> createIdentifier |>> Value
+    let internal pushIdentifier = commonIdentifier >>= validIdentifier .>> nodot |>> createIdentifier >>= createValue
     
     let internal pushSimple = choice [
                                 pushSimpleTypes

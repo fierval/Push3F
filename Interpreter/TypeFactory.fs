@@ -110,15 +110,15 @@ module TypeFactory =
     // retrieves arguments for a binary operation
     let processArgs2 sysType=
         let args = popArguments sysType 2
-        if not (args.Length = 2) then (None, None)
+        if not (args.Length = 2) then []
         else
             let arg1, arg2 = List.head args , List.head (List.tail args)
-            Some arg1, Some arg2
+            [arg1; arg2]
 
     // retrieve arguments for a unary operation
-    let processArgs1 sysType : PushTypeBase option =
+    let processArgs1 sysType : PushTypeBase =
         let args = popArguments sysType 1
-        if not (args.Length = 1) then None
+        if not (args.Length = 1) then Unchecked.defaultof<PushTypeBase>
         else
             let arg = List.head args
-            Some arg
+            arg

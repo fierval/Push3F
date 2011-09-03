@@ -33,25 +33,25 @@ module StockTypesFloat =
         [<PushOperation("+")>]
         static member Add() =
             match processArgs2 typeof<Float> with
-            | (Some a1, Some a2) -> pushResult(new Float(a1.Raw<float>() + a2.Raw<float>()))
+            | [a1; a2] -> pushResult(new Float(a1.Raw<float>() + a2.Raw<float>()))
             | _ -> ()
             
         [<PushOperation("*")>]
         static member Multiply() =
             match processArgs2 typeof<Float> with
-            | (Some a1, Some a2) -> pushResult(new Float(a1.Raw<float>() * a2.Raw<float>()))
+            | [a1; a2] -> pushResult(new Float(a1.Raw<float>() * a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("-")>]
         static member Subtract() =
             match processArgs2 typeof<Float> with
-            | (Some a1, Some a2) -> pushResult(new Float(a1.Raw<float>() - a2.Raw<float>()))
+            | [a1; a2] -> pushResult(new Float(a1.Raw<float>() - a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("/")>]
         static member Divide() =
             match processArgs2 typeof<Float> with
-            | (Some a1, Some a2) -> 
+            | [a1; a2] -> 
                 if a1.Raw<float>() = 0. 
                 then pushResult(new Float(System.Double.MinValue)) 
                 else pushResult(new Float(a1.Raw<float>() - a2.Raw<float>()))

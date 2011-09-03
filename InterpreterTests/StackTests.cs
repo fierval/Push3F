@@ -161,7 +161,7 @@ namespace InterpreterTests
             stack = Stack.push(3, stack);
             stack = Stack.push(4, stack);
 
-            var dup = Stack.dup(2, stack);
+            var dup = Stack.yankdup(2, stack);
             Assert.AreEqual(5, dup.length);
             Assert.AreEqual(2, Stack.peek(dup));
             Assert.AreEqual(Stack.peek(dup), dup.asList[3]);

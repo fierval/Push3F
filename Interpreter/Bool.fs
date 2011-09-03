@@ -35,21 +35,21 @@ module StockTypesBool =
         [<PushOperation("=", Description = "TRUE if top two booleans are equal false otherwise")>]
         static member Eq() = 
             match processArgs2 typeof<Bool> with
-            | (Some a1, Some a2) -> 
+            | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() = a2.Raw<bool>()))
             | _ -> ()
     
         [<PushOperation("AND", Description = "Logical AND of the top two booleans")>]
         static member And() = 
             match processArgs2 typeof<Bool> with
-            | (Some a1, Some a2) -> 
+            | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() && a2.Raw<bool>()))
             | _ -> ()
 
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
             match processArgs2 typeof<Bool> with
-            | (Some a1, Some a2) -> 
+            | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() || a2.Raw<bool>()))
             | _ -> ()
 

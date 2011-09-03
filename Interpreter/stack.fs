@@ -65,11 +65,9 @@ module Stack =
         | [], _ -> [], stack
         | lst, _ -> List.rev lst, stack
 
-    // append expresses itself neatly in terms of reverse
-    // it is an expensive operation, though.
-    let append (st1:Stack<'a>) (st2:Stack<'a>) = st1.asList @ st2.asList
+    let append (st1:Stack<'a>) (st2:Stack<'a>) = StackNode(st1.asList @ st2.asList)
 
-    let dup n (stack : 'a Stack) = if n >= stack.length then stack else StackNode(stack.asList.[n]::stack.asList)
+    let yankdup n (stack : 'a Stack) = if n >= stack.length then stack else StackNode(stack.asList.[n]::stack.asList)
     
     let yank n (stack : 'a Stack) = 
         if n >= stack.length then stack
@@ -80,4 +78,10 @@ module Stack =
             let totalList = (head::listHead) @ tail.asList
             StackNode(totalList)
 
-    let stacksInit (map : Map<string, 'a>) = Map.map (fun t a -> empty) map
+    let shove n (value : 'a) (stack : 'a Stack) =
+        if n = 0 then push value stack
+        else
+            let res = popMany n stack
+            match fst res with
+            | [] -> stack
+            | _ -> append (StackNode(fst res)) (push value (snd res))

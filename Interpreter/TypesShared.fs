@@ -11,6 +11,8 @@ module TypesShared =
     do 
         ()
 
+    let internal appendMaps map1 map2 = ((map1 |> Map.toList) @ (map2 |> Map.toList)) |> Map.ofList
+
     // loads types from the specified assembly
     // or from the current one by default
     let internal loadTypes assembly = 
@@ -43,6 +45,18 @@ module TypesShared =
                 if not op.Value.IsStatic then raise (PushException("Operation must be declared static"))
             ops
 
+
+    // gets generic operations from the Ops type
+    let internal getGenericOperations = 
+        let tp = (Assembly.GetCallingAssembly().GetType("push.types.GenericOperations+Ops"))
+        let opsObj = tp.GetConstructor(Array.empty).Invoke(Array.empty)
+        getOperationsForType opsObj
+
+    let internal getNonGenericOperations (ptypes : Map<string, 'b>) =
+        ptypes |> Map.map (fun typeName ptype -> (getOperationsForType ptype))
+
     // groups all operations into a map of: Map(typeName, Map(operationName, operation))
     let internal getOperations (ptypes : Map<string, 'b>) =
-        ptypes |> Map.fold (fun map typeName ptype -> map |> Map.add typeName (getOperationsForType ptype)) Map.empty
+        let nonGenericOps = getNonGenericOperations ptypes
+        let genericOps = getGenericOperations
+        nonGenericOps |> Map.map (fun key value -> appendMaps value genericOps)

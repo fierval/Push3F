@@ -41,9 +41,8 @@ module TypeFactory =
         ptypes
 
     // stack of currently implemented types
-    let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = map |> Map.fold (fun state key o -> Map.add (o.GetType().Name) empty state) Map.empty
-
-    let internal appendMaps map1 map2 = ((map1 |> Map.toList) @ (map2 |> Map.toList)) |> Map.ofList
+    let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = 
+        map |> Map.fold (fun state key o -> Map.add (o.GetType().Name) empty state) Map.empty
 
     // keeps the actual stock types.
     // internal to this module only, so nobody externally

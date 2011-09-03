@@ -32,25 +32,25 @@ module StockTypesInteger =
 
         [<PushOperation("+")>]
         static member Add() =
-            match processArgs2 typeof<Integer> with
+            match processArgs2 "INTEGER" with
             | [a1; a2] -> pushResult(new Integer(a1.Raw<int64>() + a2.Raw<int64>()))
             | _ -> ()
             
         [<PushOperation("*")>]
         static member Multiply() =
-            match processArgs2 typeof<Integer> with
+            match processArgs2 "INTEGER" with
             | [a1; a2] -> pushResult(new Integer(a1.Raw<int64>() * a2.Raw<int64>()))
             | _ -> ()
 
         [<PushOperation("-")>]
         static member Subtract() =
-            match processArgs2 typeof<Integer> with
+            match processArgs2 "INTEGER" with
             | [a1; a2] -> pushResult(new Integer(a1.Raw<int64>() - a2.Raw<int64>()))
             | _ -> ()
 
         [<PushOperation("/")>]
         static member Divide() =
-            match processArgs2 typeof<Integer> with
+            match processArgs2 "INTEGER" with
             | [a1; a2] -> 
                 if a1.Raw<int64>() = 0L 
                 then pushResult(new Integer(System.Int64.MinValue)) 

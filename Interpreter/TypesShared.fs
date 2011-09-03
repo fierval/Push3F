@@ -11,7 +11,14 @@ module TypesShared =
     do 
         ()
 
-    let internal appendMaps map1 map2 = ((map1 |> Map.toList) @ (map2 |> Map.toList)) |> Map.ofList
+
+    // map extensions
+    type Microsoft.FSharp.Collections.Map<'Key, 'Value when 'Key : comparison>  with
+        member t.Replace (key, value) =
+            t.Remove(key).Add(key, value)
+
+        member t.Append (map) =
+            ((t |> Map.toList) @ (map |> Map.toList)) |> Map.ofList    
 
     // loads types from the specified assembly
     // or from the current one by default
@@ -59,4 +66,8 @@ module TypesShared =
     let internal getOperations (ptypes : Map<string, 'b>) =
         let nonGenericOps = getNonGenericOperations ptypes
         let genericOps = getGenericOperations
-        nonGenericOps |> Map.map (fun key value -> appendMaps value genericOps)
+        nonGenericOps |> Map.map (fun key value -> value.Append(genericOps))
+
+    
+    //given a push object retrieve the name of its type
+    let internal getObjectPushType pushObj = (pushObj.GetType().GetCustomAttributes(typeof<PushTypeAttribute>, true).[0] :?> PushTypeAttribute).Name

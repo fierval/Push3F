@@ -95,12 +95,13 @@ namespace InterpreterTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
 
-            TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
-            TypeFactory.pushResult(new StockTypesInteger.Integer(64L));
+            TypeFactory.pushResult(new StockTypesInteger.Integer(30L));
+            TypeFactory.pushResult(new StockTypesInteger.Integer(50L));
 
             StockTypesInteger.Integer.Subtract();
-            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
-            Assert.AreEqual(32L, (long)res.Value);
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);
+            Assert.AreEqual(20L, (long)res.Value);
+            Assert.AreEqual(1, TypeFactory.stockTypes.stacks["INTEGER"].length);
         }
 
         [TestMethod]
@@ -131,7 +132,7 @@ namespace InterpreterTests
 
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed
-            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);
             Assert.AreEqual(32L, (long)res.Value);
         }
 
@@ -145,7 +146,7 @@ namespace InterpreterTests
 
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed
-            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["Integer"]);
+            var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);
             Assert.IsTrue(res == default(Type.PushTypeBase));
         }
 

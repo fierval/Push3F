@@ -57,6 +57,7 @@
     <Compile Include="ParserTests.cs" />
     <Compile Include="StackTests.cs" />
     <Compile Include="TypeTests.cs" />
+    <Compile Include="OperationsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interpreter\Push.Parser.fsproj">

@@ -42,7 +42,7 @@ module TypeFactory =
 
     // stack of currently implemented types
     let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = 
-        map |> Map.fold (fun state key o -> Map.add (o.GetType().Name) empty state) Map.empty
+        map |> Map.map (fun key o -> empty)
 
     // keeps the actual stock types.
     // internal to this module only, so nobody externally
@@ -74,27 +74,24 @@ module TypeFactory =
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
             let newTypes = discoverPushTypes (Some assembly)
-            ptypes <- appendMaps ptypes newTypes
+            ptypes <- ptypes.Append(newTypes)
             stacks <- typeStacks ptypes
 
         // retrieves arguments from the appropriate stack
-        member t.popArguments (sysType : System.Type) n =
-            let key = sysType.Name
+        member t.popArguments key n =
             if not (stacks.ContainsKey(key)) then List.empty
             else
                 let stack = stacks.[key]
                 if stack.length < n then List.empty
                 else
-                    stacks <- stacks.Remove(key)
                     let result, leftOver = popManyReverse 2 stack 
-                    stacks <- stacks.Add(key, leftOver)
+                    stacks <- stacks.Replace(key, leftOver)
                     result
 
         member t.pushResult resObj =
-            let key = resObj.GetType().Name
+            let key = getObjectPushType resObj
             let stack = stacks.[key]
-            stacks <- stacks.Remove(key)
-            stacks <- stacks.Add(key, push resObj stack)
+            stacks <- stacks.Replace(key, push resObj stack)
 
         // good for test to clean up the stacks
         member t.cleanAllStacks() =
@@ -106,18 +103,31 @@ module TypeFactory =
     let popArguments sysType n = stockTypes.popArguments sysType n
     let pushResult resObj = stockTypes.pushResult resObj
 
-    // retrieves arguments for a binary operation
-    let processArgs2 sysType=
+    let processArgs2 sysType =
         let args = popArguments sysType 2
         if not (args.Length = 2) then []
         else
             let arg1, arg2 = List.head args , List.head (List.tail args)
             [arg1; arg2]
-
-    // retrieve arguments for a unary operation
-    let processArgs1 sysType : PushTypeBase =
+        
+    let processArgs1 sysType = 
         let args = popArguments sysType 1
         if not (args.Length = 1) then Unchecked.defaultof<PushTypeBase>
         else
             let arg = List.head args
             arg
+
+
+    // given the MethodInfo of the operation, execute it.
+    let internal execOperation pushType (mi : MethodInfo) =
+        // if this is an operation, requiring type parameter
+        if mi.GetParameters().Length > 0
+        then
+            mi.Invoke(null, [|pushType|]) |> ignore
+        else
+            mi.Invoke(null, Array.empty) |> ignore
+            
+    // given the push type name and the operation name, 
+    // execute the operation
+    let exec typeName operation =
+        execOperation typeName stockTypes.Operations.[typeName].[operation]

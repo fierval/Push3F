@@ -2,16 +2,16 @@
 
 module Stack =
     open push.exceptions.PushExceptions
-    open System.Diagnostics;
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
-    [<DebuggerDisplay("{StructuredFormatDisplay}")>]
     type Stack<'a> = 
         | StackNode of 'a list
         with
             member private t.StructuredFormatDisplay = 
-                let str = t.asList |> List.fold (fun st e -> st + e.ToString() + "; ") "("
-                str.Substring(0, str.Length - 2) + ")" 
+                if t.length = 0 then "()"
+                else
+                    let str = t.asList |> List.fold (fun st e -> st + e.ToString() + "; ") "("
+                    str.Substring(0, str.Length - 2) + ")" 
             member t.length =
                 match t with
                 | StackNode(x) -> x.Length
@@ -63,7 +63,7 @@ module Stack =
     let popManyReverse n stack = 
         match popMany n stack with
         | [], _ -> [], stack
-        | lst, _ -> List.rev lst, stack
+        | lst, st -> List.rev lst, st
 
     let append (st1:Stack<'a>) (st2:Stack<'a>) = StackNode(st1.asList @ st2.asList)
 

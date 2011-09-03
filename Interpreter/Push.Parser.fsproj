@@ -52,8 +52,8 @@
     <Compile Include="Type.fs" />
     <Compile Include="TypeFactory.fs" />
     <Compile Include="Integer.fs" />
-    <Compile Include="Bool.fs" />
     <Compile Include="Float.fs" />
+    <Compile Include="Bool.fs" />
     <Compile Include="Identifier.fs" />
     <Compile Include="Code.fs" />
     <Compile Include="genericOperations.fs" />

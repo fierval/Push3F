@@ -131,3 +131,7 @@ module TypeFactory =
     // execute the operation
     let exec typeName operation =
         execOperation typeName stockTypes.Operations.[typeName].[operation]
+
+    let peek stackName = 
+        let stack = stockTypes.Stacks.[stackName]
+        peek stack

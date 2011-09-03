@@ -4,8 +4,6 @@ module StockTypesBool =
     open push.types.Type
     open push.types.TypeAttributes
     open push.types.TypeFactory
-    open StockTypesFloat
-    open StockTypesInteger
 
     open System.Reflection
 
@@ -50,8 +48,8 @@ module StockTypesBool =
 
         [<PushOperation("FROMFLOAT", Description = "Pushies FALSE if top of the FLOAT stack is 0.0. True otherwise")>]
         static member fromFloat() =
-            let top = peek "FLOAT"
-            if top :?> Float <> Unchecked.defaultof<Float> 
+            let top = processArgs1 "FLOAT"
+            if top <> Unchecked.defaultof<PushTypeBase> 
             then
                 match top.Raw<float>() with
                 | 0.0 -> pushResult (new Bool(false))
@@ -59,8 +57,8 @@ module StockTypesBool =
 
         [<PushOperation("FROMINTEGER", Description = "Pushies FALSE if top of the INTEGER stack is 0. True otherwise")>]
         static member fromInt() =
-            let top = peek "INTEGER"
-            if top :?> Integer <> Unchecked.defaultof<Integer> 
+            let top = processArgs1 "FLOAT"
+            if top <> Unchecked.defaultof<PushTypeBase> 
             then
                 match top.Raw<int64>() with
                 | 0L -> pushResult (new Bool(false))

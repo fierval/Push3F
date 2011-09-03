@@ -56,3 +56,15 @@ module StockTypesInteger =
                 then pushResult(new Integer(System.Int64.MinValue)) 
                 else pushResult(new Integer(a1.Raw<int64>() - a2.Raw<int64>()))
             | _ -> ()
+
+        [<PushOperation("FROMFLOAT", Description = "Pushes float converted into int64 onto INTEGER stack")>]
+        static member fromFloat() =
+            let top = processArgs1 "FLOAT"
+            if top <> Unchecked.defaultof<PushTypeBase> 
+            then pushResult (new Integer(int64 (top.Raw<float>())))
+
+        [<PushOperation("FROMBOOLEAN", Description = "Pushes 1 onto INTEGER stack if top boolean is true, 0 otherwise")>]
+        static member fromBool() =
+            let top = processArgs1 "BOOLEAN"
+            if top <> Unchecked.defaultof<PushTypeBase> 
+            then pushResult (new Integer(if top.Raw<bool>() = true then 1L else 0L))

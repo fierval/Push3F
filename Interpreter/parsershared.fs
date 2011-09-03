@@ -115,11 +115,11 @@ module ParserShared =
 
     let findOp (tp, op) =
         fun stream ->
-            let mutable reply = new Reply<MethodInfo>()
+            let mutable reply = new Reply<string * MethodInfo>()
             match op with
             | FindOperation tp res -> 
                 reply.Status <- Ok
-                reply.Result <- res
+                reply.Result <- tp, res
             | _ -> 
                 reply.Status <- Error
                 reply.Error <- messageError("Unknown operation: " + tp)

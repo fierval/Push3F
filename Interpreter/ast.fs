@@ -11,7 +11,7 @@ module Ast =
         Code of string
         | Value of PushTypeBase
         | PushList of Push list
-        | Operation of MethodInfo
+        | Operation of string * MethodInfo
         | Exec of string
         with 
             member private t.StructuredFormatDisplay = 
@@ -19,7 +19,7 @@ module Ast =
                 | Code c -> box ("\"" + c + "\"")
                 | Value i -> i.StructuredFormatDisplay
                 | PushList l -> l :> obj
-                | Operation o -> box ("\"" + o.DeclaringType.Name + "." + o.Name + "\"")
+                | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
                 | Exec e -> box ("\"" + e + "\"")
 
             

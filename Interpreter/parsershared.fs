@@ -10,7 +10,7 @@ module ParserShared =
     open push.types.stock.StockTypesInteger
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesFloat
-    open push.types.stock.StockTypesIdentifier
+    open push.types.stock.StockTypesName
 
     open System.Reflection
 
@@ -72,7 +72,7 @@ module ParserShared =
     let (|FindOperation|_|) (tp : string) op =
         stockTypes.Operations.[tp].TryFind(op)
      
-    let createIdentifier ident = new Identifier(ident) :> PushTypeBase
+    let createIdentifier ident = new Name(ident) :> PushTypeBase
 
     let createValue (value : #PushTypeBase) =
         fun stream ->

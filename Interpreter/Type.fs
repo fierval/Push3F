@@ -7,6 +7,7 @@ module Type =
     open TypeAttributes
     open TypesShared
     open System.Diagnostics
+    open System
 
     [<DebuggerDisplay("Value = {Value}")>]
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
@@ -14,11 +15,23 @@ module Type =
     type PushTypeBase () = 
         [<DefaultValue>] 
         val mutable private value : obj
-        
+
+        [<DefaultValue>]
+        val mutable private myType : string
+
         new (v) as this = PushTypeBase()
                             then this.value <- v
 
         member t.Value with get() = t.value
+
+        static member GetMyType (me : #PushTypeBase) =
+            if System.String.IsNullOrEmpty(me.myType)
+            then
+                me.myType <- (me.GetType().GetCustomAttributes(typeof<PushTypeAttribute>, false).[0] :?> PushTypeAttribute).Name
+            me.myType   
+                    
+        abstract member MyType : string with get
+        default t.MyType with get () = PushTypeBase.GetMyType(t)
 
         member t.Raw<'a> () =
             match t.Value with

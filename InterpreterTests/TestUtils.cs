@@ -28,9 +28,9 @@ namespace InterpreterTests
                 TypeFactory.pushResult(new StockTypesFloat.Float((double)val));
             }
 
-            if (typeof(T) == typeof(StockTypesIdentifier.Identifier))
+            if (typeof(T) == typeof(StockTypesName.Name))
             {
-                TypeFactory.pushResult(new StockTypesIdentifier.Identifier((string)val));
+                TypeFactory.pushResult(new StockTypesName.Name((string)val));
             }
 
             if (typeof(T) == typeof(StockTypesCode.Code))

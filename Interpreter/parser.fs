@@ -22,9 +22,9 @@ module Parser =
     let internal pushIdentifier = commonIdentifier >>= validIdentifier .>> nodot |>> createIdentifier >>= createValue
     
     let internal pushSimple = choice [
-                                pushSimpleTypes
                                 attempt pushIdentifier
                                 attempt pushOperation
+                                pushSimpleTypes
                                       ]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.

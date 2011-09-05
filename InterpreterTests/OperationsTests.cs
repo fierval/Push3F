@@ -74,7 +74,7 @@ namespace InterpreterTests
         public void DefineTest()
         {
             TypeFactory.pushResult(new StockTypesFloat.Float(345.67));
-            TypeFactory.pushResult(new StockTypesIdentifier.Identifier("SomeFloat"));
+            TypeFactory.pushResult(new StockTypesName.Name("SomeFloat"));
 
             TypeFactory.exec("FLOAT", "DEFINE");
             Assert.AreEqual(345.67, TypeFactory.stockTypes.Bindings["SomeFloat"].Raw<double>());
@@ -83,7 +83,7 @@ namespace InterpreterTests
         [TestMethod]
         public void DupTest()
         {
-            TypeFactory.pushResult(new StockTypesIdentifier.Identifier("SomeId"));
+            TypeFactory.pushResult(new StockTypesName.Name("SomeId"));
 
             TypeFactory.exec("NAME", "DUP");
             Assert.AreEqual(2, TypeFactory.stockTypes.Stacks["NAME"].length);
@@ -95,7 +95,7 @@ namespace InterpreterTests
         [TestMethod]
         public void PopTest()
         {
-            TypeFactory.pushResult(new StockTypesIdentifier.Identifier("SomeId"));
+            TypeFactory.pushResult(new StockTypesName.Name("SomeId"));
 
             TypeFactory.exec("NAME", "POP");
             Assert.IsTrue(TestUtils.IsEmpty("NAME"));

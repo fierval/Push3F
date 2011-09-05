@@ -17,6 +17,8 @@ module StockTypesBool =
         new () = {inherit PushTypeBase ()}
         new (b : bool) = {inherit PushTypeBase(b)}
 
+        static member private Me = new Bool()
+
         // custom parsing
         static member parse s =
             let result = ref Unchecked.defaultof<bool>
@@ -35,14 +37,14 @@ module StockTypesBool =
 
         [<PushOperation("=", Description = "TRUE if top two booleans are equal false otherwise")>]
         static member Eq() = 
-            match processArgs2 "BOOL" with
+            match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() = a2.Raw<bool>()))
             | _ -> ()
     
         [<PushOperation("AND", Description = "Logical AND of the top two booleans")>]
         static member And() = 
-            match processArgs2 "BOOL" with
+            match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() && a2.Raw<bool>()))
             | _ -> ()
@@ -58,7 +60,7 @@ module StockTypesBool =
 
         [<PushOperation("FROMINTEGER", Description = "Pushies FALSE if top of the INTEGER stack is 0. True otherwise")>]
         static member fromInt() =
-            let top = processArgs1 "FLOAT"
+            let top = processArgs1 "INTEGER"
             if top <> Unchecked.defaultof<PushTypeBase> 
             then
                 match top.Raw<int64>() with
@@ -68,12 +70,12 @@ module StockTypesBool =
 
         [<PushOperation("NOT", Description = "Logical OR of the top of the stack")>]
         static member Not() = 
-            let a = processArgs1 "BOOL"
+            let a = processArgs1 Bool.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then () else pushResult(new Bool(not (a.Raw<bool>())))
 
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
-            match processArgs2 "BOOL" with
+            match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() || a2.Raw<bool>()))
             | _ -> ()

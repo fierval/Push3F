@@ -15,6 +15,8 @@ module StockTypesCode =
         new () = {inherit PushTypeBase ()}
         new (p : Push) = {inherit PushTypeBase(p)}
 
+        static member private Me = new Code()
+
         override t.ToString() =
           base.ToString()
 

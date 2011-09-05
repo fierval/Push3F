@@ -17,6 +17,8 @@ module StockTypesFloat =
         new () = {inherit PushTypeBase ()}
         new (f : float) = {inherit PushTypeBase(f)}
 
+        static member private Me = new Float()
+
         override t.ToString() =
             base.ToString()
 
@@ -35,25 +37,25 @@ module StockTypesFloat =
 
         [<PushOperation("+")>]
         static member Add() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Float(a1.Raw<float>() + a2.Raw<float>()))
             | _ -> ()
             
         [<PushOperation("*")>]
         static member Multiply() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Float(a1.Raw<float>() * a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("-")>]
         static member Subtract() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Float(a1.Raw<float>() - a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("/")>]
         static member Divide() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> 
                 if a1.Raw<float>() = 0. 
                 then 
@@ -64,7 +66,7 @@ module StockTypesFloat =
 
         [<PushOperation("%")>]
         static member Mod() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> 
                 if a2.Raw<float>() = 0. 
                 then 
@@ -78,25 +80,25 @@ module StockTypesFloat =
 
         [<PushOperation("<")>]
         static member Lt() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Bool(a1.Raw<float>() < a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation(">")>]
         static member Gt() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Bool(a1.Raw<float>() > a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("=")>]
         static member Eq() =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Bool(a1.Raw<float>() = a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("FROMINTEGER", Description = "Pushes int64 converted into float onto FLOAT stack")>]
         static member fromFloat() =
-            let top = processArgs1 "FLOAT"
+            let top = processArgs1 Float.Me.MyType
             if top <> Unchecked.defaultof<PushTypeBase> 
             then pushResult (new Float(float (top.Raw<int64>())))
 
@@ -108,19 +110,19 @@ module StockTypesFloat =
 
         [<PushOperation("COS", Description = "Pushes the cos of the top item")>]
         static member Cos() =
-            let a1 = processArgs1 "FLOAT"
+            let a1 = processArgs1 Float.Me.MyType
             if a1 = Unchecked.defaultof<PushTypeBase> then ()
             pushResult(new Float(Math.Cos(a1.Raw<float>())))
 
         [<PushOperation("MAX")>]
         static member Max () =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Float (Math.Max(a1.Raw<float>(), a2.Raw<float>())))
             | _ -> ()
 
         [<PushOperation("MIN")>]
         static member Min () =
-            match processArgs2 "FLOAT" with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(new Float (Math.Min(a1.Raw<float>(), a2.Raw<float>())))
             | _ -> ()
     
@@ -132,13 +134,13 @@ module StockTypesFloat =
 
         [<PushOperation("SIN", Description = "Pushes the sin of the top item")>]
         static member Sin() =
-            let a1 = processArgs1 "FLOAT"
+            let a1 = processArgs1 Float.Me.MyType
             if a1 = Unchecked.defaultof<PushTypeBase> then ()
             pushResult(new Float(Math.Sin(a1.Raw<float>())))
 
         [<PushOperation("TAN", Description = "Pushes the tangent of the top item")>]
         static member Tan() =
-            let a1 = processArgs1 "FLOAT"
+            let a1 = processArgs1 Float.Me.MyType
             if a1 = Unchecked.defaultof<PushTypeBase> then ()
             if Math.Cos(a1.Raw<float>()) = 0. then pushResult a1
             pushResult(new Float(Math.Tan(a1.Raw<float>())))

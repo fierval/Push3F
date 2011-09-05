@@ -41,17 +41,12 @@ module TypesShared =
 
     //for each of the members, we can discover its operations.
     let internal getOperationsForType ptype =
-        let opAttributes = ptype.GetType().GetMethods() 
+        let opAttributes = ptype.GetType().GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) 
                             |> Seq.filter(
                                 fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
-        if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type")) 
+        if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type. Make sure operations are declared static")) 
         else
-            let ops = opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
-
-            for op in ops do
-                if not op.Value.IsStatic then raise (PushException("Operation must be declared static"))
-            ops
-
+            opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
 
     // gets generic operations from the Ops type
     let internal getGenericOperations = 

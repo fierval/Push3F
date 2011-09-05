@@ -5,7 +5,11 @@ using Microsoft.FSharp.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.types;
 using push.types.stock;
+using ExtensionAssembly;
+using BadClass;
+using NonstaticOp;
 using Type = push.types.Type;
+
 
 namespace InterpreterTests
 {
@@ -148,6 +152,42 @@ namespace InterpreterTests
             // the operation has been executed
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);
             Assert.IsTrue(res == default(Type.PushTypeBase));
+        }
+
+        [TestMethod]
+        [Description("Add types from an assembly")]
+        public void AddTypesFromAssembly()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            TypeFactory.appendStacksFromAssembly("ExtensionAssembly.dll");
+
+            var res = TestUtils.StackOf("URL");
+
+            Assert.AreEqual(6, TypeFactory.stockTypes.Stacks.Count);
+            Assert.IsNotNull(TestUtils.StackOf("URL"));
+
+            Assert.AreEqual(6, TypeFactory.stockTypes.Operations.Count);
+        }
+    
+        [TestMethod]
+        [Description("Trying to add a type not derived from PushTypeBase")]
+        [ExpectedException(typeof(push.exceptions.PushExceptions.PushException))]
+        public void BadTypeTest()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            TypeFactory.appendStacksFromAssembly("BadClass.dll");
+        }
+
+        [TestMethod]
+        [Description("Trying to add a type where an ooperation is not static")]
+        [ExpectedException(typeof(push.exceptions.PushExceptions.PushException))]
+        public void BadOpTest()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            TypeFactory.appendStacksFromAssembly("NonstaticOp.dll");
         }
 
     }

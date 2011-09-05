@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtentionAssembly", "..\InterpreterTests\Asssemblies\Extention\ExtentionAssembly\ExtentionAssembly.csproj", "{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionAssembly", "..\InterpreterTests\Asssemblies\Extention\ExtentionAssembly\ExtensionAssembly.csproj", "{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadClass", "..\InterpreterTests\Asssemblies\Extention\IncorrectlyDerivedClass\BadClass\BadClass.csproj", "{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}"
 EndProject

@@ -65,6 +65,18 @@
       <Project>{90365AB0-39D6-4217-9056-AA3D18147E30}</Project>
       <Name>Push.Parser</Name>
     </ProjectReference>
+    <ProjectReference Include="Asssemblies\Extention\ExtentionAssembly\ExtensionAssembly.csproj">
+      <Project>{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}</Project>
+      <Name>ExtensionAssembly</Name>
+    </ProjectReference>
+    <ProjectReference Include="Asssemblies\Extention\IncorrectlyDerivedClass\BadClass\BadClass.csproj">
+      <Project>{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}</Project>
+      <Name>BadClass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Asssemblies\Extention\NonstaticOperation\NonstaticOp\NonstaticOp.csproj">
+      <Project>{A6477EA1-91A4-4FE3-BB95-CAC907993A41}</Project>
+      <Name>NonstaticOp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

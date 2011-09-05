@@ -8,7 +8,7 @@ module TypeFactory =
     open push.exceptions.PushExceptions
     open Type
     open push.stack.Stack
-
+    open push.exceptions.PushExceptions
 
     let internal createPushObject (t:System.Type) : #PushTypeBase * string =
         let ci = t.GetConstructor(Array.empty)
@@ -17,7 +17,7 @@ module TypeFactory =
         let typedObj = 
             match pushObj with
             | :? #PushTypeBase as pushO -> pushO
-            | _ -> failwithf "Can't happen, but the type is not push-based"
+            | _ -> raise  (PushException("The type needs to dervie from PushTypeBase: " + t.Name))
         typedObj, name
 
     // discovers the types and maps them by name
@@ -32,13 +32,7 @@ module TypeFactory =
 
     //static function to run through the assemblies and discover new types
     let internal discoverPushTypes (assembly : string option) =
-        let ptypes = discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
-        //verify that these types do derive from PushTypeBase
-        for t in ptypes do
-            match t.Value.GetType().BaseType.Name with
-            | "PushTypeBase" -> ()
-            | _ -> raise (PushException("Type " + t.GetType().Name + " not derived from PushTypeBase"))
-        ptypes
+        discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
 
     // stack of currently implemented types
     let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = 
@@ -49,6 +43,9 @@ module TypeFactory =
     // can instantiate it.
     type internal StockTypes(? assembly : string) = 
         let mutable ptypes = discoverPushTypes assembly
+        // this is a test hook. When adding types, it is good to restore
+        // the state to the original one
+        let mutable origPtypes = ptypes
         let mutable stacks = typeStacks ptypes
         let mutable operations = getOperations ptypes
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
@@ -76,6 +73,7 @@ module TypeFactory =
             let newTypes = discoverPushTypes (Some assembly)
             ptypes <- ptypes.Append(newTypes)
             stacks <- typeStacks ptypes
+            operations <- getOperations ptypes
 
         // retrieves arguments from the appropriate stack
         member t.popArguments key n =
@@ -95,7 +93,10 @@ module TypeFactory =
 
         // good for test to clean up the stacks
         member t.cleanAllStacks() =
+            ptypes <- origPtypes
             stacks <- typeStacks ptypes
+            operations <- getOperations ptypes
+
 
     let internal stockTypes = new StockTypes()         
 

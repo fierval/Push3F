@@ -4,7 +4,7 @@ using push.exceptions;
 using push.types;
 using Type = push.types.Type;
 
-namespace ExtentionAssembly
+namespace ExtensionAssembly
 {
     [TypeAttributes.PushType("URL")]
     public class UrlPushType : Type.PushTypeBase

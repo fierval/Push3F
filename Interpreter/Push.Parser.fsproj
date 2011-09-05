@@ -52,10 +52,10 @@
     <Compile Include="Type.fs" />
     <Compile Include="TypeFactory.fs" />
     <Compile Include="Integer.fs" />
-    <Compile Include="Float.fs" />
-    <Compile Include="Bool.fs" />
-    <Compile Include="Identifier.fs" />
     <Compile Include="genericOperations.fs" />
+    <Compile Include="Bool.fs" />
+    <Compile Include="Float.fs" />
+    <Compile Include="Identifier.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="parsershared.fs" />
     <Compile Include="parser.fs" />

@@ -4,9 +4,10 @@ using push.exceptions;
 using push.types;
 using Type = push.types.Type;
 
-namespace ExtentionAssembly
+
+namespace NonstaticOp
 {
-    [TypeAttributes.PushType("URL")]
+    [TypeAttributes.PushType("URLBADOP")]
     public class UrlPushType : Type.PushTypeBase
     {
         static UrlPushType UrlParse(string url)
@@ -27,17 +28,17 @@ namespace ExtentionAssembly
 
         public override Type.ExtendedTypeParser Parser
         {
-            get 
+            get
             {
                 return new Type.ExtendedTypeParser(UrlParse);
             }
         }
 
-        public UrlPushType() : base() {}
-        public UrlPushType(Uri url) : base(url) {}
+        public UrlPushType() : base() { }
+        public UrlPushType(Uri url) : base(url) { }
 
-        [TypeAttributes.PushOperation("DOMAIN", Description="Extract domain name from the URL")]
-        static void ExtractDomain()
+        [TypeAttributes.PushOperation("DOMAIN", Description = "This method should be static")]
+        void ExtractDomain()
         {
             var arg = TypeFactory.processArgs1("URL");
             if (arg == null)

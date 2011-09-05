@@ -8,18 +8,22 @@ module TypeAttributes =
         inherit Attribute()
         
         let mutable name = name
+        let mutable description = System.String.Empty
         
         member x.Name 
             with get() = name
             and set value = name <- value
 
+        member x.Description
+            with get() = description
+            and set value = description <- value
 
     [<AttributeUsage(AttributeTargets.Method, AllowMultiple = false , Inherited = false) >]
     type PushOperationAttribute(name:string)  =
         inherit Attribute()
         
         let mutable name = name
-        let mutable description = ""
+        let mutable description = System.String.Empty
 
         member x.Description 
             with get () = description 

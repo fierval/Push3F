@@ -9,12 +9,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTests", "..\Inte
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F53E2C9F-1F35-43C6-86BE-6D2D34D1A400}"
 	ProjectSection(SolutionItems) = preProject
+		Push.vsmdi = Push.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtentionAssembly", "..\InterpreterTests\Asssemblies\Extention\ExtentionAssembly\ExtentionAssembly.csproj", "{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadClass", "..\InterpreterTests\Asssemblies\Extention\IncorrectlyDerivedClass\BadClass\BadClass.csproj", "{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonstaticOp", "..\InterpreterTests\Asssemblies\Extention\NonstaticOperation\NonstaticOp\NonstaticOp.csproj", "{A6477EA1-91A4-4FE3-BB95-CAC907993A41}"
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Push.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -32,6 +40,14 @@ Global
 		{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFFF2163-4EBC-4D6A-A96B-70BD622751AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6477EA1-91A4-4FE3-BB95-CAC907993A41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6477EA1-91A4-4FE3-BB95-CAC907993A41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6477EA1-91A4-4FE3-BB95-CAC907993A41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6477EA1-91A4-4FE3-BB95-CAC907993A41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

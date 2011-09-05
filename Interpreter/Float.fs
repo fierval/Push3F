@@ -142,6 +142,4 @@ module StockTypesFloat =
             if a1 = Unchecked.defaultof<PushTypeBase> then ()
             if Math.Cos(a1.Raw<float>()) = 0. then pushResult a1
             pushResult(new Float(Math.Tan(a1.Raw<float>())))
-
-
         

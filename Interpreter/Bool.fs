@@ -83,6 +83,3 @@ module StockTypesBool =
             let rnd = new Random(int DateTime.UtcNow.Ticks)
             let res = if rnd.NextDouble() > 0.5 then true else false
             pushResult(new Bool(res))
-
-
-

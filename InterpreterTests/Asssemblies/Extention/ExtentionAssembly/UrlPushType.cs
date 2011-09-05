@@ -52,5 +52,10 @@ namespace ExtentionAssembly
             var uri = arg.Raw<Uri>();
             var newUri = new UrlPushType(new Uri(uri.Host));
         }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }

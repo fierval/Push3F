@@ -18,7 +18,6 @@ module GenericOperations =
             stockTypes.Stacks <- stockTypes.Stacks.Replace(key, value)
 
         static member private getIntArgument tp =
-            if tp = "INTEGER" then Ops.dup tp
             processArgs1 "INTEGER"
           
         [<PushOperation("FLUSH")>]

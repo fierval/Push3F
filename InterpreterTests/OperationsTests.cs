@@ -87,8 +87,8 @@ namespace InterpreterTests
 
             TypeFactory.exec("NAME", "DUP");
             Assert.AreEqual(2, TypeFactory.stockTypes.Stacks["NAME"].length);
-            Assert.AreEqual("SomeId", TypeFactory.stockTypes.Stacks["NAME"].asList[0]);
-            Assert.AreEqual("SomeId", TypeFactory.stockTypes.Stacks["NAME"].asList[1]);
+            Assert.AreEqual("SomeId", TestUtils.Top<string>("NAME"));
+            Assert.AreEqual("SomeId", TestUtils.ListOf("NAME")[1].Raw<string>());
 
         }
 
@@ -203,7 +203,7 @@ namespace InterpreterTests
             TypeFactory.exec("FLOAT", "YANKDUP");
 
             Assert.AreEqual(33.2, TestUtils.Top<double>("FLOAT"));
-            Assert.AreEqual(33.2, TestUtils.ListOf("FLOAT")[4]);
+            Assert.AreEqual(33.2, TestUtils.ListOf("FLOAT")[4].Raw<double>());
             Assert.AreEqual(7, TestUtils.LengthOf("FLOAT"));
             Assert.IsTrue(TestUtils.IsEmpty("INTEGER"));
         }

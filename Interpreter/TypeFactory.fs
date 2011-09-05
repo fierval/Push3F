@@ -51,7 +51,7 @@ module TypeFactory =
         let mutable ptypes = discoverPushTypes assembly
         let mutable stacks = typeStacks ptypes
         let mutable operations = getOperations ptypes
-        let mutable bindings : Map<string, string> = Map.empty
+        let mutable bindings : Map<string, PushTypeBase> = Map.empty
 
         // stores the stacks currently in use
         member t.Stacks 
@@ -84,7 +84,7 @@ module TypeFactory =
                 let stack = stacks.[key]
                 if stack.length < n then List.empty
                 else
-                    let result, leftOver = popManyReverse 2 stack 
+                    let result, leftOver = popManyReverse n stack 
                     stacks <- stacks.Replace(key, leftOver)
                     result
 
@@ -119,7 +119,7 @@ module TypeFactory =
 
 
     // given the MethodInfo of the operation, execute it.
-    let internal execOperation pushType (mi : MethodInfo) =
+    let execOperation pushType (mi : MethodInfo) =
         // if this is an operation, requiring type parameter
         if mi.GetParameters().Length > 0
         then
@@ -129,7 +129,7 @@ module TypeFactory =
             
     // given the push type name and the operation name, 
     // execute the operation
-    let exec typeName operation =
+    let internal exec typeName operation =
         execOperation typeName stockTypes.Operations.[typeName].[operation]
 
     let peek stackName = 

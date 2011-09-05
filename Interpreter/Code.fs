@@ -4,6 +4,7 @@ module StockTypesCode =
     open push.types.Type
     open push.types.TypeAttributes
     open push.types.TypeFactory
+    open push.parser.Ast
 
     open System.Reflection
 
@@ -12,7 +13,7 @@ module StockTypesCode =
         inherit PushTypeBase
 
         new () = {inherit PushTypeBase ()}
-        new (s : string) = {inherit PushTypeBase(s)}
+        new (p : Push) = {inherit PushTypeBase(p)}
 
         override t.ToString() =
           base.ToString()

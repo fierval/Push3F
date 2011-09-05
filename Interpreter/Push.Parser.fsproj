@@ -55,11 +55,11 @@
     <Compile Include="Float.fs" />
     <Compile Include="Bool.fs" />
     <Compile Include="Identifier.fs" />
-    <Compile Include="Code.fs" />
     <Compile Include="genericOperations.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="parsershared.fs" />
     <Compile Include="parser.fs" />
+    <Compile Include="Code.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

@@ -4,6 +4,7 @@ module StockTypesBool =
     open push.types.Type
     open push.types.TypeAttributes
     open push.types.TypeFactory
+    open System
 
     open System.Reflection
 
@@ -64,10 +65,24 @@ module StockTypesBool =
                 | 0L -> pushResult (new Bool(false))
                 | _ -> pushResult (new Bool (true))
 
+
+        [<PushOperation("NOT", Description = "Logical OR of the top of the stack")>]
+        static member Not() = 
+            let a = processArgs1 "BOOL"
+            if a = Unchecked.defaultof<PushTypeBase> then () else pushResult(new Bool(not (a.Raw<bool>())))
+
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
             match processArgs2 "BOOL" with
             | [a1; a2] -> 
                 pushResult(new Bool(a1.Raw<bool>() || a2.Raw<bool>()))
             | _ -> ()
+
+        [<PushOperation("RAND", Description = "Generates a random boolean")>]
+        static member Rand() =
+            let rnd = new Random(int DateTime.UtcNow.Ticks)
+            let res = if rnd.NextDouble() > 0.5 then true else false
+            pushResult(new Bool(res))
+
+
 

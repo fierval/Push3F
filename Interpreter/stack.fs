@@ -81,7 +81,7 @@ module Stack =
     let shove n (value : 'a) (stack : 'a Stack) =
         if n = 0 then push value stack
         else
-            let res = popMany n stack
+            let res = popManyReverse n stack
             match fst res with
             | [] -> stack
             | _ -> append (StackNode(fst res)) (push value (snd res))

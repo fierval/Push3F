@@ -8,7 +8,6 @@ module Ast =
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<DebuggerDisplay("{StructuredFormatDisplay}")>]
     type Push = 
-        Code of string
         | Value of PushTypeBase
         | PushList of Push list
         | Operation of string * MethodInfo
@@ -16,7 +15,6 @@ module Ast =
         with 
             member private t.StructuredFormatDisplay = 
                 match t with
-                | Code c -> box ("\"" + c + "\"")
                 | Value i -> i.StructuredFormatDisplay
                 | PushList l -> l :> obj
                 | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")

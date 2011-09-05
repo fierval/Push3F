@@ -15,10 +15,10 @@ module GenericOperations =
     type Ops ()=
 
         static member private Replace key value =
-            stockTypes.Stacks.Replace(key, value)
+            stockTypes.Stacks <- stockTypes.Stacks.Replace(key, value)
 
         static member private getIntArgument tp =
-            if tp = "Integer" then Ops.dup tp
+            if tp = "INTEGER" then Ops.dup tp
             processArgs1 "INTEGER"
           
         [<PushOperation("FLUSH")>]
@@ -27,11 +27,11 @@ module GenericOperations =
         
         [<PushOperation("DEFINE")>]
         static member define tp =
-            let stack = stockTypes.Stacks.["NAMES"]
+            let stack = stockTypes.Stacks.["NAME"]
             if stack.length = 0 then ()
             else
                 let name = (peek stack).Value :?> string
-                stockTypes.Bindings <- stockTypes.Bindings.Add(name, tp)
+                stockTypes.Bindings <- stockTypes.Bindings.Add(name, (peek stockTypes.Stacks.[tp]))
 
         [<PushOperation("DUP")>]
         static member dup tp =
@@ -45,7 +45,7 @@ module GenericOperations =
         [<PushOperation("ROT")>]
         static member rot tp =
             pushResult (new StockTypesInteger.Integer(2L))
-            Ops.yank
+            Ops.yank tp
 
         [<PushOperation("SHOVE")>]
         static member shove tp =
@@ -65,14 +65,21 @@ module GenericOperations =
 
         [<PushOperation("STACKDEPTH")>]
         static member stackdepth tp =
-            stockTypes.pushResult (new StockTypesInteger.Integer(int64 (stockTypes.Stacks.[tp].length)))
+            let preLen = int64 (stockTypes.Stacks.[tp].length)
+            let len = 
+                match tp with
+                | "INTEGER" ->  preLen + 1L
+                | _ -> preLen
+
+            stockTypes.pushResult (new StockTypesInteger.Integer(len))
 
         [<PushOperation("YANK")>]
         static member yank tp =
             let arg = Ops.getIntArgument tp
             if arg = Unchecked.defaultof<PushTypeBase> then ()
             let newStack = yank (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
-            Ops.Replace tp newStack
+            Ops.Replace tp newStack 
+            |> ignore
 
         [<PushOperation("YANKDUP")>]
         static member yankdup tp =

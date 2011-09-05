@@ -2,11 +2,9 @@
 
 module Ast = 
     open System.Reflection
-    open System.Diagnostics
     open push.types.Type
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
-    [<DebuggerDisplay("{StructuredFormatDisplay}")>]
     type Push = 
         | Value of PushTypeBase
         | PushList of Push list
@@ -19,6 +17,3 @@ module Ast =
                 | PushList l -> l :> obj
                 | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
                 | Exec e -> box ("\"" + e + "\"")
-
-            
-

@@ -32,12 +32,13 @@ module StockTypesName =
         static member GetRandomString maxSize =
             let rnd = new Random(int (DateTime.UtcNow.Ticks))
             let size = rnd.Next(1, maxSize) // limit it in size to 20 characters
-            seq {
+            let chars = 
+                [|
             
                 for i = 0 to size do
-                    yield (Convert.ToChar(Math.Floor(26. * rnd.NextDouble() + 65.)))
-            }
-            |> Seq.fold (fun str el -> str + string el) System.String.Empty
+                    yield (char(int(26. * rnd.NextDouble()) + 65))
+                |]
+            new System.String(chars)
            
         [<PushOperation("=")>]
         static member Eq() =

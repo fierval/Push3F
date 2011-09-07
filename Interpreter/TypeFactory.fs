@@ -85,7 +85,7 @@ module TypeFactory =
                     stacks <- stacks.Replace(key, leftOver)
                     result
 
-        member t.pushResult (resObj : #PushTypeBase) =
+        member t.pushResult (resObj : PushTypeBase) =
             let key = resObj.MyType
             let stack = stacks.[key]
             stacks <- stacks.Replace(key, push resObj stack)

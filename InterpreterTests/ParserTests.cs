@@ -131,6 +131,32 @@ namespace InterpreterTests
         }
 
         [TestMethod]
+        [Description("Parses an empty list")]
+        public void EmptyListTest()
+        {
+            this.str = @"()";
+            var res = RunPushParser(this.str);
+
+            Type type = res.GetType();
+            if (FSharpType.IsTuple(type))
+            {
+                throw new PushExceptions.PushException(res.Item1);
+            }
+            Assert.AreEqual(0, res.Item.Length);
+
+            this.str = @"(        )";
+            var res1 = RunPushParser(this.str);
+
+            Type type1 = res.GetType();
+            if (FSharpType.IsTuple(type1))
+            {
+                throw new PushExceptions.PushException(res1.Item1);
+            }
+            Assert.AreEqual(0, res1.Item.Length);
+
+        }
+
+        [TestMethod]
         [Description("Incorrect type")]
         public void IncorrectType()
         {

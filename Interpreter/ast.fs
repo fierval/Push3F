@@ -30,11 +30,17 @@ module Ast =
                 | _ -> false
 
             override t.GetHashCode() =
+                // does not really convert "to string"
+                // but in the case of lists trying to minimize recursion
+                // by making the function tail-recursive
                 let rec toString p = 
                     match p with
                     | Value v -> v.ToString()
                     | Operation (name, m) -> (name + "." + m.Name)
-                    | PushList l -> l |> List.fold (fun s e -> s + toString e) System.String.Empty
+                    | PushList l -> 
+                        match l with
+                        | [] -> System.String.Empty
+                        | _ -> toString l.Head
 
                 (toString t).GetHashCode()
 

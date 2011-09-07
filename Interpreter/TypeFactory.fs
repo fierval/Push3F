@@ -12,13 +12,12 @@ module TypeFactory =
 
     let internal createPushObject (t:System.Type) : #PushTypeBase * string =
         let ci = t.GetConstructor(Array.empty)
-        let name = (t.GetCustomAttributes(typeof<PushTypeAttribute>, false).[0] :?> PushTypeAttribute).Name
         let pushObj = ci.Invoke(Array.empty)
         let typedObj = 
             match pushObj with
             | :? #PushTypeBase as pushO -> pushO
             | _ -> raise  (PushException("The type needs to dervie from PushTypeBase: " + t.Name))
-        typedObj, name
+        typedObj, typedObj.MyType
 
     // discovers the types and maps them by name
     let internal discoverByAssemblyAttribute (attribute : System.Type) (assembly : string option) =
@@ -86,8 +85,8 @@ module TypeFactory =
                     stacks <- stacks.Replace(key, leftOver)
                     result
 
-        member t.pushResult resObj =
-            let key = getObjectPushType resObj
+        member t.pushResult (resObj : #PushTypeBase) =
+            let key = resObj.MyType
             let stack = stacks.[key]
             stacks <- stacks.Replace(key, push resObj stack)
 

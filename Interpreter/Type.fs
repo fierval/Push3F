@@ -24,7 +24,7 @@ module Type =
 
         member t.Value with get() = t.value
 
-        static member GetMyType (me : #PushTypeBase) =
+        static member private GetMyType (me : #PushTypeBase) =
             if System.String.IsNullOrEmpty(me.myType)
             then
                 me.myType <- (me.GetType().GetCustomAttributes(typeof<PushTypeAttribute>, false).[0] :?> PushTypeAttribute).Name

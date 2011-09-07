@@ -18,7 +18,7 @@ module TypeAttributes =
             with get() = description
             and set value = description <- value
 
-    [<AttributeUsage(AttributeTargets.Method, AllowMultiple = false , Inherited = false) >]
+    [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
     type PushOperationAttribute(name:string)  =
         inherit Attribute()
         

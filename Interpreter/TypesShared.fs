@@ -34,19 +34,25 @@ module TypesShared =
     let internal getAnnotatedTypes (attribute : System.Type) (types: System.Type seq) =
         types |>
         Seq.filter (fun (t:System.Type) -> t.GetCustomAttributes(attribute, false).Length > 0)
-        
-    let internal extractName (mi : MethodInfo) =
-        (mi.GetCustomAttributes(typeof<PushOperationAttribute>, false) |> Seq.head :?> PushOperationAttribute).Name
 
+    // allows for operation aliasing. Two operation names may mean the same thing        
+    let internal addToOpsMap (mi : MethodInfo * string[]) map =
+        snd mi |> Array.fold (fun map e -> map |> Map.add e (fst mi)) map
 
     //for each of the members, we can discover its operations.
     let internal getOperationsForType ptype =
-        let opAttributes = ptype.GetType().GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) 
-                            |> Seq.filter(
-                                fun m -> m.GetCustomAttributes(typeof<PushOperationAttribute>, false).Length = 1)    
+        let opAttributes = ptype.GetType().GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) //discover all relevant methods
+                            |> Seq.map ( // create a seq of MethodInfo * Attribute []
+                                fun mi -> mi, mi.GetCustomAttributes(typeof<PushOperationAttribute>, false)) // optimization: only calling GetCustomAttributes() once
+                            |> Seq.filter ( // filter the sequence to only have PushOperationAttribute - containing methods
+                                fun e -> (snd e).Length > 0)
         if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type. Make sure operations are declared static")) 
         else
-            opAttributes |> Seq.fold (fun acc mi -> Map.add (extractName mi) mi acc) Map.empty
+            opAttributes
+            |> Seq.map ( // map to the sequence of MethodInfo * string [] (where string [] are operation aliases)
+                fun e -> fst e, ((snd e) |> Array.map (fun e -> (e :?> PushOperationAttribute).Name)))
+            |> Seq.fold ( // finally, convert to the map of Map<string, MethodInfo>
+                fun acc mi -> addToOpsMap mi acc) Map.empty 
 
     // gets generic operations from the Ops type
     let internal getGenericOperations = 
@@ -62,7 +68,3 @@ module TypesShared =
         let nonGenericOps = getNonGenericOperations ptypes
         let genericOps = getGenericOperations
         nonGenericOps |> Map.map (fun key value -> value.Append(genericOps))
-
-    
-    //given a push object retrieve the name of its type
-    let internal getObjectPushType pushObj = (pushObj.GetType().GetCustomAttributes(typeof<PushTypeAttribute>, true).[0] :?> PushTypeAttribute).Name

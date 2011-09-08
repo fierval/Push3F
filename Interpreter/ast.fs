@@ -22,7 +22,11 @@ module Ast =
                     match a1, a2 with
                     | (Value v1, Value v2) -> v1.ToString() = v2.ToString()
                     | (Operation (o1, m1), Operation (o2, m2)) -> o1 = o2 && m2.Name = m2.Name
-                    | (PushList l1, PushList l2) -> List.forall2 (fun e1 e2 -> areEq e1 e2) l1 l2
+                    | (PushList l1, PushList l2) -> 
+                        match l1, l2 with
+                        | [], [] -> true
+                        | lst1, lst2 -> 
+                            if lst1.Length <> lst2.Length then false else List.forall2 (fun e1 e2 -> areEq e1 e2) l1 l2
                     | _ -> false
 
                 match o with
@@ -56,12 +60,7 @@ module Ast =
                 | PushList l -> t
 
             member t.asPushList = 
-                let lst = 
-                    match t with
-                    | Value v -> PushList [t]
-                    | Operation (n, m) -> PushList [t]
-                    | PushList l -> t
-                match lst with 
+                match t.toList with 
                 | PushList l -> l
                 | _ -> []
 

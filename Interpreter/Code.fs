@@ -88,24 +88,30 @@ module StockTypesCode =
                 | PushList l -> not l.IsEmpty
                 | _ -> false
 
-            let rec container ofA stackOfInB=
+            let rec container (ofA : Push) stackOfInB =
                 if haveResult then ()
-                else
-                    let topInB = peek stackOfInB
-                    for b in topInB do
-                        if not haveResult && b.Equals(ofA) then ret := PushList topInB 
-                        else
-                            match b with
-                            | PushList blist -> container ofA (push blist stackOfInB)
-                            | _ -> ()
+                else 
+                    match ofA with
+                    | PushList [] -> ret := PushList (peek stackOfInB)
+                    | _ ->                    
+                        let topInB = peek stackOfInB
+                        for b in topInB do
+                            if not haveResult && b.Equals(ofA) then ret := PushList topInB 
+                            else
+                                match b with
+                                | PushList blist -> if blist.Length < ofA.asPushList.Length then () else container ofA (push blist stackOfInB)
+                                | _ -> ()
                     
-                    container ofA (snd (pop stackOfInB))
+                        container ofA (snd (pop stackOfInB))
             
             match processArgs2 Code.Me.MyType with
             | [a1; a2] -> 
                     match a2.Raw<Push>() with
                     | PushList l -> 
-                        container (a1.Raw<Push>()) (push l empty)
-                        pushResult (new Code(!ret))
+                        match a1.Raw<Push>() with
+                        | PushList [] -> pushResult a2
+                        | _ -> 
+                            container (a1.Raw<Push>()) (push l empty)
+                            pushResult (new Code(!ret))
                     | _ -> pushResult (new Code(PushList []))
             | _ -> pushResult (new Code(PushList []))

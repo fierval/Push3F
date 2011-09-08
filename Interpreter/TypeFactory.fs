@@ -132,6 +132,6 @@ module TypeFactory =
     let internal exec typeName operation =
         execOperation typeName stockTypes.Operations.[typeName].[operation]
 
-    let peek stackName = 
+    let peekStack stackName = 
         let stack = stockTypes.Stacks.[stackName]
         peek stack

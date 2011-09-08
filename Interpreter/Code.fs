@@ -5,9 +5,10 @@ module StockTypesCode =
     open push.types.TypeAttributes
     open push.types.TypeFactory
     open push.parser.Ast
+    open push.stack.Stack
     open push.types.stock.StockTypesBool
-
     open System.Reflection
+
 
     [<PushType("CODE")>]
     type Code =
@@ -49,16 +50,62 @@ module StockTypesCode =
 
         [<PushOperation("ATOM", Description = "TRUE if the top item is atomic, FALSE otherwise")>]
         static member Atom() =
-            let a = peek Code.Me.MyType
+            let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then ()
             pushResult (new Bool(a.Raw<Push>().isList))
                    
         [<PushOperation("CAR", Description = "Pushes the first item of the top of the stack. If top of the stack is an atom - no effect")>]
         [<PushOperation("FIRST", Description = "This is a more explicit name for the CAR operation")>]
         static member First() =
-            let a = peek Code.Me.MyType
+            let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then ()
             let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
             match arg with
             | PushList l -> pushResult (new Code(l.Head))
             | _ -> pushResult(new Code(arg))
+
+        [<PushOperation("CDR", Description = "Pushes the \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
+        [<PushOperation("REST", Description = "This is a more explicit name for the CDR operation")>]
+        static member Rest() =
+            let a = peekStack Code.Me.MyType
+            if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then pushResult (new Code(PushList []))
+            let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+            match arg with
+            | PushList l -> pushResult (new Code(PushList l.Tail))
+            | _ -> pushResult(new Code(PushList []))
+
+        [<PushOperation("CONS", Description = "if fst is on top of the stack, and snd right udner: (CONS snd fst) -> (snd fst)")>]
+        static member Cons() =
+            match processArgs2 Code.Me.MyType with
+            | [a1; a2] -> pushResult (new Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().asPushList)))
+            | _ -> ()
+
+        [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
+        static member Containter() =
+            let ret = ref (PushList [])
+            let haveResult = 
+                match !ret with
+                | PushList l -> not l.IsEmpty
+                | _ -> false
+
+            let rec container ofA stackOfInB=
+                if haveResult then ()
+                else
+                    let topInB = peek stackOfInB
+                    for b in topInB do
+                        if not haveResult && b.Equals(ofA) then ret := PushList topInB 
+                        else
+                            match b with
+                            | PushList blist -> container ofA (push blist stackOfInB)
+                            | _ -> ()
+                    
+                    container ofA (snd (pop stackOfInB))
+            
+            match processArgs2 Code.Me.MyType with
+            | [a1; a2] -> 
+                    match a2.Raw<Push>() with
+                    | PushList l -> 
+                        container (a1.Raw<Push>()) (push l empty)
+                        pushResult (new Code(!ret))
+                    | _ -> pushResult (new Code(PushList []))
+            | _ -> pushResult (new Code(PushList []))

@@ -55,6 +55,16 @@ module Ast =
                 | Operation (n, m) -> PushList [t]
                 | PushList l -> t
 
+            member t.asPushList = 
+                let lst = 
+                    match t with
+                    | Value v -> PushList [t]
+                    | Operation (n, m) -> PushList [t]
+                    | PushList l -> t
+                match lst with 
+                | PushList l -> l
+                | _ -> []
+
             member t.isList = 
                 match t with
                 | PushList l -> true

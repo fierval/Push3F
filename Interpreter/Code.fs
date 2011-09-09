@@ -29,9 +29,27 @@ module StockTypesCode =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
-        static member pushArgsBack (args : PushTypeBase list) =
+        static member internal pushArgsBack (args : PushTypeBase list) =
             pushResult args.Head
             pushResult args.Tail.Head
+
+        // this function collects all of the containers ofA that are inB
+        static member internal getContainers (ofA : Push) (stackOfInB : Stack<Push list>) =
+            let containers : Stack<Push> ref = ref empty
+            let stackOfInB = ref stackOfInB
+            match ofA with
+            | PushList [] -> containers := push (PushList (peek !stackOfInB)) !containers; !containers
+            | _ ->
+                while not (!stackOfInB).isEmpty do
+                    let topInB = peek !stackOfInB
+                    for b in topInB do
+                        if b.Equals(ofA) then containers := push (PushList topInB) !containers
+                        else
+                            match b with
+                            | PushList blist -> if blist.Length < ofA.asPushList.Length then () else stackOfInB := push blist !stackOfInB
+                            | _ -> ()
+                    stackOfInB := (snd (pop !stackOfInB))
+                !containers
 
         [<PushOperation("=", Description = "Compares two top pieces of code")>]
         static member Eq() = 
@@ -86,40 +104,27 @@ module StockTypesCode =
 
         [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
         static member Container() =
-            let ret = ref (Unchecked.defaultof<Push>)
-            let haveResult r = 
-                r <> Unchecked.defaultof<Push>
-
-            let rec container (ofA : Push) (stackOfInB : Stack<Push list>) =
-                if haveResult !ret then ()
-                elif stackOfInB.isEmpty then ret := PushList []
-                else 
-                    match ofA with
-                    | PushList [] -> ret := PushList (peek stackOfInB)
-                    | _ ->
-                        let topInB = peek stackOfInB
-                        for b in topInB do
-                            if not (haveResult !ret) && b.Equals(ofA) then ret := PushList topInB 
-                            elif haveResult !ret then ()
-                            else
-                                match b with
-                                | PushList blist -> if blist.Length < ofA.asPushList.Length then () else container ofA (push blist stackOfInB)
-                                | _ -> ()
-                    
-                        container ofA (snd (pop stackOfInB))
-            
             let args = processArgs2 Code.Me.MyType
             match args with
             | [aSnd; aFst] -> 
-                    Code.pushArgsBack args // return the arguments to the stack right away.
-                    match aFst.Raw<Push>() with
-                    | PushList l -> 
-                        match aFst.Raw<Push>() with
-                        | PushList [] -> pushResult aFst
-                        | _ -> 
-                            container (aSnd.Raw<Push>()) (push l empty)
-                            pushResult (new Code(!ret))
-                    | _ -> pushResult (new Code(PushList []))
+                Code.pushArgsBack args // return the arguments to the stack right away.
+                match aFst.Raw<Push>() with
+                | PushList l -> 
+                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
+                        if res.isEmpty then pushResult (new Code (PushList []))
+                        else
+                            let containerIndex = 
+                                res.asList 
+                                |> 
+                                List.mapi (fun i e -> 
+                                    match e with 
+                                    | PushList l -> i, l.Length
+                                    | _ -> i, -1) 
+                                |> List.minBy (fun (index, value) -> value) 
+                                |> fst
+
+                            pushResult (new Code(res.asList.[containerIndex]))
+                | _ -> pushResult (new Code(PushList []))
             | _ -> pushResult (new Code(PushList []))
             
 
@@ -127,20 +132,25 @@ module StockTypesCode =
         static member Contains() =
             let args = processArgs2 Code.Me.MyType
             match args with
-            | [aSnd; aFst] ->
-                Code.pushArgsBack args // return the arguments to the stack right away
-                match (aSnd.Raw<Push>(), aFst.Raw<Push>()) with
-                //need to handle this case explicitly, becaue [] on top has a double meaning.
-                | (PushList [], PushList []) -> pushResult (new Bool(true)) 
-                | (_, _) -> 
-                    Code.Container()
-                    let res = processArgs1 Code.Me.MyType
-                    match res.Raw<Push>() with
-                    | PushList l -> 
-                        pushResult (new Bool (not l.IsEmpty))
-                    | _ -> ()
-
+            | [aSnd; aFst] -> 
+                Code.pushArgsBack args // return the arguments to the stack right away.
+                match aFst.Raw<Push>() with
+                | PushList l -> 
+                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
+                        if res.isEmpty then pushResult (new Bool (false))
+                        else
+                             pushResult (new Bool(true))
+                    | _ -> pushResult (new Bool (false))
+            | _ -> pushResult (new Bool (false))
+ 
+        [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]
+        static member Definition() =
+            let arg = peekStack "NAME"
+            if arg = Unchecked.defaultof<PushTypeBase> then ()
+            match arg.Raw<string>() with
+            | s when not (System.String.IsNullOrEmpty(s)) -> 
+                match tryGetBinding s with
+                | Some definition -> pushResult definition
+                | None -> ()
             | _ -> ()
-
-
  

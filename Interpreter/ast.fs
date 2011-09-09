@@ -3,6 +3,7 @@
 module Ast = 
     open System.Reflection
     open push.types.Type
+    open System.Diagnostics
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<CustomEquality;NoComparison>]
@@ -14,7 +15,7 @@ module Ast =
             member private t.StructuredFormatDisplay = 
                 match t with
                 | Value i -> i.StructuredFormatDisplay
-                | PushList l -> l :> obj
+                | PushList l -> box(l) 
                 | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
 
             override t.Equals(o) =

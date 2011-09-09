@@ -135,3 +135,5 @@ module TypeFactory =
     let peekStack stackName = 
         let stack = stockTypes.Stacks.[stackName]
         peek stack
+
+    let tryGetBinding name = stockTypes.Bindings.TryFind(name)

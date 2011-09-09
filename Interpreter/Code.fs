@@ -7,8 +7,8 @@ module StockTypesCode =
     open push.parser.Ast
     open push.stack.Stack
     open push.types.stock.StockTypesBool
+    open push.types.stock.StockTypesInteger
     open System.Reflection
-
 
     [<PushType("CODE")>]
     type Code =
@@ -104,15 +104,13 @@ module StockTypesCode =
 
         [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
         static member Container() =
-            let args = processArgs2 Code.Me.MyType
-            match args with
+            match peekStack2 Code.Me.MyType with
             | [aSnd; aFst] -> 
-                Code.pushArgsBack args // return the arguments to the stack right away.
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
                         if res.isEmpty then pushResult (new Code (PushList []))
-                        else
+                        else // if we have several containers, find the index of the one with min length
                             let containerIndex = 
                                 res.asList 
                                 |> 
@@ -130,11 +128,9 @@ module StockTypesCode =
 
         [<PushOperation("CONTAINS", Description = "if fst is on top of the stack, and snd right udner, returns true if the second item contains the first")>]
         static member Contains() =
-            let args = processArgs2 Code.Me.MyType
-            match args with
+            match peekStack2 Code.Me.MyType with
             // the order of the arguments is the opposite of CONTAINER
             | [aFst; aSnd] -> 
-                Code.pushArgsBack args // return the arguments to the stack right away.
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
@@ -153,3 +149,9 @@ module StockTypesCode =
                 | None -> ()
             | _ -> ()
  
+        [<PushOperation("DISCREPANCY", Description = "Pushes the measure of discrepancy between to code items on the INTEGER stack.")>]
+        static member Discrepancy () =
+            match peekStack2 Code.Me.MyType with
+            | [a1; a2] -> pushResult (new Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
+            | _ -> ()
+                

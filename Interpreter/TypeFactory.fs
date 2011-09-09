@@ -136,4 +136,11 @@ module TypeFactory =
         let stack = stockTypes.Stacks.[stackName]
         peek stack
 
+    let peekStack2 stackName =
+        let args = processArgs2 stackName
+        match args with 
+        | [a1; a2] -> pushResult a1; pushResult a2;
+        | _ -> ()
+        args
+
     let tryGetBinding name = stockTypes.Bindings.TryFind(name)

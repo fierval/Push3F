@@ -1,17 +1,47 @@
 ﻿namespace push.parser
 
 module Ast = 
+    open System
     open System.Reflection
     open push.types.Type
     open System.Diagnostics
+    open push.types.TypesShared
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
-    [<CustomEquality;NoComparison>]
+    [<CustomEquality;CustomComparison>]
     type Push = 
         | Value of PushTypeBase
         | PushList of Push list
         | Operation of string * MethodInfo
-        with 
+        with
+            interface IComparable with
+                member x.CompareTo y =
+                    let rec compare p1 p2 =
+                        match p1, p2 with
+                        | (Value v1, Value v2) -> v1.ToString().CompareTo(v2.ToString())
+                        | (Operation (o1, m1), Operation (o2, m2)) -> 
+                            let o1compo2 = o1.CompareTo(o2)
+                            if o1compo2 = 0 then m1.Name.CompareTo(m2.Name)
+                            else
+                                o1compo2
+                        | (PushList l1, PushList l2) -> 
+                            if l1.Length <> l2.Length then l1.Length - l2.Length 
+                                else 
+                                    match List.map2 (fun e1 e2 -> compare e1 e2) l1 l2 
+                                        |> List.tryFind(fun e -> e <> 0) with
+                                    | Some x -> x
+                                    | None -> 0
+                                    
+                        | (_,_) -> -1
+
+                    match y with
+                    | :? Push as p ->
+                        if p = Unchecked.defaultof<Push> then -1
+                        else
+                            compare x p
+                    | _ -> -1
+        
+                 
             member private t.StructuredFormatDisplay = 
                 match t with
                 | Value i -> i.StructuredFormatDisplay
@@ -39,7 +69,7 @@ module Ast =
                         | lst1, lst2 -> 
                             if lst1.Length <> lst2.Length then false else List.forall2 (fun e1 e2 -> areEq e1 e2) l1 l2
                     | _ -> false
-
+            
                 match o with
                 | :? Push as push -> areEq t push
                 | _ -> false
@@ -79,3 +109,24 @@ module Ast =
                 match t with
                 | PushList l -> true
                 | _ -> false
+
+            member private t.foldIntoMapOfUniqueItems : Map<Push, int> =
+                match t with
+                | PushList l ->
+                     l |>
+                        List.fold 
+                            (fun map e -> 
+                                if not (map.ContainsKey(e)) then map.Add(e, 1) else map.Replace(e, map.[e] + 1)) Map.empty
+                | _ -> Map.empty
+
+            static member discrepancy t p =
+                match t, p with
+                | PushList l1, PushList l2 ->
+                    let mapT, mapP = t.foldIntoMapOfUniqueItems, p.foldIntoMapOfUniqueItems
+                    let lstDistinctT, lstDistinctP = mapT.KeyCollection, mapP.KeyCollection
+                    let distinctElems = 
+                        (except lstDistinctT lstDistinctP).Length + (except lstDistinctP lstDistinctT).Length
+                    let commonElems = intersect lstDistinctT lstDistinctP
+                    let distinction = commonElems |> List.sumBy (fun e -> Math.Abs(mapT.[e] - mapP.[e]))
+                    distinction + distinctElems                                        
+                | _ -> Math.Abs((t :> IComparable).CompareTo p)

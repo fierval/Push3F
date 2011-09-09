@@ -46,7 +46,7 @@ module StockTypesCode =
                         if b.Equals(ofA) then containers := push (PushList topInB) !containers
                         else
                             match b with
-                            | PushList blist -> if blist.Length < ofA.asPushList.Length then () else stackOfInB := push blist !stackOfInB
+                            | PushList blist -> if blist.Length < ofA.asPushList.Length then () else stackOfInB := shove (!stackOfInB).length blist !stackOfInB
                             | _ -> ()
                     stackOfInB := (snd (pop !stackOfInB))
                 !containers
@@ -132,15 +132,14 @@ module StockTypesCode =
         static member Contains() =
             let args = processArgs2 Code.Me.MyType
             match args with
-            | [aSnd; aFst] -> 
+            // the order of the arguments is the opposite of CONTAINER
+            | [aFst; aSnd] -> 
                 Code.pushArgsBack args // return the arguments to the stack right away.
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
-                        if res.isEmpty then pushResult (new Bool (false))
-                        else
-                             pushResult (new Bool(true))
-                    | _ -> pushResult (new Bool (false))
+                        pushResult (new Bool (res.isEmpty))
+                | _ -> pushResult (new Bool (false))
             | _ -> pushResult (new Bool (false))
  
         [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]

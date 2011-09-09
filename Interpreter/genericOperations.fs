@@ -59,8 +59,8 @@ module GenericOperations =
             let args = processArgs2 tp
             if args.Length < 2 then ()
             let hd, tl = args.Head, (args.Tail).Head
-            stockTypes.pushResult hd
             stockTypes.pushResult tl
+            stockTypes.pushResult hd
 
         [<PushOperation("STACKDEPTH")>]
         static member stackdepth tp =

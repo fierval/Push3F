@@ -11,6 +11,9 @@ module TypesShared =
     do 
         ()
 
+    type State =
+    | Quote = 0
+    | Exec = 1
 
     // map extensions
     type Microsoft.FSharp.Collections.Map<'Key, 'Value when 'Key : comparison>  with

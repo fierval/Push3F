@@ -15,8 +15,18 @@ module Ast =
             member private t.StructuredFormatDisplay = 
                 match t with
                 | Value i -> i.StructuredFormatDisplay
-                | PushList l -> box(l) 
+                | PushList l -> box(t.ToString()) 
                 | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
+
+            override t.ToString() =
+                let rec toString o =
+                    match o with
+                    | Value v -> v.ToString()
+                    | Operation (tp, mi) -> tp + " " + mi.Name
+                    | PushList l -> 
+                        let s = l |> List.fold(fun str e -> str + (toString e) + "; ") "["
+                        s.Substring(0, s.Length - 2) + "]"
+                toString t
 
             override t.Equals(o) =
                 let rec areEq a1 a2 =

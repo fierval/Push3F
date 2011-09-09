@@ -81,7 +81,7 @@ module TypeFactory =
                 let stack = stacks.[key]
                 if stack.length < n then List.empty
                 else
-                    let result, leftOver = popManyReverse n stack 
+                    let result, leftOver = popMany n stack 
                     stacks <- stacks.Replace(key, leftOver)
                     result
 

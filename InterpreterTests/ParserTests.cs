@@ -168,14 +168,7 @@ namespace InterpreterTests
 
         dynamic RunPushParser(string str)
         {
-            if(string.IsNullOrWhiteSpace(str))
-            {
-                throw new ArgumentNullException("Please set str argument to something meaningful");
-            }
-            var pres = Parser.parsePushString(str);
-            dynamic res = Parser.extractResult(pres);
-
-            return res;
+            return TestUtils.RunParser(str);
         }
     }
 }

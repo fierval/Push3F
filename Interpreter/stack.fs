@@ -17,6 +17,7 @@ module Stack =
                 | StackNode(x) -> x.Length
             member t.asList = 
                 match t with StackNode(x) -> x
+            member t.isEmpty = t.length = 0
 
     let peek = function
         | StackNode([]) -> Unchecked.defaultof<'a>

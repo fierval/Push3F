@@ -99,8 +99,8 @@ namespace InterpreterTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
 
-            TypeFactory.pushResult(new StockTypesInteger.Integer(30L));
             TypeFactory.pushResult(new StockTypesInteger.Integer(50L));
+            TypeFactory.pushResult(new StockTypesInteger.Integer(30L));
 
             StockTypesInteger.Integer.Subtract();
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);

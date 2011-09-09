@@ -29,6 +29,10 @@ module StockTypesCode =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
+        static member pushArgsBack (args : PushTypeBase list) =
+            pushResult args.Head
+            pushResult args.Tail.Head
+
         [<PushOperation("=", Description = "Compares two top pieces of code")>]
         static member Eq() = 
             match processArgs2 Code.Me.MyType with
@@ -81,22 +85,22 @@ module StockTypesCode =
             | _ -> ()
 
         [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
-        static member Containter() =
-            let ret = ref (PushList [])
-            let haveResult = 
-                match !ret with
-                | PushList l -> not l.IsEmpty
-                | _ -> false
+        static member Container() =
+            let ret = ref (Unchecked.defaultof<Push>)
+            let haveResult r = 
+                r <> Unchecked.defaultof<Push>
 
-            let rec container (ofA : Push) stackOfInB =
-                if haveResult then ()
+            let rec container (ofA : Push) (stackOfInB : Stack<Push list>) =
+                if haveResult !ret then ()
+                elif stackOfInB.isEmpty then ret := PushList []
                 else 
                     match ofA with
                     | PushList [] -> ret := PushList (peek stackOfInB)
-                    | _ ->                    
+                    | _ ->
                         let topInB = peek stackOfInB
                         for b in topInB do
-                            if not haveResult && b.Equals(ofA) then ret := PushList topInB 
+                            if not (haveResult !ret) && b.Equals(ofA) then ret := PushList topInB 
+                            elif haveResult !ret then ()
                             else
                                 match b with
                                 | PushList blist -> if blist.Length < ofA.asPushList.Length then () else container ofA (push blist stackOfInB)
@@ -104,14 +108,39 @@ module StockTypesCode =
                     
                         container ofA (snd (pop stackOfInB))
             
-            match processArgs2 Code.Me.MyType with
-            | [a1; a2] -> 
-                    match a2.Raw<Push>() with
+            let args = processArgs2 Code.Me.MyType
+            match args with
+            | [aSnd; aFst] -> 
+                    Code.pushArgsBack args // return the arguments to the stack right away.
+                    match aFst.Raw<Push>() with
                     | PushList l -> 
-                        match a1.Raw<Push>() with
-                        | PushList [] -> pushResult a2
+                        match aFst.Raw<Push>() with
+                        | PushList [] -> pushResult aFst
                         | _ -> 
-                            container (a1.Raw<Push>()) (push l empty)
+                            container (aSnd.Raw<Push>()) (push l empty)
                             pushResult (new Code(!ret))
                     | _ -> pushResult (new Code(PushList []))
             | _ -> pushResult (new Code(PushList []))
+            
+
+        [<PushOperation("CONTAINS", Description = "if fst is on top of the stack, and snd right udner, returns true if the second item contains the first")>]
+        static member Contains() =
+            let args = processArgs2 Code.Me.MyType
+            match args with
+            | [aSnd; aFst] ->
+                Code.pushArgsBack args // return the arguments to the stack right away
+                match (aSnd.Raw<Push>(), aFst.Raw<Push>()) with
+                //need to handle this case explicitly, becaue [] on top has a double meaning.
+                | (PushList [], PushList []) -> pushResult (new Bool(true)) 
+                | (_, _) -> 
+                    Code.Container()
+                    let res = processArgs1 Code.Me.MyType
+                    match res.Raw<Push>() with
+                    | PushList l -> 
+                        pushResult (new Bool (not l.IsEmpty))
+                    | _ -> ()
+
+            | _ -> ()
+
+
+ 

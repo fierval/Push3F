@@ -48,6 +48,7 @@ module TypeFactory =
         let mutable stacks = typeStacks ptypes
         let mutable operations = getOperations ptypes
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
+        let mutable state  = State.Exec
 
         // stores the stacks currently in use
         member t.Stacks 
@@ -66,6 +67,11 @@ module TypeFactory =
         member t.Bindings 
             with get() = bindings
             and set value = bindings <- value
+
+        // gets/sets the "state" flag
+        member t.State
+            with get () = state
+            and set value = state <- value
 
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =

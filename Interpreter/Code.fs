@@ -5,6 +5,7 @@ module StockTypesCode =
     open push.types.TypeAttributes
     open push.types.TypeFactory
     open push.parser.Ast
+    open push.parser.Eval
     open push.stack.Stack
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesInteger
@@ -154,4 +155,11 @@ module StockTypesCode =
             match peekStack2 Code.Me.MyType with
             | [a1; a2] -> pushResult (new Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
             | _ -> ()
-                
+
+        [<PushOperation("DO", Description = "Pop the CODE stack & execute the top")>]
+        static member Do () =
+            eval Code.Me.MyType
+
+        [<PushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.")>]
+        static member DoStar () =
+            evalStar Code.Me.MyType

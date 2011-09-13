@@ -17,7 +17,7 @@ module StockTypesBool =
         new () = {inherit PushTypeBase ()}
         new (b : bool) = {inherit PushTypeBase(b)}
 
-        static member private Me = new Bool()
+        static member private Me = Bool()
 
         // custom parsing
         static member parse s =
@@ -26,7 +26,7 @@ module StockTypesBool =
             then 
                 Unchecked.defaultof<PushTypeBase> 
             else 
-                new Bool(!result) :> PushTypeBase
+                Bool(!result) :> PushTypeBase
 
         override t.Parser 
             with get() = 
@@ -39,14 +39,14 @@ module StockTypesBool =
         static member Eq() = 
             match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
-                pushResult(new Bool(a1.Raw<bool>() = a2.Raw<bool>()))
+                pushResult(Bool(a1.Raw<bool>() = a2.Raw<bool>()))
             | _ -> ()
     
         [<PushOperation("AND", Description = "Logical AND of the top two booleans")>]
         static member And() = 
             match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
-                pushResult(new Bool(a1.Raw<bool>() && a2.Raw<bool>()))
+                pushResult(Bool(a1.Raw<bool>() && a2.Raw<bool>()))
             | _ -> ()
 
         [<PushOperation("FROMFLOAT", Description = "Pushies FALSE if top of the FLOAT stack is 0.0. True otherwise")>]
@@ -55,8 +55,8 @@ module StockTypesBool =
             if top <> Unchecked.defaultof<PushTypeBase> 
             then
                 match top.Raw<float>() with
-                | 0.0 -> pushResult (new Bool(false))
-                | _ -> pushResult (new Bool (true))
+                | 0.0 -> pushResult (Bool(false))
+                | _ -> pushResult (Bool (true))
 
         [<PushOperation("FROMINTEGER", Description = "Pushies FALSE if top of the INTEGER stack is 0. True otherwise")>]
         static member fromInt() =
@@ -64,24 +64,24 @@ module StockTypesBool =
             if top <> Unchecked.defaultof<PushTypeBase> 
             then
                 match top.Raw<int64>() with
-                | 0L -> pushResult (new Bool(false))
-                | _ -> pushResult (new Bool (true))
+                | 0L -> pushResult (Bool(false))
+                | _ -> pushResult (Bool (true))
 
 
         [<PushOperation("NOT", Description = "Logical OR of the top of the stack")>]
         static member Not() = 
             let a = processArgs1 Bool.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> then () else pushResult(new Bool(not (a.Raw<bool>())))
+            if a = Unchecked.defaultof<PushTypeBase> then () else pushResult(Bool(not (a.Raw<bool>())))
 
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
             match processArgs2 Bool.Me.MyType with
             | [a1; a2] -> 
-                pushResult(new Bool(a1.Raw<bool>() || a2.Raw<bool>()))
+                pushResult(Bool(a1.Raw<bool>() || a2.Raw<bool>()))
             | _ -> ()
 
         [<PushOperation("RAND", Description = "Generates a random boolean")>]
         static member Rand() =
             let rnd = new Random(int DateTime.UtcNow.Ticks)
             let res = if rnd.NextDouble() > 0.5 then true else false
-            pushResult(new Bool(res))
+            pushResult(Bool(res))

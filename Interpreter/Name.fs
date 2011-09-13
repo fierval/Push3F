@@ -17,7 +17,7 @@ module StockTypesName =
         new () = {inherit PushTypeBase ()}
         new (s : string) = {inherit PushTypeBase(s)}
 
-        static member private Me = new Name()
+        static member private Me = Name()
 
         override t.isQuotable with get() = true
 
@@ -51,7 +51,7 @@ module StockTypesName =
         [<PushOperation("=")>]
         static member Eq() =
             match processArgs2 Name.Me.MyType with
-            | [a1; a2] -> pushResult(new Bool(a1.Raw<int64>() = a2.Raw<int64>()))
+            | [a1; a2] -> pushResult(Bool(a1.Raw<int64>() = a2.Raw<int64>()))
             | _ -> ()
 
         [<PushOperation("QUOTE", Description = "Next NAME is simply pushed onto the name stack")>]
@@ -60,12 +60,12 @@ module StockTypesName =
 
         [<PushOperation("RAND", Description = "Pushes a random generated NAME to the name stack")>]
         static member Rand () =
-            pushResult (new Name (Name.GetRandomString 15))
+            pushResult (Name (Name.GetRandomString 15))
 
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
             if stockTypes.Bindings.IsEmpty then ()
             let rnd = new Random(int (DateTime.UtcNow.Ticks))
             let selectedName = fst ((stockTypes.Bindings |> Map.toList).[rnd.Next(stockTypes.Bindings.Count)])
-            pushResult (new Name (selectedName))
+            pushResult (Name (selectedName))
         

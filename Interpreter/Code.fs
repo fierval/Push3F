@@ -59,7 +59,7 @@ module StockTypesCode =
         static member Eq() = 
             match processArgs2 Code.Me.MyType with
             | [a1; a2] -> 
-                pushResult (new Bool (a1.Raw<Push>() = a2.Raw<Push>()))
+                pushResult (Bool (a1.Raw<Push>() = a2.Raw<Push>()))
             | _ -> ()
 
         [<PushOperation("APPEND", Description = "Appends two top pieces of code. Converts either one to list if necessary")>]
@@ -71,14 +71,14 @@ module StockTypesCode =
                     | PushList lst1, PushList lst2 -> PushList (lst1 @ lst2)
                     | _ -> PushList []
 
-                pushResult (new Code(l1appendl2))
+                pushResult (Code(l1appendl2))
             |_ -> ()
 
         [<PushOperation("ATOM", Description = "TRUE if the top item is atomic, FALSE otherwise")>]
         static member Atom() =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then ()
-            pushResult (new Bool(a.Raw<Push>().isList))
+            pushResult (Bool(a.Raw<Push>().isList))
                    
         [<PushOperation("CAR", Description = "Pushes the first item of the top of the stack. If top of the stack is an atom - no effect")>]
         [<PushOperation("FIRST", Description = "This is a more explicit name for the CAR operation")>]
@@ -87,23 +87,23 @@ module StockTypesCode =
             if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then ()
             let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
             match arg with
-            | PushList l -> pushResult (new Code(l.Head))
-            | _ -> pushResult(new Code(arg))
+            | PushList l -> pushResult (Code(l.Head))
+            | _ -> pushResult(Code(arg))
 
         [<PushOperation("CDR", Description = "Pushes the \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("REST", Description = "This is a more explicit name for the CDR operation")>]
         static member Rest() =
             let a = peekStack Code.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then pushResult (new Code(PushList []))
+            if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then pushResult (Code(PushList []))
             let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
             match arg with
-            | PushList l -> pushResult (new Code(PushList l.Tail))
-            | _ -> pushResult(new Code(PushList []))
+            | PushList l -> pushResult (Code(PushList l.Tail))
+            | _ -> pushResult(Code(PushList []))
 
         [<PushOperation("CONS", Description = "if fst is on top of the stack, and snd right udner: (CONS snd fst) -> (snd fst)")>]
         static member Cons() =
             match processArgs2 Code.Me.MyType with
-            | [a1; a2] -> pushResult (new Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().asPushList)))
+            | [a1; a2] -> pushResult (Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().asPushList)))
             | _ -> ()
 
         [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
@@ -113,7 +113,7 @@ module StockTypesCode =
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
-                        if res.isEmpty then pushResult (new Code (PushList []))
+                        if res.isEmpty then pushResult (Code (PushList []))
                         else // if we have several containers, find the index of the one with min length
                             let containerIndex = 
                                 res.asList 
@@ -125,9 +125,9 @@ module StockTypesCode =
                                 |> List.minBy (fun (index, value) -> value) 
                                 |> fst
 
-                            pushResult (new Code(res.asList.[containerIndex]))
-                | _ -> pushResult (new Code(PushList []))
-            | _ -> pushResult (new Code(PushList []))
+                            pushResult (Code(res.asList.[containerIndex]))
+                | _ -> pushResult (Code(PushList []))
+            | _ -> pushResult (Code(PushList []))
             
 
         [<PushOperation("CONTAINS", Description = "if fst is on top of the stack, and snd right udner, returns true if the second item contains the first")>]
@@ -138,9 +138,9 @@ module StockTypesCode =
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
-                        pushResult (new Bool (res.isEmpty))
-                | _ -> pushResult (new Bool (false))
-            | _ -> pushResult (new Bool (false))
+                        pushResult (Bool (res.isEmpty))
+                | _ -> pushResult (Bool (false))
+            | _ -> pushResult (Bool (false))
  
         [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]
         static member Definition() =
@@ -156,7 +156,7 @@ module StockTypesCode =
         [<PushOperation("DISCREPANCY", Description = "Pushes the measure of discrepancy between to code items on the INTEGER stack.")>]
         static member Discrepancy () =
             match peekStack2 Code.Me.MyType with
-            | [a1; a2] -> pushResult (new Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
+            | [a1; a2] -> pushResult (Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
             | _ -> ()
 
         [<PushOperation("DO", Description = "Pop the CODE stack & execute the top")>]

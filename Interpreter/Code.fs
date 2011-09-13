@@ -206,3 +206,19 @@ module StockTypesCode =
                 Code.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
             | _ -> ()
         
+        [<PushOperation("EXTRACT", Description = "Extract from the top code item a sub-item indexed by the top of INTEGER stack")>]
+        static member ExtractSubItem() =
+            if isEmptyStack Code.Me.MyType then ()
+            if isEmptyStack Integer.Me.MyType then ()
+
+            let topCode = peekStack Code.Me.MyType
+            let topInt = processArgs1 Integer.Me.MyType
+            match topCode.Raw<Push>() with
+            | PushList l -> 
+                match l with
+                | [] -> pushResult topCode
+                | _ -> 
+                    let index = int (topInt.Raw<int64>()) % l.Length
+                    if index = 0 then pushResult topCode
+                    else pushResult (Code(l.[index - 1]))
+            | _ -> pushResult topCode

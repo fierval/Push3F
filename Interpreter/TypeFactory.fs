@@ -170,3 +170,6 @@ module TypeFactory =
 
     let internal getState typeName =
         stockTypes.States.[typeName]
+
+    let isEmptyStack stack =
+        stockTypes.Stacks.[stack].isEmpty

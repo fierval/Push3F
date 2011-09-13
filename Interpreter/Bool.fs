@@ -17,7 +17,7 @@ module StockTypesBool =
         new () = {inherit PushTypeBase ()}
         new (b : bool) = {inherit PushTypeBase(b)}
 
-        static member private Me = Bool()
+        static member Me = Bool()
 
         // custom parsing
         static member parse s =

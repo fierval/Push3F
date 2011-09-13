@@ -17,7 +17,7 @@ module StockTypesFloat =
         new () = {inherit PushTypeBase ()}
         new (f : float) = {inherit PushTypeBase(f)}
 
-        static member private Me = Float()
+        static member Me = Float()
 
         override t.ToString() =
             base.ToString()

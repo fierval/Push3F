@@ -9,6 +9,7 @@ module StockTypesCode =
     open push.stack.Stack
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesInteger
+    open push.types.stock.StockTypesFloat
     open System.Reflection
     open System
 
@@ -222,3 +223,21 @@ module StockTypesCode =
                     if index = 0 then pushResult topCode
                     else pushResult (Code(l.[index - 1]))
             | _ -> pushResult topCode
+
+        
+        static member toCode tp =
+            if isEmptyStack tp then ()
+            let top = processArgs1 tp
+            pushResult (Code(Value(top)))
+
+        [<PushOperation("FROMINTEGER", Description = "Converts an INTEGER into a CODE item")>]
+        static member FromInteger() =
+            Code.toCode Integer.Me.MyType
+
+        [<PushOperation("FROMBOOLEAN", Description = "Converts a BOOLEAN into a CODE item")>]
+        static member FromBool() =
+            Code.toCode Bool.Me.MyType
+
+        [<PushOperation("FROMFLOAT", Description = "Converts a FLOAT into a CODE item")>]
+        static member FromFloat() =
+            Code.toCode Float.Me.MyType

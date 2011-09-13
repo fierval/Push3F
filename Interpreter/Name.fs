@@ -17,7 +17,7 @@ module StockTypesName =
         new () = {inherit PushTypeBase ()}
         new (s : string) = {inherit PushTypeBase(s)}
 
-        static member private Me = Name()
+        static member Me = Name()
 
         override t.isQuotable with get() = true
 

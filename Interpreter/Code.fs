@@ -10,6 +10,7 @@ module StockTypesCode =
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesInteger
     open push.types.stock.StockTypesFloat
+    open push.types.stock.StockTypesName
     open System.Reflection
     open System
 
@@ -241,3 +242,7 @@ module StockTypesCode =
         [<PushOperation("FROMFLOAT", Description = "Converts a FLOAT into a CODE item")>]
         static member FromFloat() =
             Code.toCode Float.Me.MyType
+
+        [<PushOperation("FROMFNAME", Description = "Converts a FLOAT into a CODE item")>]
+        static member FromName() =
+            Code.toCode Name.Me.MyType

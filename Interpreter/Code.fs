@@ -30,6 +30,8 @@ module StockTypesCode =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
+        override t.isQuotable with get() = true
+
         static member internal pushArgsBack (args : PushTypeBase list) =
             pushResult args.Head
             pushResult args.Tail.Head

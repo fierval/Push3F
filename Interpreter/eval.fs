@@ -9,6 +9,7 @@ module Eval =
     open Stack
     open Type
     open TypeFactory
+    open TypesShared
 
     let internal (|FindStack|_|) str = 
         match stockTypes.Stacks.TryFind(str), str with
@@ -21,7 +22,15 @@ module Eval =
     let rec internal evalStack stack name shouldPopFirst =
         let rec evalStackTailRec (top : PushTypeBase) stack name = 
             match top.Raw<Push>() with
-            | Value v -> pushResult v
+            | Value v -> 
+                if not v.isQuotable 
+                then 
+                    pushResult v.Eval
+                elif getState v.MyType = State.Quote
+                then
+                    pushResult v
+                    setState v.MyType State.Exec |> ignore
+
             | Operation (name, methodInfo) -> execOperation name methodInfo 
             | PushList l -> 
                 // push in the reverse order
@@ -29,13 +38,17 @@ module Eval =
                     fst (popManyReverse l.Length stack) 
                     |> List.fold (fun stack e -> push e stack) empty 
                     |> pop
-                evalStackTailRec top updatedStack name
+                evalStackTailRec top updatedStack top.MyType
     
         let top = if shouldPopFirst then processArgs1 name else peekStack name
-        if top = Unchecked.defaultof<PushTypeBase> then ()
+        if top = Unchecked.defaultof<PushTypeBase> 
+        then 
+            ()
         else
             evalStackTailRec top stack name
-            if not shouldPopFirst then processArgs1 name |> ignore
+        if not shouldPopFirst 
+        then 
+            processArgs1 name |> ignore
 
     // evaluates an object on the top of the stack
     let eval =

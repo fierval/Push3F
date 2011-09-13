@@ -2,6 +2,7 @@
 
 module StockTypesName =
     open push.types.Type
+    open push.types.TypesShared
     open push.types.TypeAttributes
     open push.types.TypeFactory
     open push.types.stock.StockTypesBool
@@ -17,6 +18,13 @@ module StockTypesName =
         new (s : string) = {inherit PushTypeBase(s)}
 
         static member private Me = new Name()
+
+        override t.isQuotable with get() = true
+
+        override t.Eval = 
+            match tryGetBinding (t.Raw<string>()) with
+            | Some value -> value
+            | None -> Unchecked.defaultof<PushTypeBase>
 
         override t.ToString() =
           base.ToString()
@@ -45,6 +53,10 @@ module StockTypesName =
             match processArgs2 Name.Me.MyType with
             | [a1; a2] -> pushResult(new Bool(a1.Raw<int64>() = a2.Raw<int64>()))
             | _ -> ()
+
+        [<PushOperation("QUOTE", Description = "Next NAME is simply pushed onto the name stack")>]
+        static member Quote () =
+            setState Name.Me.MyType State.Quote
 
         [<PushOperation("RAND", Description = "Pushes a random generated NAME to the name stack")>]
         static member Rand () =

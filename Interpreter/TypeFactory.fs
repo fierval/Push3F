@@ -37,6 +37,10 @@ module TypeFactory =
     let internal typeStacks (map : Map<string, #PushTypeBase>) : Map<string, Stack<#PushTypeBase>> = 
         map |> Map.map (fun key o -> empty)
 
+    // initialize the states
+    let internal internalStates (ptypes : Map<string, #PushTypeBase>) = 
+        ptypes |> Map.filter(fun key value -> value.isQuotable) |> Map.map(fun key value -> State.Exec)
+
     // keeps the actual stock types.
     // internal to this module only, so nobody externally
     // can instantiate it.
@@ -48,7 +52,7 @@ module TypeFactory =
         let mutable stacks = typeStacks ptypes
         let mutable operations = getOperations ptypes
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
-        let mutable state  = State.Exec
+        let mutable states = internalStates ptypes
 
         // stores the stacks currently in use
         member t.Stacks 
@@ -69,9 +73,9 @@ module TypeFactory =
             and set value = bindings <- value
 
         // gets/sets the "state" flag
-        member t.State
-            with get () = state
-            and set value = state <- value
+        member t.States
+            with get () = states
+            and set value = states <- value
 
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
@@ -79,6 +83,7 @@ module TypeFactory =
             ptypes <- ptypes.Append(newTypes)
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes
+            states <- internalStates ptypes
 
         // retrieves arguments from the appropriate stack
         member t.popArguments key n =
@@ -150,3 +155,9 @@ module TypeFactory =
         args
 
     let tryGetBinding name = stockTypes.Bindings.TryFind(name)
+
+    let internal setState typeName state =
+        stockTypes.States.Replace(typeName, state)
+
+    let internal getState typeName =
+        stockTypes.States.[typeName]

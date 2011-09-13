@@ -70,7 +70,7 @@ namespace InterpreterTests
 
             var names = sysTypes.Select(t => (t.GetCustomAttributes(typeof(push.types.TypeAttributes.PushTypeAttribute), false).Single() as push.types.TypeAttributes.PushTypeAttribute).Name).ToList();
 
-            var obj = TypeFactory.createPushObject<Type.PushTypeBase>(sysTypes[0]);
+            var obj = TypeFactory.createPushObject<Type.PushTypeBase>(sysTypes[0], new object [] {});
 
             Assert.IsTrue(names.Where(n => n == obj.Item2).Count() == 1);
         }

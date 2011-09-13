@@ -63,3 +63,8 @@ module Eval =
         | FindStack (stack, name) -> evalStack stack name false
         | _ -> ()
 
+    // pushes an item on to the EXEC stack to be evaluated
+    let pushToExec (pushObj : Push) =
+        let execType = stockTypes.Types.["EXEC"].GetType()
+        let execObj = fst (createPushObject execType [|pushObj|])
+        pushResult execObj

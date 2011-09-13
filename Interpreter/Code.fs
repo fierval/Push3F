@@ -10,6 +10,7 @@ module StockTypesCode =
     open push.types.stock.StockTypesBool
     open push.types.stock.StockTypesInteger
     open System.Reflection
+    open System
 
     [<PushType("CODE")>]
     type Code =
@@ -165,3 +166,43 @@ module StockTypesCode =
         [<PushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.")>]
         static member DoStar () =
             evalStar Code.Me.MyType
+
+        static member internal doRange start finish (code : Push) pushIndex=
+            let next = 
+                if start < finish then start + 1L
+                elif start > finish then start - 1L
+                else start
+
+            if start <> finish then
+                pushToExec (Value(Integer(next)))
+                pushToExec (Value(Integer(finish)))
+                pushToExec (Operation("CODE", stockTypes.Operations.["CODE"].["DO*RANGE"]))
+                pushResult (Code(code)) // don't forget to return the code to the code stack
+
+            if pushIndex 
+            then                
+                pushResult (Integer(next))
+            pushToExec code
+
+
+        static member internal doTimes pushIndex =
+            match (processArgs1 Integer.Me.MyType), (processArgs1 Code.Me.MyType) with
+            | a1, c when a1 <> Unchecked.defaultof<PushTypeBase> && c <> Unchecked.defaultof<PushTypeBase> -> 
+                Code.doRange (1L - a1.Raw<int64>()) 0L (c.Raw<Push>()) pushIndex
+            | _ -> ()
+            
+        [<PushOperation("DO*COUNT", Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack")>]
+        static member DoCount() = 
+            Code.doTimes true
+
+        [<PushOperation("DO*TIMES", Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack")>]
+        static member DoTimes() = 
+            Code.doTimes false
+
+        [<PushOperation("DO*RANGE", Description = "Executes the item on top of the CODE stack recursively, while iterating through the range arguments")>]
+        static member DoRange() =
+            match (processArgs2 Integer.Me.MyType), (processArgs1 Code.Me.MyType) with
+            | [a1; a2], c when c <> Unchecked.defaultof<PushTypeBase> -> 
+                Code.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
+            | _ -> ()
+        

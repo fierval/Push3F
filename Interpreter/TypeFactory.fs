@@ -10,9 +10,15 @@ module TypeFactory =
     open push.stack.Stack
     open push.exceptions.PushExceptions
 
-    let internal createPushObject (t:System.Type) : #PushTypeBase * string =
-        let ci = t.GetConstructor(Array.empty)
-        let pushObj = ci.Invoke(Array.empty)
+    let internal createPushObject (t:System.Type) (args : obj []) : #PushTypeBase * string =
+        
+        let ci =
+            match args with 
+            | [||] -> t.GetConstructor(Array.empty)
+            | _ -> 
+                let constrArgs = args |> Array.map(fun a -> a.GetType())
+                t.GetConstructor(constrArgs)
+        let pushObj = ci.Invoke(args)
         let typedObj = 
             match pushObj with
             | :? #PushTypeBase as pushO -> pushO
@@ -25,7 +31,7 @@ module TypeFactory =
         |> loadTypes
         |> getAnnotatedTypes attribute
         |> Seq.fold (fun map t -> 
-                        let pushObj, name = createPushObject t
+                        let pushObj, name = createPushObject t Array.empty
                         map |> Map.add name pushObj) Map.empty
 
 
@@ -96,11 +102,14 @@ module TypeFactory =
                     stacks <- stacks.Replace(key, leftOver)
                     result
 
-        member t.pushResult (resObj : PushTypeBase) =
-            let key = resObj.MyType
+        member private t.pushResultToStack key resObj =
             let stack = stacks.[key]
             stacks <- stacks.Replace(key, push resObj stack)
 
+        member t.pushResult (resObj : PushTypeBase) =
+            let key = resObj.MyType
+            t.pushResultToStack key resObj
+                        
         // good for test to clean up the stacks
         member t.cleanAllStacks() =
             ptypes <- origPtypes

@@ -17,7 +17,7 @@ module StockTypesInteger =
         new () = {inherit PushTypeBase() }
         new (n : int64) = {inherit PushTypeBase(n)}
 
-        static member private Me = new Integer()
+        static member Me = new Integer()
 
         // custom parsing
         static member parse s =

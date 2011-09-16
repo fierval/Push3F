@@ -11,6 +11,7 @@ module StockTypesCode =
     open push.types.stock.StockTypesInteger
     open push.types.stock.StockTypesFloat
     open push.types.stock.StockTypesName
+    open push.types.GenericOperations
     open System.Reflection
     open System
 
@@ -33,6 +34,8 @@ module StockTypesCode =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
+        // code type is "quoatable", however CODE.QUOTE is implemented
+        // by simply pushing the next item from the EXEC stack to the code stack
         override t.isQuotable with get() = true
 
         static member internal pushArgsBack (args : PushTypeBase list) =
@@ -111,7 +114,7 @@ module StockTypesCode =
         [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
         static member Container() =
             match peekStack2 Code.Me.MyType with
-            | [aSnd; aFst] -> 
+            | [aFst; aSnd] -> 
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
@@ -208,6 +211,12 @@ module StockTypesCode =
                 Code.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
             | _ -> ()
         
+        static member getIndex ofBase =
+            let topInt = processArgs1 Integer.Me.MyType
+            match topInt.Raw<int64>() with
+            | v when v = 0L -> 0
+            | x ->  Math.Abs(int x) % (ofBase + 1)
+
         [<PushOperation("EXTRACT", Description = "Extract from the top code item a sub-item indexed by the top of INTEGER stack")>]
         static member ExtractSubItem() =
             if isEmptyStack Code.Me.MyType then ()
@@ -217,12 +226,9 @@ module StockTypesCode =
             let topInt = processArgs1 Integer.Me.MyType
             match topCode.Raw<Push>() with
             | PushList l -> 
-                match l with
-                | [] -> pushResult topCode
-                | _ -> 
-                    let index = int (topInt.Raw<int64>()) % l.Length
-                    if index = 0 then pushResult topCode
-                    else pushResult (Code(l.[index - 1]))
+                let index = Code.getIndex (l.Length)
+                if index = 0 then pushResult topCode else
+                    pushResult (Code(l.[Code.getIndex (l.Length) - 1]))
             | _ -> pushResult topCode
 
         
@@ -246,3 +252,63 @@ module StockTypesCode =
         [<PushOperation("FROMFNAME", Description = "Converts a FLOAT into a CODE item")>]
         static member FromName() =
             Code.toCode Name.Me.MyType
+
+        [<PushOperation("IF", Description = "Execute either the first or the second item on top of the code stack")>]
+        static member If() =
+            if isEmptyStack Bool.Me.MyType then ()
+            match processArgs2 Code.Me.MyType with
+            | [a1; a2] ->
+                if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
+                then 
+                    pushToExec (a2.Raw<Push>())
+                    pushResult a1
+                else
+                    pushToExec (a1.Raw<Push>())
+                    pushResult a2
+            | _ -> ()
+
+        [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
+        static member Insert() =
+            if isEmptyStack Integer.Me.MyType then ()
+          
+            match processArgs2 Code.Me.MyType with
+            | [aTop; aSnd] ->
+                let scnd, frst = aSnd.Raw<Push>(), aTop.Raw<Push>()
+                match scnd, frst with
+                | (_, PushList top) -> 
+                    let index = Code.getIndex (top.Length)
+                    if index = 0 then pushResult aSnd
+                    else
+                        let index = index - 1
+                        let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
+                        pushResult (Code(newTop))
+                | _ -> pushResult aSnd
+            | _ -> ()    
+             
+        [<PushOperation("INSTRUCTIONS", Description = "Pushes a list of all active instructions")>]
+        static member Instructions() =
+            stockTypes.Operations 
+            |> Map.iter
+                (fun key m -> 
+                            m 
+                            |> Map.iter (fun key elem -> pushResult (Code(Operation(key, elem)))))
+
+        [<PushOperation("LENGTH", Description = "Pushes the length of the top item")>]
+        static member Length() =
+            if isEmptyStack Code.Me.MyType then pushResult (Integer(0L))
+            match (peekStack Code.Me.MyType).Raw<Push>() with
+            | PushList l -> pushResult (Integer (int64 (l.Length)))
+            | _ -> pushResult (Integer (1L))
+
+        [<PushOperation("LIST", Description = "Makes a list out of the first two stack items")>]
+        static member MakeList() =
+            match processArgs2 Code.Me.MyType with
+            | [aFst; aSnd] -> pushResult (Code(PushList[aFst.Raw<Push>(); aSnd.Raw<Push>()]))
+            | _ -> ()
+
+        [<PushOperation("QUOTE", Description = "Pushes top of the EXEC stack to the CODE stack")>]
+        static member Quote() =
+            let exec = "EXEC"
+            match processArgs1 exec with
+            | item when item <> Unchecked.defaultof<PushTypeBase> -> pushResult (Code(item.Raw<Push>()))
+            | _ -> ()

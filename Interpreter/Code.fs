@@ -15,12 +15,21 @@ module StockTypesCode =
     open System.Reflection
     open System
 
+    // emumeration used in random code generation
+    type Types =
+    | Const = 1
+    | Name = 2
+    | Code = 3
+    | Max = 3
+
     [<PushType("CODE")>]
     type Code =
         inherit PushTypeBase
 
-        new () = {inherit PushTypeBase ()}
-        new (p : Push) = {inherit PushTypeBase(p)}
+        [<DefaultValue>]val mutable private maxCodePoints : int
+
+        new () as t = {inherit PushTypeBase ()} then t.maxCodePoints <- 20
+        new (p : Push) as t = {inherit PushTypeBase(p)} then t.maxCodePoints <- 20
 
         static member private Me = new Code()
 
@@ -36,20 +45,21 @@ module StockTypesCode =
 
         // code type is "quoatable", however CODE.QUOTE is implemented
         // by simply pushing the next item from the EXEC stack to the code stack
-        override t.isQuotable with get() = true
+        override t.isQuotable with get() = false
 
         static member internal pushArgsBack (args : PushTypeBase list) =
             pushResult args.Head
             pushResult args.Tail.Head
 
         // this function collects all of the containers ofA that are inB
-        static member internal getContainers (ofA : Push) (stackOfInB : Stack<Push list>) =
+        static member internal getContainers (ofA : Push) (stackOfInB : Stack<Push list>) topLevelOnly =
             let containers : Stack<Push> ref = ref empty
             let stackOfInB = ref stackOfInB
             match ofA with
             | PushList [] -> containers := push (PushList (peek !stackOfInB)) !containers; !containers
             | _ ->
-                while not (!stackOfInB).isEmpty do
+                let stop = ref false
+                while not (!stackOfInB).isEmpty  && not !stop do
                     let topInB = peek !stackOfInB
                     for b in topInB do
                         if b.Equals(ofA) then containers := push (PushList topInB) !containers
@@ -57,6 +67,7 @@ module StockTypesCode =
                             match b with
                             | PushList blist -> if blist.Length < ofA.asPushList.Length then () else stackOfInB := shove (!stackOfInB).length blist !stackOfInB
                             | _ -> ()
+                        stop := topLevelOnly
                     stackOfInB := (snd (pop !stackOfInB))
                 !containers
 
@@ -111,13 +122,13 @@ module StockTypesCode =
             | [a1; a2] -> pushResult (Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().asPushList)))
             | _ -> ()
 
-        [<PushOperation("CONTAINER", Description = "if fst is on top of the stack, and snd right udner, returns the container of the second item in the first")>]
+        [<PushOperation("CONTAINER", Description = "Returns the container of the second item in the first")>]
         static member Container() =
             match peekStack2 Code.Me.MyType with
             | [aFst; aSnd] -> 
                 match aFst.Raw<Push>() with
                 | PushList l -> 
-                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
+                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) false
                         if res.isEmpty then pushResult (Code (PushList []))
                         else // if we have several containers, find the index of the one with min length
                             let containerIndex = 
@@ -135,18 +146,20 @@ module StockTypesCode =
             | _ -> pushResult (Code(PushList []))
             
 
-        [<PushOperation("CONTAINS", Description = "if fst is on top of the stack, and snd right udner, returns true if the second item contains the first")>]
-        static member Contains() =
+        static member isMember digDeeper =
             match peekStack2 Code.Me.MyType with
-            // the order of the arguments is the opposite of CONTAINER
             | [aFst; aSnd] -> 
                 match aFst.Raw<Push>() with
                 | PushList l -> 
-                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty)
+                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) digDeeper
                         pushResult (Bool (res.isEmpty))
                 | _ -> pushResult (Bool (false))
             | _ -> pushResult (Bool (false))
- 
+
+        [<PushOperation("CONTAINS", Description = "Returns true if the second item contains the first")>]
+        static member Contains() =
+            Code.isMember true
+             
         [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]
         static member Definition() =
             let arg = peekStack "NAME"
@@ -306,9 +319,148 @@ module StockTypesCode =
             | [aFst; aSnd] -> pushResult (Code(PushList[aFst.Raw<Push>(); aSnd.Raw<Push>()]))
             | _ -> ()
 
+        [<PushOperation("MEMBER", Description = "Pushes TRUE if the second is the member of the first")>]
+        static member Member() =
+            Code.isMember false
+
+        [<PushOperation("NOOP", Description = "Does nothing")>]
+        static member Noop() =
+            ()
+
+        [<PushOperation("NTH", Description = "Pushes the n-th member of the top element onto the stack")>]
+        static member Nth() =
+            if isEmptyStack Integer.Me.MyType then ()
+          
+            match peekStack Code.Me.MyType with
+            | aTop when aTop <> Unchecked.defaultof<PushTypeBase> ->
+                let top = aTop.Raw<Push>()
+                match top with
+                | PushList top -> 
+                    let index = Code.getIndex (top.Length)
+                    if index = 0 then pushResult aTop
+                    else
+                        pushResult (Code(top.[index - 1]))
+                | _ -> pushResult (Code(PushList([aTop.Raw<Push>()]))) // coerce the expression to the list
+
+            | _ -> ()
+
+        [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
+        [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]
+        static member NthRest() =
+            let a = peekStack Code.Me.MyType
+            if a = Unchecked.defaultof<PushTypeBase> then pushResult (Code(PushList []))
+            let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+
+            match arg with
+            | PushList l -> 
+                let index = Code.getIndex l.Length
+                if index = 0 then pushResult a
+                else
+                    let lst = [for i = index to l.Length - 1 do yield l.[i]]
+                    pushResult (Code(PushList(lst)))
+
+            | _ -> pushResult(Code(PushList []))
+
+        [<PushOperation("NULL", Description = "Pushes TRUE into the BOOLEAN stack if the top code item is an empty list. FALSE otherwise")>]
+        static member Null() =
+            match peekStack Code.Me.MyType with
+            | a when a <> Unchecked.defaultof<PushTypeBase> ->
+                match a.Raw<Push>() with
+                | PushList [] -> pushResult (Bool(true))
+                | _ -> pushResult (Bool(false))
+            | _ -> pushResult (Bool(false))
+
+        [<PushOperation("POSITION", Description = "Pushes a position of the second item within the first items on top of the integer stack. -1 if no occurences")>]
+        static member Position() =
+            match peekStack2 Code.Me.MyType with
+                | [aFst; aSnd] -> 
+                    match aFst.Raw<Push>() with
+                    | PushList l -> 
+                        let scnd = aSnd.Raw<Push>()
+                        match l |> List.tryFindIndex (fun e -> e = scnd) with
+                        | Some i -> pushResult (Integer (int64 i))
+                        | _ -> pushResult (Integer (-1L))
+                    | _ -> pushResult (Integer (-1L))
+                | _ -> pushResult (Integer (-1L))
+                        
         [<PushOperation("QUOTE", Description = "Pushes top of the EXEC stack to the CODE stack")>]
         static member Quote() =
             let exec = "EXEC"
             match processArgs1 exec with
             | item when item <> Unchecked.defaultof<PushTypeBase> -> pushResult (Code(item.Raw<Push>()))
             | _ -> ()
+
+        [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
+        static member Size() =
+            match peekStack Code.Me.MyType with
+            |a when a <> Unchecked.defaultof<PushTypeBase> ->
+                match a.Raw<Push>() with
+                | PushList l -> pushResult (Integer(int64 (l.Length)))
+                | _ -> pushResult (Integer(0L))
+            | _ -> pushResult (Integer(0L))
+        
+        [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]
+        static member Subst() = Code.Noop()
+
+        // random code generation
+        [<PushOperation("RAND", Description = "Generates random code")>]
+        static member Rand() = 
+            let initRandom = Random(int DateTime.UtcNow.Ticks)
+
+            // given a choice, generate a random name, random code, random integer
+            let pickRandomConst = 
+                let randomType = initRandom.Next(1, int Types.Max)
+            
+                let keyFromIndex index map = (map |> Map.toList).[index]
+
+                // generate a random operation
+                match enum<Types>(randomType) with 
+                | Types.Code | Types.Max -> 
+                    let indexTypes = initRandom.Next(0, stockTypes.Operations.Count)
+                    let typeName = fst (stockTypes.Operations |> keyFromIndex indexTypes)
+                    let indexOps = initRandom.Next(0, (stockTypes.Operations.[typeName].Count))
+                    let op = (stockTypes.Operations.[typeName] |> keyFromIndex indexOps)
+                    Operation(fst op, snd op)
+
+                // generate a random constant
+                | Types.Const -> 
+                    match initRandom.Next(0, 3) with
+                    | 0 -> Value(Integer(int64(initRandom.Next())))
+                    | 1 -> Value (Float(initRandom.NextDouble()))
+                    | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
+                    | _ -> failwith "cannot happen"
+                    
+                // either generates a random name or gets a random definition
+                | Types.Name -> 
+                    if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString 15)) 
+                    else
+                        let index = initRandom.Next(0, stockTypes.Bindings.Count - 1)
+                        let key = fst (stockTypes.Bindings |> keyFromIndex index)
+                        stockTypes.Bindings.[key].Raw<Push>()
+                | _ -> failwith "this is never reached"
+
+            // gets a list or random values
+            let rec decompose num maxParts acc =
+                if num = 1 || maxParts = 1 then PushList ((Value(Integer(1L)))::acc)
+                else
+                    let thisPart = initRandom.Next(1, num - 1)
+                    decompose (num - thisPart) (maxParts - 1) (Value(Integer(int64 thisPart))::acc)
+
+            let rec inputCodeMaxSize points acc =
+                if points = 1 then pickRandomConst :: acc
+                    else
+                        let sizesThisLevel = (decompose (points - 1) (points - 1) List.empty).asPushList |> 
+                                                List.map(fun e -> 
+                                                            match e with 
+                                                            |Value v -> v.Raw<int64>()
+                                                            | _ -> failwith "cannot happen")
+                        [
+                            for i in sizesThisLevel do
+                                yield! inputCodeMaxSize (int i) acc
+                        ] 
+            
+            let points = initRandom.Next(1, Code.Me.maxCodePoints)
+
+            let res = inputCodeMaxSize points List.empty
+
+            pushResult (Code(PushList res))

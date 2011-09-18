@@ -21,14 +21,14 @@ module Program =
         printfn "%s" (e.ToString())
 
 
-    let execProgram program =
+    let internal execProgram program =
         pushResult (Exec(program))
         eval "EXEC"
 
     // the callback type for the function used
-    type parseFunc = string -> ParserResult<Push, unit>
+    type internal parseFunc = string -> ParserResult<Push, unit>
 
-    let execPush parse str fullErrorReport =
+    let internal execPush parse str fullErrorReport =
         try
             let res = extractResult (parse str)
             if not (FSharpType.IsTuple(res.GetType()))

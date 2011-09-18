@@ -45,18 +45,24 @@ module Ast =
             member private t.StructuredFormatDisplay = 
                 match t with
                 | Value i -> i.StructuredFormatDisplay
-                | PushList l -> box(t.ToString()) 
+                | PushList l -> box(t.ToString(fun i -> " (")) 
                 | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
 
-            override t.ToString() =
-                let rec toString o =
+            // we need a bit more fancy formatting for the actual ToString()
+            // lists should be tabbed & sublists should start on the next line
+            override t.ToString() = 
+                t.ToString(fun a -> (String.Format("\n{0}(", System.String('\t', a))))
+
+            member private t.ToString(seed : int -> string) =
+                let rec toString o (seed : int -> string) acc =
                     match o with
                     | Value v -> v.ToString()
                     | Operation (tp, mi) -> tp + " " + mi.Name
                     | PushList l -> 
-                        let s = l |> List.fold(fun str e -> str + (toString e) + "; ") "["
-                        s.Substring(0, s.Length - 2) + "]"
-                toString t
+                        let s = l |> List.fold(fun str e -> str + (toString e seed (acc + 1)) + " ") (seed acc)
+                        s.Substring(0, s.Length - 1) + ")"
+                let s = toString t seed 0
+                s.Substring(1, s.Length - 1)
 
             override t.Equals(o) =
                 let rec areEq a1 a2 =

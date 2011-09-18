@@ -65,3 +65,7 @@ module StockTypesExec =
             // and then shove it underneath the second item of the stack
             pushResult (Integer(2L))
             Ops.shove Exec.Me.MyType
+
+        [<PushOperation("DUMPALLSTACKS", Description= "Writes out all the stacks to the console")>]
+        static member DumpAllStacks () =
+            stockTypes.Stacks |> Map.iter (fun key value -> Ops.DumpStack key)

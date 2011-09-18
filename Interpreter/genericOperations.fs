@@ -131,7 +131,6 @@ module GenericOperations =
                 pushResult (Integer(next))
             pushToExec code
 
-
         static member internal doTimes pushIndex tp =
             match (processArgs1 Integer.Me.MyType), (peekStack tp) with
             | a1, c when a1 <> Unchecked.defaultof<PushTypeBase> && c <> Unchecked.defaultof<PushTypeBase> -> 
@@ -158,4 +157,17 @@ module GenericOperations =
             | [a1; a2], c when c <> Unchecked.defaultof<PushTypeBase> -> 
                 Ops.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
             | _ -> ()
-         
+
+        [<GenericPushOperation("WRITE", Description="Write the top value out to the console")>]
+        static member Write tp =
+            if isEmptyStack tp then ()
+            else
+                Console.WriteLine(peekStack tp)
+
+        [<GenericPushOperation("DUMPSTACK", Description="")>]
+        static member DumpStack (tp : string) =
+            Console.WriteLine(tp)
+            Console.WriteLine("-------------")
+            if isEmptyStack tp then ()
+            else
+                stockTypes.Stacks.[tp].asList |> List.iter (fun e -> Console.WriteLine(e))

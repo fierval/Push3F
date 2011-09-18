@@ -2,17 +2,10 @@
 
 [<AutoOpen>]
 module StockTypesExec =
-    open push.types.Type
-    open push.types.TypeAttributes
-    open push.types.TypeFactory
-    open push.parser.Ast
-    open push.parser.Eval
-    open push.stack.Stack
-    open push.types.stock.StockTypesBool
-    open push.types.stock.StockTypesInteger
-    open push.types.stock.StockTypesFloat
-    open push.types.stock.StockTypesName
-    open push.types.GenericOperations
+    open push.types
+    open push.parser
+    open push.stack
+    open push.types.stock
     open System.Reflection
     open System
 

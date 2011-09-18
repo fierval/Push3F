@@ -2,15 +2,9 @@
 
 [<AutoOpen>]
 module Eval =
-
     open System
-    open Ast
     open push.types
     open push.stack
-    open Stack
-    open Type
-    open TypeFactory
-    open TypesShared
 
     let internal (|FindStack|_|) str = 
         match stockTypes.Stacks.TryFind(str), str with

@@ -4,12 +4,8 @@ module ParserShared =
 
     open FParsec
 
-    open Ast
-    open push.types.TypeFactory
-    open push.types.Type
-    open push.types.stock.StockTypesInteger
-    open push.types.stock.StockTypesBool
-    open push.types.stock.StockTypesName
+    open push.types
+    open push.types.stock
 
     open System.Reflection
 

@@ -3,10 +3,6 @@
 [<AutoOpen>]
 module StockTypesFloat =
     open push.types
-    open push.types.Type
-    open TypeAttributes
-    open TypeFactory
-    open StockTypesBool
 
     open System.Reflection
     open System

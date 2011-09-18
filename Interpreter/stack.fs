@@ -1,5 +1,6 @@
 ﻿namespace push.stack
 
+[<AutoOpen>]
 module Stack =
     open push.exceptions.PushExceptions
 

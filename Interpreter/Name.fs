@@ -2,11 +2,8 @@
 
 [<AutoOpen>]
 module StockTypesName =
-    open push.types.Type
-    open push.types.TypesShared
-    open push.types.TypeAttributes
-    open push.types.TypeFactory
-    open push.types.stock.StockTypesBool
+    open push.types
+    open push.types.stock
 
     open System.Reflection
     open System

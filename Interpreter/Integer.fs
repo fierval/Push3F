@@ -2,11 +2,7 @@
 
 [<AutoOpen>]
 module StockTypesInteger =
-    open push.types.Type
-    open push.types.TypeAttributes
-    open push.types.TypeFactory
-    open push.types.stock
-    open StockTypesBool
+    open push.types
     open System
 
     open System.Reflection

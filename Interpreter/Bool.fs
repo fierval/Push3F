@@ -2,9 +2,7 @@
 
 [<AutoOpen>]
 module StockTypesBool =
-    open push.types.Type
-    open push.types.TypeAttributes
-    open push.types.TypeFactory
+    open push.types
     open System
 
     open System.Reflection

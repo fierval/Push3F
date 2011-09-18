@@ -4,9 +4,8 @@
 module Ast = 
     open System
     open System.Reflection
-    open push.types.Type
+    open push.types
     open System.Diagnostics
-    open push.types.TypesShared
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<CustomEquality;CustomComparison>]

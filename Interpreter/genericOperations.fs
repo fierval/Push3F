@@ -1,21 +1,13 @@
 ﻿namespace push.types
 
+[<AutoOpen>]
 module GenericOperations =
 
-    open TypesShared
-    open TypeAttributes
     open System.Reflection
-    open push.exceptions.PushExceptions
-    open Type
-    open TypeFactory
+    open push.exceptions
     open push.stack
     open push.parser
-    open Ast
-    open Eval
-    open Stack
     open push.types.stock
-    open StockTypesBool
-    open StockTypesInteger
     open System
 
     type Ops ()=

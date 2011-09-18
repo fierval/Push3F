@@ -34,9 +34,12 @@ module Program =
     // the callback type for the function used
     type internal parseFunc = string -> ParserResult<Push, unit>
 
+    let isFlagSet flag enumeration =
+        flag &&& enumeration = flag
+
     let internal execPush parse str execParams =
-        let fullErrorReport = (ExecutionFlags.FullErrorReport &&& execParams = ExecutionFlags.FullErrorReport)
-        let shouldPushCode = (ExecutionFlags.ShouldPushCode &&& execParams = ExecutionFlags.ShouldPushCode)
+        let fullErrorReport = isFlagSet ExecutionFlags.FullErrorReport execParams 
+        let shouldPushCode = isFlagSet ExecutionFlags.ShouldPushCode execParams
         try
             let res = extractResult (parse str)
             if not (FSharpType.IsTuple(res.GetType()))

@@ -100,6 +100,21 @@ module GenericOperations =
                 pushResult (Bool (a1.Raw<Push>() = a2.Raw<Push>()))
             | _ -> ()
 
+        [<GenericPushOperation("IF", Description = "Execute either the first or the second item on top of the code stack", AppliesTo=[|"CODE"; "EXEC"|])>]
+        static member If tp =
+            if isEmptyStack Bool.Me.MyType then ()
+            match processArgs2 tp with
+            | [a1; a2] ->
+                if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
+                then 
+                    pushToExec (a2.Raw<Push>())
+                    pushResult a1
+                else
+                    pushToExec (a1.Raw<Push>())
+                    pushResult a2
+            | _ -> ()
+
+ 
         [<GenericPushOperation("DO", Description = "Pop the CODE stack & execute the top", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member Do tp =
             eval tp

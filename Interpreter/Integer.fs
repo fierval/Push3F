@@ -1,5 +1,6 @@
 ﻿namespace push.types.stock
 
+[<AutoOpen>]
 module StockTypesInteger =
     open push.types.Type
     open push.types.TypeAttributes

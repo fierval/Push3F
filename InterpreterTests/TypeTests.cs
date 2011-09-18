@@ -53,7 +53,7 @@ namespace InterpreterTests
         [Description("load push types using shared functions")]
         public void LoadPushTypesSharedTest()
         {
-            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Parser.dll"));
+            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Core.dll"));
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types);
 
@@ -64,7 +64,7 @@ namespace InterpreterTests
         [Description("create a push object")]
         public void CreatePushObjectTest()
         {
-            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Parser.dll"));
+            var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Core.dll"));
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types).ToList();
 

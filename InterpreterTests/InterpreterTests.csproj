@@ -62,9 +62,9 @@
     <Compile Include="OperationsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Interpreter\Push.Parser.fsproj">
+    <ProjectReference Include="..\Interpreter\Push.Core.fsproj">
       <Project>{90365AB0-39D6-4217-9056-AA3D18147E30}</Project>
-      <Name>Push.Parser</Name>
+      <Name>Push.Core</Name>
     </ProjectReference>
     <ProjectReference Include="Asssemblies\Extention\ExtentionAssembly\ExtensionAssembly.csproj">
       <Project>{DA5DC8F4-4627-46B6-B8CD-D5DB2C4B6DC1}</Project>

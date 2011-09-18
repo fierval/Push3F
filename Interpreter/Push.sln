@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Push.Parser", "Push.Parser.fsproj", "{90365AB0-39D6-4217-9056-AA3D18147E30}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Push.Core", "Push.Core.fsproj", "{90365AB0-39D6-4217-9056-AA3D18147E30}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EAF1CDBA-EB42-4426-8180-EF72813E8C38}"
 EndProject

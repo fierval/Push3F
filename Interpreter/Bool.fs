@@ -1,5 +1,6 @@
 ﻿namespace push.types.stock
 
+[<AutoOpen>]
 module StockTypesBool =
     open push.types.Type
     open push.types.TypeAttributes

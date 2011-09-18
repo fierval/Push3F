@@ -1,5 +1,6 @@
 ﻿namespace push.types.stock
 
+[<AutoOpen>]
 module StockTypesFloat =
     open push.types
     open push.types.Type

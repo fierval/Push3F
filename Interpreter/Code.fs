@@ -212,20 +212,6 @@ module StockTypesCode =
         static member FromName() =
             Code.toCode Name.Me.MyType
 
-        [<PushOperation("IF", Description = "Execute either the first or the second item on top of the code stack")>]
-        static member If() =
-            if isEmptyStack Bool.Me.MyType then ()
-            match processArgs2 Code.Me.MyType with
-            | [a1; a2] ->
-                if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
-                then 
-                    pushToExec (a2.Raw<Push>())
-                    pushResult a1
-                else
-                    pushToExec (a1.Raw<Push>())
-                    pushResult a2
-            | _ -> ()
-
         [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
         static member Insert() =
             if isEmptyStack Integer.Me.MyType then ()

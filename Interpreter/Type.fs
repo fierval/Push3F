@@ -1,5 +1,6 @@
 ﻿namespace push.types
 
+[<AutoOpen>]
 module Type =
     
     open System.Reflection

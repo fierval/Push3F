@@ -1,5 +1,6 @@
 ﻿namespace push.parser
 
+[<AutoOpen>]
 module Ast = 
     open System
     open System.Reflection

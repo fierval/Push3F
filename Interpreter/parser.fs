@@ -1,5 +1,6 @@
 ﻿namespace push.parser
 
+[<AutoOpen>]
 module Parser =
 
     open FParsec
@@ -42,7 +43,7 @@ module Parser =
     let internal push = ws >>. pushProgram .>> ws .>> eof
     
     // UTF8 is the default, but it will detect UTF16 or UTF32 byte-order marks automatically
-    let parsePushFile fileName encoding =
+    let parsePushFile fileName =
         runParserOnFile push () fileName System.Text.Encoding.UTF8
 
     let parsePushStream stream encoding =
@@ -52,7 +53,6 @@ module Parser =
     
     let extractResult = function  
                             | Success(r,_,_) -> 
-                                printf "The AST is:\n%A\n" r
                                 box(r)
                             | Failure(s, e, _) -> box((s,e))
                                

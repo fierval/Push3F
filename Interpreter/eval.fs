@@ -1,5 +1,6 @@
 ﻿namespace push.parser
 
+[<AutoOpen>]
 module Eval =
 
     open System
@@ -35,7 +36,7 @@ module Eval =
             | PushList l -> 
                 // push in the reverse order
                 let top, updatedStack = 
-                    fst (popManyReverse l.Length stack) 
+                    fst (popMany l.Length stack) 
                     |> List.fold (fun stack e -> push e stack) empty 
                     |> pop
                 evalStackTailRec top updatedStack top.MyType

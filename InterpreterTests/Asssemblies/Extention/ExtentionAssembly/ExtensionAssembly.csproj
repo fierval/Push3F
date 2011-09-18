@@ -48,9 +48,9 @@
     <Compile Include="UrlPushType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Interpreter\Push.Parser.fsproj">
+    <ProjectReference Include="..\..\..\..\Interpreter\Push.Core.fsproj">
       <Project>{90365AB0-39D6-4217-9056-AA3D18147E30}</Project>
-      <Name>Push.Parser</Name>
+      <Name>Push.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

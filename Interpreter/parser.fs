@@ -4,10 +4,7 @@
 module Parser =
 
     open FParsec
-    open Ast
-    open ParserShared
-    open push.types.Type
-    open push.types.TypeFactory
+    open push.types
     open System.Reflection
     open System.Runtime.CompilerServices
 

@@ -1,5 +1,6 @@
 ﻿namespace push.parser
 
+[<AutoOpen>]
 module ParserShared =
 
     open FParsec

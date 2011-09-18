@@ -71,13 +71,6 @@ module StockTypesCode =
                     stackOfInB := (snd (pop !stackOfInB))
                 !containers
 
-        [<PushOperation("=", Description = "Compares two top pieces of code")>]
-        static member Eq() = 
-            match processArgs2 Code.Me.MyType with
-            | [a1; a2] -> 
-                pushResult (Bool (a1.Raw<Push>() = a2.Raw<Push>()))
-            | _ -> ()
-
         [<PushOperation("APPEND", Description = "Appends two top pieces of code. Converts either one to list if necessary")>]
         static member Append() =
             match processArgs2 Code.Me.MyType with
@@ -177,53 +170,6 @@ module StockTypesCode =
             | [a1; a2] -> pushResult (Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
             | _ -> ()
 
-        [<PushOperation("DO", Description = "Pop the CODE stack & execute the top")>]
-        static member Do () =
-            eval Code.Me.MyType
-
-        [<PushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.")>]
-        static member DoStar () =
-            evalStar Code.Me.MyType
-
-        static member internal doRange start finish (code : Push) pushIndex=
-            let next = 
-                if start < finish then start + 1L
-                elif start > finish then start - 1L
-                else start
-
-            if start <> finish then
-                pushToExec (Value(Integer(next)))
-                pushToExec (Value(Integer(finish)))
-                pushToExec (Operation("CODE", stockTypes.Operations.["CODE"].["DO*RANGE"]))
-                pushResult (Code(code)) // don't forget to return the code to the code stack
-
-            if pushIndex 
-            then                
-                pushResult (Integer(next))
-            pushToExec code
-
-
-        static member internal doTimes pushIndex =
-            match (processArgs1 Integer.Me.MyType), (processArgs1 Code.Me.MyType) with
-            | a1, c when a1 <> Unchecked.defaultof<PushTypeBase> && c <> Unchecked.defaultof<PushTypeBase> -> 
-                Code.doRange (1L - a1.Raw<int64>()) 0L (c.Raw<Push>()) pushIndex
-            | _ -> ()
-            
-        [<PushOperation("DO*COUNT", Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack")>]
-        static member DoCount() = 
-            Code.doTimes true
-
-        [<PushOperation("DO*TIMES", Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack")>]
-        static member DoTimes() = 
-            Code.doTimes false
-
-        [<PushOperation("DO*RANGE", Description = "Executes the item on top of the CODE stack recursively, while iterating through the range arguments")>]
-        static member DoRange() =
-            match (processArgs2 Integer.Me.MyType), (processArgs1 Code.Me.MyType) with
-            | [a1; a2], c when c <> Unchecked.defaultof<PushTypeBase> -> 
-                Code.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
-            | _ -> ()
-        
         static member getIndex ofBase =
             let topInt = processArgs1 Integer.Me.MyType
             match topInt.Raw<int64>() with
@@ -244,7 +190,7 @@ module StockTypesCode =
                     pushResult (Code(l.[Code.getIndex (l.Length) - 1]))
             | _ -> pushResult topCode
 
-        
+
         static member toCode tp =
             if isEmptyStack tp then ()
             let top = processArgs1 tp

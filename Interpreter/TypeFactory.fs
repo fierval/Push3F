@@ -11,7 +11,6 @@ module TypeFactory =
     open push.exceptions.PushExceptions
 
     let internal createPushObject (t:System.Type) (args : obj []) : #PushTypeBase * string =
-        
         let ci =
             match args with 
             | [||] -> t.GetConstructor(Array.empty)

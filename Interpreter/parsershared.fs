@@ -9,7 +9,6 @@ module ParserShared =
     open push.types.Type
     open push.types.stock.StockTypesInteger
     open push.types.stock.StockTypesBool
-    open push.types.stock.StockTypesFloat
     open push.types.stock.StockTypesName
 
     open System.Reflection

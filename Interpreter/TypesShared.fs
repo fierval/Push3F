@@ -53,10 +53,10 @@ module TypesShared =
         snd mi |> Array.fold (fun map e -> map |> Map.add e (fst mi)) map
 
     //for each of the members, we can discover its operations.
-    let internal getOperationsForType ptype =
+    let internal getOperationsForType ptype attribute =
         let opAttributes = ptype.GetType().GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) //discover all relevant methods
                             |> Seq.map ( // create a seq of MethodInfo * Attribute []
-                                fun mi -> mi, mi.GetCustomAttributes(typeof<PushOperationAttribute>, false)) // optimization: only calling GetCustomAttributes() once
+                                fun mi -> mi, mi.GetCustomAttributes(attribute, false)) // optimization: only calling GetCustomAttributes() once
                             |> Seq.filter ( // filter the sequence to only have PushOperationAttribute - containing methods
                                 fun e -> (snd e).Length > 0)
         if Seq.length opAttributes = 0 then raise (PushException("no operations were found on the type. Make sure operations are declared static")) 
@@ -71,13 +71,34 @@ module TypesShared =
     let internal getGenericOperations = 
         let tp = (Assembly.GetCallingAssembly().GetType("push.types.GenericOperations+Ops"))
         let opsObj = tp.GetConstructor(Array.empty).Invoke(Array.empty)
-        getOperationsForType opsObj
+        getOperationsForType opsObj typeof<GenericPushOperationAttribute>
 
     let internal getNonGenericOperations (ptypes : Map<string, 'b>) =
-        ptypes |> Map.map (fun typeName ptype -> (getOperationsForType ptype))
+        ptypes |> Map.map (fun typeName ptype -> (getOperationsForType ptype typeof<PushOperationAttribute>))
 
     // groups all operations into a map of: Map(typeName, Map(operationName, operation))
     let internal getOperations (ptypes : Map<string, 'b>) =
         let nonGenericOps = getNonGenericOperations ptypes
-        let genericOps = getGenericOperations
-        nonGenericOps |> Map.map (fun key value -> value.Append(genericOps))
+        let genericOps = 
+            getGenericOperations 
+            |> Map.map 
+                (fun key mi -> 
+                    let attr = (mi.GetCustomAttributes(typeof<GenericPushOperationAttribute>, false)).[0] :?> GenericPushOperationAttribute
+                    mi, Set(attr.AppliesTo)
+                    ) // this will store the filter next to the operation method info so we can later on apply it if necessary
+        nonGenericOps 
+        |> Map.map 
+            (fun key value -> 
+                let filterdGenerics = 
+                    genericOps 
+                    |> Map.filter
+                        (fun k (entryMethod, filterSet) -> 
+                            filterSet.IsEmpty || filterSet.Contains(key))
+                    |> Map.map(fun k v -> fst v) // we don't need the filter anymore, drop it.
+                
+                value.Append(filterdGenerics))
+
+
+
+
+

@@ -9,7 +9,7 @@ module TypeAttributes =
         
         let mutable name = name
         let mutable description = System.String.Empty
-        
+
         member x.Name 
             with get() = name
             and set value = name <- value
@@ -20,16 +20,14 @@ module TypeAttributes =
 
     [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
     type PushOperationAttribute(name:string)  =
-        inherit Attribute()
+        inherit PushTypeAttribute(name)
         
-        let mutable name = name
-        let mutable description = System.String.Empty
+    [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
+    type GenericPushOperationAttribute (name : string) =
+        inherit PushOperationAttribute (name)
 
-        member x.Description 
-            with get () = description 
-            and set value = description <- value
+        let mutable appliesTo = [||]
 
-        member x.Name 
-            with get() = name
-            and set value = name <- value
-
+        member x.AppliesTo 
+            with get() : string array = appliesTo
+            and set value = appliesTo <- value

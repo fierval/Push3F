@@ -8,15 +8,26 @@ module Eval =
 
     let internal (|FindStack|_|) str = 
         match stockTypes.Stacks.TryFind(str), str with
-        | (Some stack, name) ->
-            if stack.GetType().GetGenericArguments().[0].GetType() <> typeof<Push> then None
-            else
-                Some(stack, name)
+        | (Some stack, name) -> Some(stack, name)
         | _ -> None
 
-    let rec internal evalStack stack name shouldPopFirst =
-        let rec evalStackTailRec (top : PushTypeBase) stack name = 
-            match top.Raw<Push>() with
+
+    let makePushBaseType e name =
+        let execType = stockTypes.Types.[name].GetType()
+        fst (createPushObject execType [|e|])
+
+    let mapToPushTypeStack (stack : Stack<#PushTypeBase>) =
+        StackNode(stack.asList |> List.map (fun e -> e.Value :?> Push))
+
+    let internal evalStack stack name shouldPopFirst topOnly=
+        let mapToPushTypeBaseStack (stack : Stack<Push>) =
+            StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
+
+        let preserveTop = peekStack name
+
+        let rec evalIt (top, (stack : Stack<Push>)) =
+            if stack.length = 0 then ()
+            match top with
             | Value v -> 
                 if not v.isQuotable 
                 then 
@@ -29,37 +40,39 @@ module Eval =
             | Operation (name, methodInfo) -> execOperation name methodInfo 
             | PushList l -> 
                 // push in the reverse order
-                let top, updatedStack = 
-                    fst (popMany l.Length stack) 
-                    |> List.fold (fun stack e -> push e stack) empty 
-                    |> pop
-                evalStackTailRec top updatedStack top.MyType
-    
-        let top = if shouldPopFirst then processArgs1 name else peekStack name
-        if top = Unchecked.defaultof<PushTypeBase> 
-        then 
-            ()
-        else
-            evalStackTailRec top stack name
+                let updatedStack = 
+                    l |> List.rev
+                    |> List.fold (fun stack e -> push e stack) empty
+                
+                evalIt (pop updatedStack)
+            evalIt (pop stack)
+
+        let stop = ref false
+        while (not (isEmptyStack name || !stop)) do
+            let top = (processArgs1 name).Raw<Push>()
+            evalIt (top, stack)                        
+            stop := topOnly
+
         if not shouldPopFirst 
         then 
-            processArgs1 name |> ignore
+            pushResult preserveTop |> ignore
+
+            
 
     // evaluates an object on the top of the stack
-    let eval =
-        function
-        | FindStack (stack, name) -> evalStack stack name true
+    let eval stackName topOnly =
+        match stackName with
+        | FindStack (stack, name) -> evalStack (stack |> mapToPushTypeStack) name true topOnly
         | _ -> ()
         
     // evaluates an object on top of the stack and pops
     // the stack after evaluating.
-    let evalStar =
-        function
-        | FindStack (stack, name) -> evalStack stack name false
+    let evalStar stackName topOnly=
+        match stackName with
+        | FindStack (stack, name) -> evalStack (stack |> mapToPushTypeStack) name false topOnly
         | _ -> ()
 
     // pushes an item on to the EXEC stack to be evaluated
     let pushToExec (pushObj : Push) =
-        let execType = stockTypes.Types.["EXEC"].GetType()
-        let execObj = fst (createPushObject execType [|pushObj|])
+        let execObj = makePushBaseType pushObj "EXEC" 
         pushResult execObj

@@ -43,10 +43,7 @@ module Ast =
         
                  
             member private t.StructuredFormatDisplay = 
-                match t with
-                | Value i -> i.StructuredFormatDisplay
-                | PushList l -> box(t.ToString(fun i -> " (")) 
-                | Operation (tp, mi) -> box ("\"" + mi.DeclaringType.Name + "." + tp + "\"")
+                box(t.ToString(fun i -> " (")) 
 
             // we need a bit more fancy formatting for the actual ToString()
             // lists should be tabbed & sublists should start on the next line
@@ -57,12 +54,11 @@ module Ast =
                 let rec toString o (seed : int -> string) acc =
                     match o with
                     | Value v -> v.ToString()
-                    | Operation (tp, mi) -> tp + " " + mi.Name
+                    | Operation (tp, mi) -> tp + "." + ((mi.GetCustomAttributes(typeof<PushOperationAttribute>, false)).[0] :?> PushOperationAttribute).Name
                     | PushList l -> 
                         let s = l |> List.fold(fun str e -> str + (toString e seed (acc + 1)) + " ") (seed acc)
                         s.Substring(0, s.Length - 1) + ")"
-                let s = toString t seed 0
-                s.Substring(1, s.Length - 1)
+                toString t seed 0
 
             override t.Equals(o) =
                 let rec areEq a1 a2 =

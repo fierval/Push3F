@@ -29,7 +29,7 @@ module Program =
     let internal execProgram program shouldPushCode =
         pushResult (Exec(program))
         if shouldPushCode then pushResult (Code(program))
-        eval "EXEC"
+        eval "EXEC" false
 
     // the callback type for the function used
     type internal parseFunc = string -> ParserResult<Push, unit>
@@ -50,8 +50,11 @@ module Program =
         with
         | e -> exceptionReport e
         
-    let ExecPushProgram prog fullErrorReport execParams = 
+    let ExecPushProgram (prog, execParams) = 
         execPush parsePushString prog execParams
+
+    let ExecPush (prog) =
+        execPush parsePushString prog (ExecutionFlags.FullErrorReport ||| ExecutionFlags.ShouldPushCode)
 
     // actual "entry point" to execute a file containing a program
     let ExecPushFromFile fileName execParams =

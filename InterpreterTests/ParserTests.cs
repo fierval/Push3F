@@ -112,7 +112,7 @@ namespace InterpreterTests
             this.str = "(12 35 INTEGER.* true false)";
             var res = RunPushParser(this.str);
 
-            Assert.IsNotInstanceOfType(res, typeof(Int32));
+            Assert.AreEqual(12L, (long)res.Item[0].Item.Raw<Int64>());
         }
 
         [TestMethod]

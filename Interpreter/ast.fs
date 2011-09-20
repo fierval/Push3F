@@ -56,10 +56,13 @@ module Ast =
                     | Value v -> v.ToString()
                     | Operation (tp, mi) -> tp + "." + ((mi.GetCustomAttributes(typeof<PushOperationAttribute>, false)).[0] :?> PushOperationAttribute).Name
                     | PushList l -> 
-                        let s = l |> List.fold(fun str e -> str + (toString e seed (acc + 1)) + " ") (seed acc)
-                        s.Substring(0, s.Length - 1) + ")"
+                        match l with 
+                        | [] -> "()"
+                        | _ ->
+                            let s = l |> List.fold(fun str e -> str + (toString e seed (acc + 1)) + " ") (seed acc)
+                            s.Substring(1, s.Length - 2) + ")"
                 toString t seed 0
-
+                
             override t.Equals(o) =
                 let rec areEq a1 a2 =
                     match a1, a2 with

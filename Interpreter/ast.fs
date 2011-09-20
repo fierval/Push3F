@@ -42,12 +42,15 @@ module Ast =
                     | _ -> -1
         
             static member private compareValues (v1 : PushTypeBase) (v2 : PushTypeBase) =
-                let normalize f = if f = 0. then 0 else int( f / Math.Abs(f))
-
+                
                 match v1.Value, v2.Value with
-                | (:? int64 as i1), (:? float as f2) -> normalize ((float i1) - f2)
-                | (:? float as f1), (:? int64 as i2) -> normalize (f1 - (float i2))
-                | _ -> String.Compare(v1.Value.ToString(), v2.Value.ToString(), true)
+                | (:? int64 as i1), (:? float as f2) -> int ((float i1) - f2)
+                | (:? float as f1), (:? int64 as i2) -> int (f1 - (float i2))
+                | _ -> if v1.Value.GetType() <> v2.Value.GetType() 
+                        then
+                            -1
+                        else
+                            String.Compare(v1.Value.ToString(), v2.Value.ToString(), true)
 
                  
             member private t.StructuredFormatDisplay = 

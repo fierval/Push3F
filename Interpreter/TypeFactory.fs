@@ -59,6 +59,7 @@ module TypeFactory =
         let mutable operations = getOperations ptypes
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
         let mutable states = internalStates ptypes
+        let mutable currentStack = System.String.Empty
 
         // stores the stacks currently in use
         member t.Stacks 
@@ -82,6 +83,11 @@ module TypeFactory =
         member t.States
             with get () = states
             and set value = states <- value
+
+        // what is the current execution stack
+        member t.CurrentStack 
+            with get () = currentStack
+            and set value = currentStack <- value
 
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
@@ -166,10 +172,14 @@ module TypeFactory =
     let tryGetBinding name = stockTypes.Bindings.TryFind(name)
 
     let internal setState typeName state =
-        stockTypes.States.Replace(typeName, state)
+        stockTypes.States <- stockTypes.States.Replace(typeName, state)
 
     let internal getState typeName =
-        stockTypes.States.[typeName]
+        match stockTypes.States.TryFind(typeName) with
+        | Some state -> state
+        | None -> State.Exec
 
     let isEmptyStack stack =
         stockTypes.Stacks.[stack].isEmpty
+
+    let getCurrentStackName = stockTypes.CurrentStack

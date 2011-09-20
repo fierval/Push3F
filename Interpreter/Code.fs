@@ -29,16 +29,14 @@ module StockTypesCode =
         override t.ToString() =
           base.ToString()
 
+        override t.isQuotable with get () = true
+
         // custom parsing.
         // in this case custom parsing is disabled.
         // Push will parse these values
         override t.Parser 
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
-
-        // code type is "quoatable", however CODE.QUOTE is implemented
-        // by simply pushing the next item from the EXEC stack to the code stack
-        override t.isQuotable with get() = false
 
         static member internal pushArgsBack (args : PushTypeBase list) =
             pushResult args.Head
@@ -80,27 +78,30 @@ module StockTypesCode =
         static member Atom() =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then ()
-            pushResult (Bool(a.Raw<Push>().isList))
+            else
+                pushResult (Bool(a.Raw<Push>().isList))
                    
         [<PushOperation("CAR", Description = "Pushes the first item of the top of the stack. If top of the stack is an atom - no effect")>]
         [<PushOperation("FIRST", Description = "This is a more explicit name for the CAR operation")>]
         static member First() =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then ()
-            let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
-            match arg with
-            | PushList l -> pushResult (Code(l.Head))
-            | _ -> pushResult(Code(arg))
+            else
+                let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+                match arg with
+                | PushList l -> pushResult (Code(l.Head))
+                | _ -> pushResult(Code(arg))
 
         [<PushOperation("CDR", Description = "Pushes the \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("REST", Description = "This is a more explicit name for the CDR operation")>]
         static member Rest() =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then pushResult (Code(PushList []))
-            let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
-            match arg with
-            | PushList l -> pushResult (Code(PushList l.Tail))
-            | _ -> pushResult(Code(PushList []))
+            else
+                let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+                match arg with
+                | PushList l -> pushResult (Code(PushList l.Tail))
+                | _ -> pushResult(Code(PushList []))
 
         [<PushOperation("CONS", Description = "if fst is on top of the stack, and snd right udner: (CONS snd fst) -> (snd fst)")>]
         static member Cons() =
@@ -138,7 +139,7 @@ module StockTypesCode =
                 match aFst.Raw<Push>() with
                 | PushList l -> 
                         let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) digDeeper
-                        pushResult (Bool (res.isEmpty))
+                        pushResult (Bool (not res.isEmpty))
                 | _ -> pushResult (Bool (false))
             | _ -> pushResult (Bool (false))
 
@@ -150,12 +151,13 @@ module StockTypesCode =
         static member Definition() =
             let arg = peekStack "NAME"
             if arg = Unchecked.defaultof<PushTypeBase> then ()
-            match arg.Raw<string>() with
-            | s when not (System.String.IsNullOrEmpty(s)) -> 
-                match tryGetBinding s with
-                | Some definition -> pushResult definition
-                | None -> ()
-            | _ -> ()
+            else
+                match arg.Raw<string>() with
+                | s when not (System.String.IsNullOrEmpty(s)) -> 
+                    match tryGetBinding s with
+                    | Some definition -> pushResult definition
+                    | None -> ()
+                | _ -> ()
  
         [<PushOperation("DISCREPANCY", Description = "Pushes the measure of discrepancy between to code items on the INTEGER stack.")>]
         static member Discrepancy () =
@@ -171,23 +173,23 @@ module StockTypesCode =
 
         [<PushOperation("EXTRACT", Description = "Extract from the top code item a sub-item indexed by the top of INTEGER stack")>]
         static member ExtractSubItem() =
-            if isEmptyStack Code.Me.MyType then ()
-            if isEmptyStack Integer.Me.MyType then ()
-
-            let topCode = peekStack Code.Me.MyType
-            let topInt = processArgs1 Integer.Me.MyType
-            match topCode.Raw<Push>() with
-            | PushList l -> 
-                let index = Code.getIndex (l.Length)
-                if index = 0 then pushResult topCode else
-                    pushResult (Code(l.[Code.getIndex (l.Length) - 1]))
-            | _ -> pushResult topCode
+            if isEmptyStack Code.Me.MyType || isEmptyStack Integer.Me.MyType then ()
+            else
+                let topCode = peekStack Code.Me.MyType
+                let topInt = processArgs1 Integer.Me.MyType
+                match topCode.Raw<Push>() with
+                | PushList l -> 
+                    let index = Code.getIndex (l.Length)
+                    if index = 0 then pushResult topCode else
+                        pushResult (Code(l.[Code.getIndex (l.Length) - 1]))
+                | _ -> pushResult topCode
 
 
         static member toCode tp =
             if isEmptyStack tp then ()
-            let top = processArgs1 tp
-            pushResult (Code(Value(top)))
+            else
+                let top = processArgs1 tp
+                pushResult (Code(Value(top)))
 
         [<PushOperation("FROMINTEGER", Description = "Converts an INTEGER into a CODE item")>]
         static member FromInteger() =
@@ -208,20 +210,20 @@ module StockTypesCode =
         [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
         static member Insert() =
             if isEmptyStack Integer.Me.MyType then ()
-          
-            match processArgs2 Code.Me.MyType with
-            | [aTop; aSnd] ->
-                let scnd, frst = aSnd.Raw<Push>(), aTop.Raw<Push>()
-                match scnd, frst with
-                | (_, PushList top) -> 
-                    let index = Code.getIndex (top.Length)
-                    if index = 0 then pushResult aSnd
-                    else
-                        let index = index - 1
-                        let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
-                        pushResult (Code(newTop))
-                | _ -> pushResult aSnd
-            | _ -> ()    
+            else
+                match processArgs2 Code.Me.MyType with
+                | [aTop; aSnd] ->
+                    let scnd, frst = aSnd.Raw<Push>(), aTop.Raw<Push>()
+                    match scnd, frst with
+                    | (_, PushList top) -> 
+                        let index = Code.getIndex (top.Length)
+                        if index = 0 then pushResult aSnd
+                        else
+                            let index = index - 1
+                            let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
+                            pushResult (Code(newTop))
+                    | _ -> pushResult aSnd
+                | _ -> ()    
              
         [<PushOperation("INSTRUCTIONS", Description = "Pushes a list of all active instructions")>]
         static member Instructions() =
@@ -234,9 +236,10 @@ module StockTypesCode =
         [<PushOperation("LENGTH", Description = "Pushes the length of the top item")>]
         static member Length() =
             if isEmptyStack Code.Me.MyType then pushResult (Integer(0L))
-            match (peekStack Code.Me.MyType).Raw<Push>() with
-            | PushList l -> pushResult (Integer (int64 (l.Length)))
-            | _ -> pushResult (Integer (1L))
+            else
+                match (peekStack Code.Me.MyType).Raw<Push>() with
+                | PushList l -> pushResult (Integer (int64 (l.Length)))
+                | _ -> pushResult (Integer (1L))
 
         [<PushOperation("LIST", Description = "Makes a list out of the first two stack items")>]
         static member MakeList() =
@@ -255,36 +258,37 @@ module StockTypesCode =
         [<PushOperation("NTH", Description = "Pushes the n-th member of the top element onto the stack")>]
         static member Nth() =
             if isEmptyStack Integer.Me.MyType then ()
-          
-            match peekStack Code.Me.MyType with
-            | aTop when aTop <> Unchecked.defaultof<PushTypeBase> ->
-                let top = aTop.Raw<Push>()
-                match top with
-                | PushList top -> 
-                    let index = Code.getIndex (top.Length)
-                    if index = 0 then pushResult aTop
-                    else
-                        pushResult (Code(top.[index - 1]))
-                | _ -> pushResult (Code(PushList([aTop.Raw<Push>()]))) // coerce the expression to the list
+            else          
+                match peekStack Code.Me.MyType with
+                | aTop when aTop <> Unchecked.defaultof<PushTypeBase> ->
+                    let top = aTop.Raw<Push>()
+                    match top with
+                    | PushList top -> 
+                        let index = Code.getIndex (top.Length)
+                        if index = 0 then pushResult aTop
+                        else
+                            pushResult (Code(top.[index - 1]))
+                    | _ -> pushResult (Code(PushList([aTop.Raw<Push>()]))) // coerce the expression to the list
 
-            | _ -> ()
+                | _ -> ()
 
         [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]
         static member NthRest() =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then pushResult (Code(PushList []))
-            let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+            else
+                let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
 
-            match arg with
-            | PushList l -> 
-                let index = Code.getIndex l.Length
-                if index = 0 then pushResult a
-                else
-                    let lst = [for i = index to l.Length - 1 do yield l.[i]]
-                    pushResult (Code(PushList(lst)))
+                match arg with
+                | PushList l -> 
+                    let index = Code.getIndex l.Length
+                    if index = 0 then pushResult a
+                    else
+                        let lst = [for i = index to l.Length - 1 do yield l.[i]]
+                        pushResult (Code(PushList(lst)))
 
-            | _ -> pushResult(Code(PushList []))
+                | _ -> pushResult(Code(PushList []))
 
         [<PushOperation("NULL", Description = "Pushes TRUE into the BOOLEAN stack if the top code item is an empty list. FALSE otherwise")>]
         static member Null() =
@@ -310,10 +314,11 @@ module StockTypesCode =
                         
         [<PushOperation("QUOTE", Description = "Pushes top of the EXEC stack to the CODE stack")>]
         static member Quote() =
-            let exec = "EXEC"
-            match processArgs1 exec with
-            | item when item <> Unchecked.defaultof<PushTypeBase> -> pushResult (Code(item.Raw<Push>()))
-            | _ -> ()
+            if not (getCurrentStackName = Code.Me.MyType)
+            then
+                if isEmptyStack "EXEC" then ()
+                else
+                    Code((processArgs1 "EXEC").Raw<Push>()) |> pushResult
 
         [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
         static member Size() =

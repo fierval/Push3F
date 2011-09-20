@@ -8,7 +8,7 @@
     <ProjectGuid>{90365ab0-39d6-4217-9056-aa3d18147e30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>push.parser</RootNamespace>
-    <AssemblyName>Push.Parser</AssemblyName>
+    <AssemblyName>Push.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>Push.Core</Name>
   </PropertyGroup>

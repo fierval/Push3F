@@ -19,39 +19,36 @@ module Eval =
     let mapToPushTypeStack (stack : Stack<#PushTypeBase>) =
         StackNode(stack.asList |> List.map (fun e -> e.Value :?> Push))
 
-    let internal evalStack stack name shouldPopFirst topOnly=
+    let internal evalStack (stack : Stack<Push>) name shouldPopFirst topOnly=
         let mapToPushTypeBaseStack (stack : Stack<Push>) =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
 
         let preserveTop = peekStack name
+        let startingLength = stack.length - 1
+        stockTypes.CurrentStack <- name
 
-        let rec evalIt (top, (stack : Stack<Push>)) =
-            if stack.length = 0 then ()
-            match top with
-            | Value v -> 
-                if not v.isQuotable 
-                then 
-                    pushResult v.Eval
-                elif getState v.MyType = State.Quote
-                then
-                    pushResult v
-                    setState v.MyType State.Exec |> ignore
-
-            | Operation (name, methodInfo) -> execOperation name methodInfo 
-            | PushList l -> 
-                // push in the reverse order
-                let updatedStack = 
-                    l |> List.rev
-                    |> List.fold (fun stack e -> push e stack) empty
-                
-                evalIt (pop updatedStack)
-            evalIt (pop stack)
-
-        let stop = ref false
-        while (not (isEmptyStack name || !stop)) do
+        while ((topOnly && stockTypes.Stacks.[name].length >= startingLength) || (not topOnly && not (isEmptyStack name))) do
             let top = (processArgs1 name).Raw<Push>()
-            evalIt (top, stack)                        
-            stop := topOnly
+            if getState name = State.Quote then ()
+            else
+                match top with
+                | Value v -> 
+                    if getState v.MyType = State.Quote
+                    then
+                        pushResult v
+                        setState v.MyType State.Exec |> ignore
+                    else
+                        pushResult v.Eval
+
+                | Operation (nm, methodInfo) -> execOperation name methodInfo 
+                | PushList l -> 
+                    // push in the reverse order
+                    let updatedStack = 
+                        l |> List.rev
+                        |> List.fold (fun stack e -> push e stack) empty
+                    
+                    let newRunningStack = append (updatedStack |> mapToPushTypeBaseStack) (stockTypes.Stacks.[name])
+                    stockTypes.Stacks <- stockTypes.Stacks.Replace(name, newRunningStack)
 
         if not shouldPopFirst 
         then 

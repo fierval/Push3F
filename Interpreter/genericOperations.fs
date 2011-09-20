@@ -76,7 +76,6 @@ module GenericOperations =
             if arg = Unchecked.defaultof<PushTypeBase> then ()
             let newStack = yank (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
             Ops.Replace tp newStack 
-            |> ignore
 
         [<GenericPushOperation("YANKDUP", Description = "Yanks an item out of the stack and pushes it on top of the stack")>]
         static member yankdup tp =

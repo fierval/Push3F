@@ -18,7 +18,7 @@ module Ast =
                 member x.CompareTo y =
                     let rec compare p1 p2 =
                         match p1, p2 with
-                        | (Value v1, Value v2) -> v1.ToString().CompareTo(v2.ToString())
+                        | (Value v1, Value v2) -> Push.compareValues v1 v2
                         | (Operation (o1, m1), Operation (o2, m2)) -> 
                             let o1compo2 = o1.CompareTo(o2)
                             if o1compo2 = 0 then m1.Name.CompareTo(m2.Name)
@@ -41,6 +41,14 @@ module Ast =
                             compare x p
                     | _ -> -1
         
+            static member private compareValues (v1 : PushTypeBase) (v2 : PushTypeBase) =
+                let normalize f = if f = 0. then 0 else int( f / Math.Abs(f))
+
+                match v1.Value, v2.Value with
+                | (:? int64 as i1), (:? float as f2) -> normalize ((float i1) - f2)
+                | (:? float as f1), (:? int64 as i2) -> normalize (f1 - (float i2))
+                | _ -> String.Compare(v1.Value.ToString(), v2.Value.ToString(), true)
+
                  
             member private t.StructuredFormatDisplay = 
                 box(t.ToString(fun i -> " (")) 
@@ -62,11 +70,11 @@ module Ast =
                             let s = l |> List.fold(fun str e -> str + (toString e seed (acc + 1)) + " ") (seed acc)
                             s.Substring(1, s.Length - 2) + ")"
                 toString t seed 0
-                
+
             override t.Equals(o) =
                 let rec areEq a1 a2 =
                     match a1, a2 with
-                    | (Value v1, Value v2) -> v1.ToString() = v2.ToString()
+                    | (Value v1, Value v2) -> Push.compareValues v1 v2 = 0
                     | (Operation (o1, m1), Operation (o2, m2)) -> o1 = o2 && m2.Name = m2.Name
                     | (PushList l1, PushList l2) -> 
                         match l1, l2 with

@@ -4,9 +4,7 @@
 module Type =
     
     open System.Reflection
-    open push.exceptions.PushExceptions
-    open TypeAttributes
-    open TypesShared
+    open push.exceptions
     open System.Diagnostics
     open System
 

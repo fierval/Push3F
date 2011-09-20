@@ -133,19 +133,18 @@ module StockTypesCode =
             | _ -> pushResult (Code(PushList []))
             
 
-        static member isMember digDeeper =
-            match peekStack2 Code.Me.MyType with
-            | [aFst; aSnd] -> 
-                match aFst.Raw<Push>() with
-                | PushList l -> 
-                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) digDeeper
-                        pushResult (Bool (not res.isEmpty))
-                | _ -> pushResult (Bool (false))
+        static member isMember (aFst : PushTypeBase) (aSnd : PushTypeBase) digDeeper =
+            match aFst.Raw<Push>() with
+            | PushList l -> 
+                    let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) (not digDeeper)
+                    pushResult (Bool (not res.isEmpty))
             | _ -> pushResult (Bool (false))
 
         [<PushOperation("CONTAINS", Description = "Returns true if the second item contains the first")>]
         static member Contains() =
-            Code.isMember true
+            match peekStack2 Code.Me.MyType with
+            | [aFst; aSnd] -> Code.isMember aFst aSnd true
+            | _ -> pushResult (Bool (false))
              
         [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]
         static member Definition() =
@@ -249,7 +248,9 @@ module StockTypesCode =
 
         [<PushOperation("MEMBER", Description = "Pushes TRUE if the second is the member of the first")>]
         static member Member() =
-            Code.isMember false
+            match peekStack2 Code.Me.MyType with
+            | [aFst; aSnd] -> Code.isMember aSnd aFst false
+            | _ -> pushResult (Bool (false))
 
         [<PushOperation("NOOP", Description = "Does nothing")>]
         static member Noop() =

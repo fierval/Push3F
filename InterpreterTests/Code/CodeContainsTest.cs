@@ -66,5 +66,13 @@ namespace InterpreterTests
             Assert.IsTrue(TestUtils.Top<bool>("BOOLEAN"));
         }
 
+        [TestMethod]
+        public void ContainsDeepTest()
+        {
+            var prog = "(CODE.QUOTE (a (b c ( d e) k)) CODE.QUOTE (d e) CODE.CONTAINS)";
+            Program.ExecPush(prog);
+            Assert.IsTrue(TestUtils.Top<bool>("BOOLEAN"));
+        }
+
     }
 }

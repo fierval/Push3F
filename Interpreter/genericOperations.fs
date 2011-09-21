@@ -28,7 +28,10 @@ module GenericOperations =
             if stack.length = 0 then ()
             else
                 let name = (peek stack).Value :?> string
-                stockTypes.Bindings <- stockTypes.Bindings.Add(name, fst(pop stockTypes.Stacks.[tp]))
+                let value = processArgs1 tp
+                match stockTypes.Bindings.TryFind(name) with
+                | Some v -> stockTypes.Bindings <- stockTypes.Bindings.Replace(name, value)
+                | None -> stockTypes.Bindings <- stockTypes.Bindings.Add(name, value)
 
         [<GenericPushOperation("DUP", Description = "Pushes the duplicate of the top of the stack")>]
         static member dup tp =

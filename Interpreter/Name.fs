@@ -4,6 +4,7 @@
 module StockTypesName =
     open push.types
     open push.types.stock
+    open push.parser
 
     open System.Reflection
     open System
@@ -22,7 +23,7 @@ module StockTypesName =
         override t.Eval = 
             match tryGetBinding (t.Raw<string>()) with
             | Some value -> value
-            | None -> Unchecked.defaultof<PushTypeBase>
+            | None -> t :> PushTypeBase
 
         override t.ToString() =
           base.ToString()

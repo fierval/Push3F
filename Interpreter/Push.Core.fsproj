@@ -54,10 +54,10 @@
     <Compile Include="Bool.fs" />
     <Compile Include="Integer.fs" />
     <Compile Include="ast.fs" />
+    <Compile Include="eval.fs" />
     <Compile Include="Name.fs" />
     <Compile Include="parsershared.fs" />
     <Compile Include="parser.fs" />
-    <Compile Include="eval.fs" />
     <Compile Include="genericOperations.fs" />
     <Compile Include="Float.fs" />
     <Compile Include="Code.fs" />

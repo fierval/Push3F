@@ -40,7 +40,7 @@ module Eval =
                     else
                         pushResult v.Eval
 
-                | Operation (nm, methodInfo) -> execOperation name methodInfo 
+                | Operation (nm, methodInfo) -> execOperation nm methodInfo 
                 | PushList l -> 
                     // push in the reverse order
                     let updatedStack = 

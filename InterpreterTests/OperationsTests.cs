@@ -170,7 +170,7 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void YankTest()
+        public void YankOperationTest()
         {
             TestUtils.PushVal<StockTypesInteger.Integer>(3L);
 

@@ -54,8 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\AppendTests.cs" />
+    <Compile Include="Code\AtomTest.cs" />
     <Compile Include="Code\CodeContainerTest.cs" />
     <Compile Include="Code\CodeContainsTest.cs" />
+    <Compile Include="Code\CarTest.cs" />
+    <Compile Include="Code\CdrTest.cs" />
+    <Compile Include="Code\ConsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="StackTests.cs" />

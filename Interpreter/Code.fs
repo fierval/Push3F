@@ -79,17 +79,17 @@ module StockTypesCode =
             let a = peekStack Code.Me.MyType
             if a = Unchecked.defaultof<PushTypeBase> then ()
             else
-                pushResult (Bool(a.Raw<Push>().isList))
+                pushResult (Bool(not (a.Raw<Push>().isList)))
                    
         [<PushOperation("CAR", Description = "Pushes the first item of the top of the stack. If top of the stack is an atom - no effect")>]
         [<PushOperation("FIRST", Description = "This is a more explicit name for the CAR operation")>]
         static member First() =
             let a = peekStack Code.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> || not (a.Raw<Push>().isList) then ()
+            if a = Unchecked.defaultof<PushTypeBase> then ()
             else
                 let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
                 match arg with
-                | PushList l -> pushResult (Code(l.Head))
+                | PushList l when not l.IsEmpty -> pushResult (Code(l.Head))
                 | _ -> pushResult(Code(arg))
 
         [<PushOperation("CDR", Description = "Pushes the \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
@@ -100,7 +100,7 @@ module StockTypesCode =
             else
                 let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
                 match arg with
-                | PushList l -> pushResult (Code(PushList l.Tail))
+                | PushList l when not l.IsEmpty -> pushResult (Code(PushList l.Tail))
                 | _ -> pushResult(Code(PushList []))
 
         [<PushOperation("CONS", Description = "if fst is on top of the stack, and snd right udner: (CONS snd fst) -> (snd fst)")>]

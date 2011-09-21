@@ -19,13 +19,13 @@ module Eval =
     let mapToPushTypeStack (stack : Stack<#PushTypeBase>) =
         StackNode(stack.asList |> List.map (fun e -> e.Value :?> Push))
 
-    let internal evalStack (stack : Stack<Push>) name shouldPopFirst topOnly=
+    let internal evalStack name shouldPopFirst topOnly=
         let mapToPushTypeBaseStack (stack : Stack<Push>) =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
 
+        let stack = stockTypes.Stacks.[name]
         let preserveTop = peekStack name
         let startingLength = stack.length - 1
-        stockTypes.CurrentStack <- name
 
         while ((topOnly && stockTypes.Stacks.[name].length >= startingLength) || (not topOnly && not (isEmptyStack name))) do
             let top = (processArgs1 name).Raw<Push>()
@@ -40,7 +40,12 @@ module Eval =
                     else
                         pushResult v.Eval
 
-                | Operation (nm, methodInfo) -> execOperation nm methodInfo 
+                | Operation (nm, methodInfo) -> 
+                    // CODE.QUOTE in the context of the CODE stack is a noop.
+                    // This needs a more general solution.
+                    match nm, name, methodInfo.Name with
+                    | "CODE", "CODE", "Quote" -> ()
+                    | _ ->  execOperation nm methodInfo 
                 | PushList l -> 
                     // push in the reverse order
                     let updatedStack = 
@@ -59,14 +64,14 @@ module Eval =
     // evaluates an object on the top of the stack
     let eval stackName topOnly =
         match stackName with
-        | FindStack (stack, name) -> evalStack (stack |> mapToPushTypeStack) name true topOnly
+        | FindStack (stack, name) -> evalStack name true topOnly
         | _ -> ()
         
     // evaluates an object on top of the stack and pops
     // the stack after evaluating.
     let evalStar stackName topOnly=
         match stackName with
-        | FindStack (stack, name) -> evalStack (stack |> mapToPushTypeStack) name false topOnly
+        | FindStack (stack, name) -> evalStack  name false topOnly
         | _ -> ()
 
     // pushes an item on to the EXEC stack to be evaluated

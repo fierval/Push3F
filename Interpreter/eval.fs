@@ -40,12 +40,7 @@ module Eval =
                     else
                         pushResult v.Eval
 
-                | Operation (nm, methodInfo) -> 
-                    // CODE.QUOTE in the context of the CODE stack is a noop.
-                    // This needs a more general solution.
-                    match nm, name, methodInfo.Name with
-                    | "CODE", "CODE", "Quote" -> ()
-                    | _ ->  execOperation nm methodInfo 
+                | Operation (nm, methodInfo) -> execOperation [|name; nm|] methodInfo 
                 | PushList l -> 
                     // push in the reverse order
                     let updatedStack = 

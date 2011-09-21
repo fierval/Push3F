@@ -139,18 +139,21 @@ module TypeFactory =
 
 
     // given the MethodInfo of the operation, execute it.
-    let execOperation pushType (mi : MethodInfo) =
+    let execOperation (args : obj []) (mi : MethodInfo) =
         // if this is an operation, requiring type parameter
-        if mi.GetParameters().Length > 0
+        if mi.GetParameters().Length > 1
         then
-            mi.Invoke(null, [|pushType|]) |> ignore
+            mi.Invoke(null, args)
+        elif mi.GetParameters().Length > 0 then
+            mi.Invoke(null, [|args.[0]|]) 
         else
-            mi.Invoke(null, Array.empty) |> ignore
+            mi.Invoke(null, Array.empty)
+        |> ignore
             
     // given the push type name and the operation name, 
     // execute the operation
     let internal exec typeName operation =
-        execOperation typeName stockTypes.Operations.[typeName].[operation]
+        execOperation [|typeName|] stockTypes.Operations.[typeName].[operation]
 
     let peekStack stackName = 
         let stack = stockTypes.Stacks.[stackName]

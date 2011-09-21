@@ -314,10 +314,10 @@ module StockTypesCode =
                 | _ -> pushResult (Integer (-1L))
                         
         [<PushOperation("QUOTE", Description = "Pushes top of the EXEC stack to the CODE stack")>]
-        static member Quote(tp : string) =
-            if isEmptyStack tp then ()
+        static member Quote (context:string) (tp : string) =
+            if isEmptyStack context then ()
             else
-                Code((processArgs1 tp).Raw<Push>()) |> pushResult
+                Code((processArgs1 context).Raw<Push>()) |> pushResult
 
         [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
         static member Size() =

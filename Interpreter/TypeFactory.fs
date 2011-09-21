@@ -145,7 +145,7 @@ module TypeFactory =
         then
             mi.Invoke(null, args)
         elif mi.GetParameters().Length > 0 then
-            mi.Invoke(null, [|args.[0]|]) 
+            mi.Invoke(null, if args.Length = 1 then args else [|args.[1]|]) 
         else
             mi.Invoke(null, Array.empty)
         |> ignore

@@ -84,19 +84,8 @@ module Ast =
                 toString t seed 0
 
             override t.Equals(o) =
-                let rec areEq a1 a2 =
-                    match a1, a2 with
-                    | (Value v1, Value v2) -> Push.compareValues v1 v2 = 0
-                    | (Operation (o1, m1), Operation (o2, m2)) -> o1 = o2 && m2.Name = m2.Name
-                    | (PushList l1, PushList l2) -> 
-                        match l1, l2 with
-                        | [], [] -> true
-                        | lst1, lst2 -> 
-                            if lst1.Length <> lst2.Length then false else List.forall2 (fun e1 e2 -> areEq e1 e2) l1 l2
-                    | _ -> false
-            
                 match o with
-                | :? Push as push -> areEq t push
+                | :? Push as push -> (push :> IComparable).CompareTo t = 0
                 | _ -> false
 
             override t.GetHashCode() =

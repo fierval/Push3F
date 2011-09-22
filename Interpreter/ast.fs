@@ -139,7 +139,7 @@ module Ast =
                 match t with
                 | PushList l -> 
                     l.ToList().Aggregate(new Dictionary<Push, int>((t :> IEqualityComparer<Push>)), 
-                        (fun (acc : Dictionary<Push, int>) (e : Push) -> 
+                        (fun acc e -> 
                             if not (acc.ContainsKey(e)) 
                             then 
                                 acc.Add(e, 1) 
@@ -151,12 +151,12 @@ module Ast =
 
             static member discrepancy t p =
 
-                let intersect (left : Push list) (right : Push list) =
+                let intersect left right =
                     let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
                     let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
                     leftSet.Intersect(rightSet) |> Seq.toList
 
-                let except (left : Push list) (right : Push list) =
+                let except left right =
                     let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
                     let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
                     leftSet.Except(rightSet) |> Seq.toList

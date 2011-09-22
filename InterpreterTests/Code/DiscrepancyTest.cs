@@ -46,12 +46,33 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void ConsWithAtomTest()
+        public void DiscrepancyListsWithinListsDifferentTest()
         {
-            var prog = "(CODE.QUOTE (a b) CODE.QUOTE c CODE.CONS)";
+            var prog = "(CODE.QUOTE (b c (d e) f g) CODE.QUOTE (b c (e d) f g) CODE.DISCREPANCY)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("((a b) c)", TestUtils.Top<Push>("CODE").StructuredFormatDisplay);
+            Assert.AreEqual(2, TestUtils.Top<long>("INTEGER"));
+
+        }
+
+        [TestMethod]
+        public void OneEmptyListTest()
+        {
+            var prog = "(CODE.QUOTE () CODE.QUOTE (b c (e d) f g) CODE.DISCREPANCY)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(5, TestUtils.Top<long>("INTEGER"));
+
+
+        }
+
+        [TestMethod]
+        public void TwoEmptyListsTest()
+        {
+            var prog = "(CODE.QUOTE () CODE.QUOTE () CODE.DISCREPANCY)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
         }
 
     }

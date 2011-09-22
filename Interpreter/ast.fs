@@ -6,6 +6,8 @@ module Ast =
     open System.Reflection
     open push.types
     open System.Diagnostics
+    open System.Collections.Generic
+    open System.Linq
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<CustomEquality;CustomComparison>]
@@ -40,7 +42,14 @@ module Ast =
                         else
                             compare x p
                     | _ -> -1
-        
+            
+            interface IEqualityComparer<Push> with
+                member x.Equals (p1, p2) =
+                    ((p1) :> IComparable).CompareTo p2 = 0
+
+                member x.GetHashCode(objct) =
+                    objct.GetHashCode()
+
             static member private compareValues (v1 : PushTypeBase) (v2 : PushTypeBase) =
                 
                 match v1.Value, v2.Value with
@@ -101,7 +110,7 @@ module Ast =
                     | PushList l -> 
                         match l with
                         | [] -> System.String.Empty
-                        | _ -> toString l.Head
+                        | _ -> toString l.Head + toString (PushList(l.Tail))
 
                 (toString t).GetHashCode()
 
@@ -126,23 +135,39 @@ module Ast =
                 | PushList l -> true
                 | _ -> false
 
-            member private t.foldIntoMapOfUniqueItems : Map<Push, int> =
+            member private t.foldIntoMapOfUniqueItems : Dictionary<Push, int> =
                 match t with
-                | PushList l ->
-                     l |>
-                        List.fold 
-                            (fun map e -> 
-                                if not (map.ContainsKey(e)) then map.Add(e, 1) else map.Replace(e, map.[e] + 1)) Map.empty
-                | _ -> Map.empty
+                | PushList l -> 
+                    l.ToList().Aggregate(new Dictionary<Push, int>((t :> IEqualityComparer<Push>)), 
+                        (fun (acc : Dictionary<Push, int>) (e : Push) -> 
+                            if not (acc.ContainsKey(e)) 
+                            then 
+                                acc.Add(e, 1) 
+                            else 
+                                acc.[e] <- acc.[e] + 1
+                            acc)
+                            )
+                | _ -> new Dictionary<Push, int>()
 
             static member discrepancy t p =
+
+                let intersect (left : Push list) (right : Push list) =
+                    let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
+                    let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
+                    leftSet.Intersect(rightSet) |> Seq.toList
+
+                let except (left : Push list) (right : Push list) =
+                    let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
+                    let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
+                    leftSet.Except(rightSet) |> Seq.toList
+
                 match t, p with
                 | PushList l1, PushList l2 ->
                     let mapT, mapP = t.foldIntoMapOfUniqueItems, p.foldIntoMapOfUniqueItems
-                    let lstDistinctT, lstDistinctP = mapT.KeyCollection, mapP.KeyCollection
+                    let lstDistinctT, lstDistinctP = mapT.Keys, mapP.Keys
                     let distinctElems = 
-                        (except lstDistinctT lstDistinctP).Length + (except lstDistinctP lstDistinctT).Length
-                    let commonElems = intersect lstDistinctT lstDistinctP
+                        (except (lstDistinctT |> Seq.toList) (lstDistinctP |> Seq.toList)).Length + (except (lstDistinctP  |> Seq.toList) (lstDistinctT |> Seq.toList)).Length
+                    let commonElems = intersect (lstDistinctT |> Seq.toList) (lstDistinctP |> Seq.toList)
                     let distinction = commonElems |> List.sumBy (fun e -> Math.Abs(mapT.[e] - mapP.[e]))
                     distinction + distinctElems                                        
                 | _ -> Math.Abs((t :> IComparable).CompareTo p)

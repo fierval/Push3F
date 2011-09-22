@@ -26,14 +26,6 @@ module TypesShared =
 
         member t.KeyCollection = t |> Map.toList |> List.map (fun (key,value) -> key)
 
-    let intersect (left : 'a list when 'a : comparison) (right : 'a list) =
-        let cache = Set<'a>(right)
-        left |> List.filter (fun e -> cache.Contains e) 
-
-    let except (left : 'a list when 'a : comparison) (right : 'a list) =
-        let cache = Set<'a>(right)
-        left |> List.filter (fun e -> not (cache.Contains e))
-
     // loads types from the specified assembly
     // or from the current one by default
     let internal loadTypes assembly = 

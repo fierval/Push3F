@@ -97,6 +97,13 @@ namespace InterpreterTests
         }
 
         /// <summary>
+        /// Returns the top of the CODE stack in string representation
+        /// </summary>
+        internal static string GetTopCodeString()
+        {
+            return TestUtils.Top<push.parser.Ast.Push>("CODE").StructuredFormatDisplay as string;
+        }
+        /// <summary>
         /// Runs Push parser and extracts results
         /// </summary>
         /// <param name="str">Push program</param>

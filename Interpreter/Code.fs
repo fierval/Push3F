@@ -175,12 +175,11 @@ module StockTypesCode =
             if isEmptyStack Code.Me.MyType || isEmptyStack Integer.Me.MyType then ()
             else
                 let topCode = peekStack Code.Me.MyType
-                let topInt = processArgs1 Integer.Me.MyType
                 match topCode.Raw<Push>() with
                 | PushList l -> 
                     let index = Code.getIndex (l.Length)
                     if index = 0 then pushResult topCode else
-                        pushResult (Code(l.[Code.getIndex (l.Length) - 1]))
+                        pushResult (Code(l.[index - 1]))
                 | _ -> pushResult topCode
 
 
@@ -215,12 +214,14 @@ module StockTypesCode =
                     let scnd, frst = aSnd.Raw<Push>(), aTop.Raw<Push>()
                     match scnd, frst with
                     | (_, PushList top) -> 
-                        let index = Code.getIndex (top.Length)
-                        if index = 0 then pushResult aSnd
+                        if isEmptyStack Integer.Me.MyType then ()
                         else
-                            let index = index - 1
-                            let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
-                            pushResult (Code(newTop))
+                            let index = Code.getIndex (top.Length)
+                            if index = 0 then pushResult aSnd
+                            else
+                                let index = index - 1
+                                let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
+                                pushResult (Code(newTop))
                     | _ -> pushResult aSnd
                 | _ -> ()    
              
@@ -282,12 +283,14 @@ module StockTypesCode =
                 let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
 
                 match arg with
-                | PushList l -> 
-                    let index = Code.getIndex l.Length
-                    if index = 0 then pushResult a
-                    else
-                        let lst = [for i = index to l.Length - 1 do yield l.[i]]
-                        pushResult (Code(PushList(lst)))
+                | PushList l ->
+                    if isEmptyStack Integer.Me.MyType then ()
+                    else 
+                        let index = Code.getIndex l.Length
+                        if index = 0 then pushResult a
+                        else
+                            let lst = [for i = index to l.Length - 1 do yield l.[i]]
+                            pushResult (Code(PushList(lst)))
 
                 | _ -> pushResult(Code(PushList []))
 

@@ -54,9 +54,6 @@ namespace InterpreterTests
             Program.ExecPush(prog);
 
             Assert.AreEqual("()", TestUtils.GetTopCodeString());
-
-
-
         }
 
         [TestMethod]

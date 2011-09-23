@@ -24,10 +24,14 @@ module Eval =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
 
         let stack = stockTypes.Stacks.[name]
-        let preserveTop = peekStack name
-        let startingLength = stack.length - 1
+        let startingLength = stack.length
 
-        while ((topOnly && stockTypes.Stacks.[name].length >= startingLength) || (not topOnly && not (isEmptyStack name))) do
+        let preserveTop = 
+            match peekStack name with
+            | v when startingLength = 0 -> None
+            | s -> Some s
+
+        while ((topOnly && stockTypes.Stacks.[name].length >= startingLength && startingLength <> 0) || (not topOnly && not (isEmptyStack name))) do
             let top = (processArgs1 name).Raw<Push>()
             if getState name = State.Quote then ()
             else
@@ -50,10 +54,11 @@ module Eval =
                     let newRunningStack = append (updatedStack |> mapToPushTypeBaseStack) (stockTypes.Stacks.[name])
                     stockTypes.Stacks <- stockTypes.Stacks.Replace(name, newRunningStack)
 
-        if not shouldPopFirst 
+        if not shouldPopFirst
         then 
-            pushResult preserveTop |> ignore
-
+            match preserveTop with
+            | Some t -> pushResult t
+            | _ -> ()
             
 
     // evaluates an object on the top of the stack

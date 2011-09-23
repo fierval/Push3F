@@ -83,6 +83,10 @@ namespace InterpreterTests
         /// <returns>The value of the top item</returns>
         internal static T Top<T>(string item)
         {
+            if (IsEmpty(item))
+            {
+                return default (T);
+            }
             return StackOf(item).asList.First().Raw<T>();
         }
 
@@ -101,6 +105,10 @@ namespace InterpreterTests
         /// </summary>
         internal static string GetTopCodeString()
         {
+            if (IsEmpty("CODE"))
+            {
+                return string.Empty;
+            }
             return TestUtils.Top<push.parser.Ast.Push>("CODE").StructuredFormatDisplay as string;
         }
         /// <summary>

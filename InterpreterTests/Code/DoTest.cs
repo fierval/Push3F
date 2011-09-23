@@ -11,7 +11,7 @@ using Push = push.parser.Ast.Push;
 namespace InterpreterTests
 {
     [TestClass]
-    public class InsertTest
+    public class DoTest
     {
         [TestInitialize()]
         public void OpsTestInitialize()
@@ -20,39 +20,39 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void InsertSimple()
+        public void DoSimple()
         {
-            var prog = "(CODE.QUOTE (a b c d e f) CODE.QUOTE (k l) 2 CODE.INSERT)";
+            var prog = "(CODE.QUOTE (5 INTEGER.+) CODE.QUOTE (3 5 INTEGER.*) CODE.DO CODE.DO)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(a (k l) b c d e f)", TestUtils.GetTopCodeString());
+            Assert.AreEqual(20, TestUtils.Top<long>("INTEGER"));
         }
 
         [TestMethod]
-        public void InsertZeroIndexTest()
+        public void DoEmptyTest()
         {
-            var prog = "(CODE.QUOTE (a b c d e f) CODE.QUOTE (k l) -14 CODE.INSERT)";
+            var prog = "(CODE.DO)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(k l)", TestUtils.GetTopCodeString());
+            Assert.AreEqual(string.Empty, TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
         public void InsertNoIntegerArgumentTest()
         {
-            var prog = "(CODE.QUOTE (a b c d e f) CODE.QUOTE (k l) CODE.INSERT)";
+            var prog = "(CODE.QUOTE (5 INTEGER.+) CODE.QUOTE (3 5 INTEGER.*) CODE.DO* CODE.DO*)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(k l)", TestUtils.GetTopCodeString());
+            Assert.AreEqual(15, TestUtils.Top<long>("INTEGER"));
         }
 
         [TestMethod]
-        public void InsertNoSecondArgumentTest()
+        public void DoStarEmptyTest()
         {
-            var prog = "(CODE.QUOTE (a b c d e f) 5 CODE.INSERT)";
+            var prog = "(CODE.DO*)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(a b c d e f)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("(CODE.DO*)", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]

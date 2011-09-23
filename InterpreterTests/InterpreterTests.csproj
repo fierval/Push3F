@@ -60,6 +60,7 @@
     <Compile Include="Code\CarTest.cs" />
     <Compile Include="Code\CdrTest.cs" />
     <Compile Include="Code\ConsTest.cs" />
+    <Compile Include="Code\DoTest.cs" />
     <Compile Include="Code\InsertTest.cs" />
     <Compile Include="Code\FromTest.cs" />
     <Compile Include="Code\ExtractTest.cs" />

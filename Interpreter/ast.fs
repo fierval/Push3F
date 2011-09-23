@@ -153,10 +153,10 @@ module Ast =
                 match t, p with
                 | PushList l1, PushList l2 ->
                     let mapT, mapP = t.foldIntoMapOfUniqueItems, p.foldIntoMapOfUniqueItems
-                    let lstDistinctT, lstDistinctP = mapT.Keys, mapP.Keys
+                    let lstDistinctT, lstDistinctP = mapT.Keys |> Seq.toList, mapP.Keys |> Seq.toList
                     let distinctElems = 
-                        (except (lstDistinctT |> Seq.toList) (lstDistinctP |> Seq.toList)).Length + (except (lstDistinctP  |> Seq.toList) (lstDistinctT |> Seq.toList)).Length
-                    let commonElems = intersect (lstDistinctT |> Seq.toList) (lstDistinctP |> Seq.toList)
+                        (except lstDistinctT lstDistinctP).Length + (except lstDistinctP lstDistinctT).Length
+                    let commonElems = intersect lstDistinctT lstDistinctP
                     let distinction = commonElems |> List.sumBy (fun e -> Math.Abs(mapT.[e] - mapP.[e]))
                     distinction + distinctElems                                        
                 | _ -> Math.Abs((t :> IComparable).CompareTo p)

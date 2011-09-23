@@ -16,15 +16,14 @@ module Program =
     | FullErrorReport = 1u
     | ShouldPushCode = 2u
 
-    let internal report (s, e) full =
+    let report (s, e) full =
         if full then 
             printfn "%s" (e.ToString())
         else 
             printfn "%s" s
 
-    let internal exceptionReport (e : Exception) =
+    let exceptionReport (e : Exception) =
         printfn "%s" (e.ToString())
-
 
     let internal execProgram program shouldPushCode =
         pushResult (Exec(program))
@@ -48,7 +47,7 @@ module Program =
             else
                 report(unbox<string*ParserError> res) fullErrorReport
         with
-        | e -> exceptionReport e
+        | e -> raise e
         
     let ExecPushProgram (prog, execParams) = 
         execPush parsePushString prog execParams

@@ -201,17 +201,27 @@ module StockTypesCode =
         static member FromFloat() =
             Code.toCode Float.Me.MyType
 
-        [<PushOperation("FROMFNAME", Description = "Converts a FLOAT into a CODE item")>]
+        [<PushOperation("FROMNAME", Description = "Converts a FLOAT into a CODE item")>]
         static member FromName() =
             Code.toCode Name.Me.MyType
 
         [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
         static member Insert() =
+            let insert lst i x = 
+                let rec insert lst acc = 
+                    match lst with 
+                    | []   -> acc 
+                    | h::t -> if acc |> List.length = i then 
+                                  acc @ [x] @ lst 
+                              else 
+                                  insert t (acc @ [h]) 
+                insert lst [] 
+
             if isEmptyStack Integer.Me.MyType then ()
             else
                 match processArgs2 Code.Me.MyType with
-                | [aTop; aSnd] ->
-                    let scnd, frst = aSnd.Raw<Push>(), aTop.Raw<Push>()
+                | [aFst; aSnd] ->
+                    let scnd, frst = aSnd.Raw<Push>(), aFst.Raw<Push>()
                     match scnd, frst with
                     | (_, PushList top) -> 
                         if isEmptyStack Integer.Me.MyType then ()
@@ -220,7 +230,8 @@ module StockTypesCode =
                             if index = 0 then pushResult aSnd
                             else
                                 let index = index - 1
-                                let newTop = PushList(top |> List.mapi (fun i elem -> if i <> index then elem else scnd))
+                                let newTop = PushList(insert top index scnd)
+                                                
                                 pushResult (Code(newTop))
                     | _ -> pushResult aSnd
                 | _ -> ()    

@@ -150,10 +150,12 @@ module Ast =
                     let  leftSet = PushSet.Create(PushList(left), left)
                     PushSet.Union(leftSet, rightSet)  |> Seq.toList
 
+                let getKeys (map : Map<Push, int, Push>) = map.ToList() |> List.map(fun (k, v) -> k)
+
                 match t, p with
                 | PushList l1, PushList l2 ->
                     let mapT, mapP = t.foldIntoMapOfUniqueItems, p.foldIntoMapOfUniqueItems
-                    let lstDistinctT, lstDistinctP = mapT.ToList() |> List.map(fun (k, v) -> k), mapP.ToList() |> List.map(fun (k, v) -> k)
+                    let lstDistinctT, lstDistinctP = mapT |> getKeys, mapP |> getKeys
                     let allElems = union lstDistinctT lstDistinctP
                     allElems |> List.sumBy 
                                     (fun e -> diffElementOccurrence mapT mapP e)

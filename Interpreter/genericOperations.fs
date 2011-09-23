@@ -111,11 +111,11 @@ module GenericOperations =
  
         [<GenericPushOperation("DO", Description = "Pop the CODE stack & execute the top", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member Do tp =
-            eval tp (tp = "CODE")
+            eval tp true
 
         [<GenericPushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoStar tp =
-            evalStar tp (tp = "CODE")
+            evalStar tp true
 
         static member internal doRange start finish (code : Push) pushIndex=
             let next = 

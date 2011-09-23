@@ -7,7 +7,7 @@ module Ast =
     open push.types
     open System.Diagnostics
     open System.Collections.Generic
-    open System.Linq
+    open Microsoft.FSharp.Collections.Tagged
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<CustomEquality;CustomComparison>]
@@ -43,6 +43,12 @@ module Ast =
                             compare x p
                     | _ -> -1
             
+            // the following two interfaces are used by the
+            // powerpack two collections Set and Map
+            interface IComparer<Push> with
+                member x.Compare (p1, p2) =
+                    ((p1) :> IComparable).CompareTo p2
+
             interface IEqualityComparer<Push> with
                 member x.Equals (p1, p2) =
                     ((p1) :> IComparable).CompareTo p2 = 0
@@ -124,39 +130,35 @@ module Ast =
                 | PushList l -> true
                 | _ -> false
 
-            member private t.foldIntoMapOfUniqueItems : Dictionary<Push, int> =
+            member private t.foldIntoMapOfUniqueItems : Map<Push, int, Push> =
                 match t with
                 | PushList l -> 
-                    l.ToList().Aggregate(new Dictionary<Push, int>((t :> IEqualityComparer<Push>)), 
-                        (fun acc e -> 
-                            if not (acc.ContainsKey(e)) 
-                            then 
-                                acc.Add(e, 1) 
-                            else 
-                                acc.[e] <- acc.[e] + 1
-                            acc)
-                            )
-                | _ -> new Dictionary<Push, int>()
+                     l |>
+                        List.fold 
+                            (fun map e -> 
+                                if not (map.ContainsKey(e)) then map.Add(e, 1) else map.Remove(e).Add(e, map.[e] + 1)) (Map<Push, int, Push>.Empty(t))
+                | _ -> Map<Push, int, Push>.Empty(t)
 
             static member discrepancy t p =
+                let diffElementOccurrence (map1 : Map<Push, int, Push>) (map2 : Map<Push, int, Push>) elem =
+                    let inMap1 = if map1.ContainsKey elem then map1.[elem] else 0
+                    let inMap2 = if map2.ContainsKey elem then map2.[elem] else 0
+                    Math.Abs(inMap1 - inMap2)
 
-                let intersect left right =
-                    let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
-                    let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
-                    leftSet.Intersect(rightSet) |> Seq.toList
-
-                let except left right =
-                    let rightSet = HashSet(right, (PushList(right) :> IEqualityComparer<Push>))
-                    let  leftSet = HashSet(left, (PushList(left) :> IEqualityComparer<Push>))
-                    leftSet.Except(rightSet) |> Seq.toList
+                let union left right =
+                    let rightSet = PushSet.Create(PushList(right), right)
+                    let  leftSet = PushSet.Create(PushList(left), left)
+                    PushSet.Union(leftSet, rightSet)  |> Seq.toList
 
                 match t, p with
                 | PushList l1, PushList l2 ->
                     let mapT, mapP = t.foldIntoMapOfUniqueItems, p.foldIntoMapOfUniqueItems
-                    let lstDistinctT, lstDistinctP = mapT.Keys |> Seq.toList, mapP.Keys |> Seq.toList
-                    let distinctElems = 
-                        (except lstDistinctT lstDistinctP).Length + (except lstDistinctP lstDistinctT).Length
-                    let commonElems = intersect lstDistinctT lstDistinctP
-                    let distinction = commonElems |> List.sumBy (fun e -> Math.Abs(mapT.[e] - mapP.[e]))
-                    distinction + distinctElems                                        
+                    let lstDistinctT, lstDistinctP = mapT.ToList() |> List.map(fun (k, v) -> k), mapP.ToList() |> List.map(fun (k, v) -> k)
+                    let allElems = union lstDistinctT lstDistinctP
+                    allElems |> List.sumBy 
+                                    (fun e -> diffElementOccurrence mapT mapP e)
                 | _ -> Math.Abs((t :> IComparable).CompareTo p)
+            
+    and
+        PushSet = Set<Push, Push>
+                

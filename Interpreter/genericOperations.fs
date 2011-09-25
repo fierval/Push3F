@@ -121,22 +121,23 @@ module GenericOperations =
         static member DoStar tp =
             evalStar tp true
 
-        static member internal doRange start finish code pushIndex=
+        static member internal doRange start finish (code : PushTypeBase) pushIndex=
             let next = 
                 if start < finish then start + 1L
                 elif start > finish then start - 1L
                 else start
 
             if start <> finish then
-                pushToExec (Operation("CODE", stockTypes.Operations.["CODE"].["DO*RANGE"]))
+                pushToExec (Operation(code.MyType, stockTypes.Operations.[code.MyType].["DO*RANGE"]))
                 pushToExec (Value(Integer(finish)))
                 pushToExec (Value(Integer(next)))
                 pushResult code
 
-            if pushIndex 
-            then                
-                pushResult (Integer(start))
+            pushResult (Integer(start))
             pushToExec (code.Raw<Push>())
+            if not pushIndex
+            then                
+                pushToExec (Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["DO*RANGE"]))
 
         static member internal doTimes pushIndex tp =
             if (peekStack2 Integer.Me.MyType).Length < 2 || (peekStack tp) = Unchecked.defaultof<PushTypeBase> then ()

@@ -54,16 +54,5 @@ namespace InterpreterTests
 
             Assert.AreEqual("(CODE.DO*)", TestUtils.GetTopCodeString());
         }
-
-        [TestMethod]
-        public void InsertIntoEmptyTest()
-        {
-            var prog = "(CODE.QUOTE () CODE.QUOTE (a b c d e f) 5 CODE.INSERT)";
-            Program.ExecPush(prog);
-
-            Assert.AreEqual("(a b c d e f)", TestUtils.GetTopCodeString());
-        }
-
-
     }
 }

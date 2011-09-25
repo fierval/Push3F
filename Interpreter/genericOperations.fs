@@ -49,19 +49,20 @@ module GenericOperations =
 
         [<GenericPushOperation("SHOVE", Description = "Pushes the top of the stack deep into the stack. The depth is designated by the top of INTEGER stack")>]
         static member shove tp =
-            let arg = Ops.getIntArgument tp
-            if arg = Unchecked.defaultof<PushTypeBase> then ()
-            let value = processArgs1 tp
-            if value = Unchecked.defaultof<PushTypeBase> then ()
-            Ops.Replace tp (shove (int (arg.Raw<int64>())) value stockTypes.Stacks.[tp])
+            if isEmptyStack tp || isEmptyStack "INTEGER" then ()
+            else
+                let arg = Ops.getIntArgument tp
+                let value = processArgs1 tp
+                Ops.Replace tp (shove (int (arg.Raw<int64>())) value stockTypes.Stacks.[tp])
 
         [<GenericPushOperation("SWAP", Description = "Swaps two top values of the stack")>]
         static member swap tp =
             let args = processArgs2 tp
             if args.Length < 2 then ()
-            let hd, tl = args.Head, (args.Tail).Head
-            stockTypes.pushResult tl
-            stockTypes.pushResult hd
+            else
+                let hd, tl = args.Head, (args.Tail).Head
+                stockTypes.pushResult tl
+                stockTypes.pushResult hd
 
         [<GenericPushOperation("STACKDEPTH", Description = "Pushes the number of items of the stack on top of the INTEGER stack.")>]
         static member stackdepth tp =
@@ -77,15 +78,17 @@ module GenericOperations =
         static member yank tp =
             let arg = Ops.getIntArgument tp
             if arg = Unchecked.defaultof<PushTypeBase> then ()
-            let newStack = yank (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
-            Ops.Replace tp newStack 
+            else
+                let newStack = yank (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
+                Ops.Replace tp newStack 
 
         [<GenericPushOperation("YANKDUP", Description = "Yanks an item out of the stack and pushes it on top of the stack")>]
         static member yankdup tp =
             let arg = Ops.getIntArgument tp
             if arg = Unchecked.defaultof<PushTypeBase> then ()
-            let newStack = yankdup (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
-            Ops.Replace tp newStack
+            else
+                let newStack = yankdup (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
+                Ops.Replace tp newStack
         
         [<GenericPushOperation("=", Description = "Compares two top pieces of code", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member Eq tp = 
@@ -97,16 +100,17 @@ module GenericOperations =
         [<GenericPushOperation("IF", Description = "Execute either the first or the second item on top of the code stack", AppliesTo=[|"CODE"; "EXEC"|])>]
         static member If tp =
             if isEmptyStack Bool.Me.MyType then ()
-            match processArgs2 tp with
-            | [a1; a2] ->
-                if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
-                then 
-                    pushToExec (a2.Raw<Push>())
-                    pushResult a1
-                else
-                    pushToExec (a1.Raw<Push>())
-                    pushResult a2
-            | _ -> ()
+            else
+                match processArgs2 tp with
+                | [a1; a2] ->
+                    if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
+                    then 
+                        pushToExec (a2.Raw<Push>())
+                        pushResult a1
+                    else
+                        pushToExec (a1.Raw<Push>())
+                        pushResult a2
+                | _ -> ()
 
  
         [<GenericPushOperation("DO", Description = "Pop the CODE stack & execute the top", AppliesTo=[|"EXEC"; "CODE"|])>]
@@ -117,27 +121,31 @@ module GenericOperations =
         static member DoStar tp =
             evalStar tp true
 
-        static member internal doRange start finish (code : Push) pushIndex=
+        static member internal doRange start finish code pushIndex=
             let next = 
                 if start < finish then start + 1L
                 elif start > finish then start - 1L
                 else start
 
             if start <> finish then
-                pushToExec (Value(Integer(next)))
-                pushToExec (Value(Integer(finish)))
                 pushToExec (Operation("CODE", stockTypes.Operations.["CODE"].["DO*RANGE"]))
+                pushToExec (Value(Integer(finish)))
+                pushToExec (Value(Integer(next)))
+                pushResult code
 
             if pushIndex 
             then                
-                pushResult (Integer(next))
-            pushToExec code
+                pushResult (Integer(start))
+            pushToExec (code.Raw<Push>())
 
         static member internal doTimes pushIndex tp =
-            match (processArgs1 Integer.Me.MyType), (peekStack tp) with
-            | a1, c when a1 <> Unchecked.defaultof<PushTypeBase> && c <> Unchecked.defaultof<PushTypeBase> -> 
-                Ops.doRange (1L - a1.Raw<int64>()) 0L (c.Raw<Push>()) pushIndex
-            | _ -> ()
+            if (peekStack2 Integer.Me.MyType).Length < 2 || (peekStack tp) = Unchecked.defaultof<PushTypeBase> then ()
+            else
+                match (processArgs1 Integer.Me.MyType), (processArgs1 tp) with
+                | a1, code 
+                    when a1 <> Unchecked.defaultof<PushTypeBase> && code <> Unchecked.defaultof<PushTypeBase> -> 
+                        Ops.doRange (1L - a1.Raw<int64>()) 0L code pushIndex
+                | _ -> ()
             
         [<GenericPushOperation("DO*COUNT", 
             Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack", 
@@ -155,10 +163,14 @@ module GenericOperations =
             Description = "Executes the item on top of the CODE stack recursively, while iterating through the range arguments", 
             AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoRange tp =
-            match (processArgs2 Integer.Me.MyType), (peekStack tp) with
-            | [a1; a2], c when c <> Unchecked.defaultof<PushTypeBase> -> 
-                Ops.doRange (a1.Raw<int64>()) (a2.Raw<int64>()) (c.Raw<Push>()) true
-            | _ -> ()
+            if (peekStack2 Integer.Me.MyType).Length < 2 || (peekStack tp) = Unchecked.defaultof<PushTypeBase> then ()
+            else
+                match (processArgs2 Integer.Me.MyType), (processArgs1 tp) with
+                | [a1; a2], code ->
+                    let start = a1.Raw<int64>()
+                    let finish = a2.Raw<int64>() 
+                    Ops.doRange start finish code true
+                | _ -> ()
 
         [<GenericPushOperation("WRITE", Description="Write the top value out to the console")>]
         static member Write tp =

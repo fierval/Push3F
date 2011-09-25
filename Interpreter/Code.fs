@@ -224,15 +224,13 @@ module StockTypesCode =
                     let scnd, frst = aSnd.Raw<Push>(), aFst.Raw<Push>()
                     match scnd, frst with
                     | (_, PushList top) -> 
-                        if isEmptyStack Integer.Me.MyType then ()
+                        let index = Code.getIndex (top.Length)
+                        if index = 0 then pushResult aSnd
                         else
-                            let index = Code.getIndex (top.Length)
-                            if index = 0 then pushResult aSnd
-                            else
-                                let index = index - 1
-                                let newTop = PushList(insert top index scnd)
+                            let index = index - 1
+                            let newTop = PushList(insert top index scnd)
                                                 
-                                pushResult (Code(newTop))
+                            pushResult (Code(newTop))
                     | _ -> pushResult aSnd
                 | _ -> ()    
              

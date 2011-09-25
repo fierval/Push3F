@@ -77,19 +77,19 @@ module StockTypesFloat =
 
         [<PushOperation("<")>]
         static member Lt() =
-            match processArgs2 Float.Me.MyType with
+            match peekStack2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() < a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation(">")>]
         static member Gt() =
-            match processArgs2 Float.Me.MyType with
+            match peekStack2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() > a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("=")>]
         static member Eq() =
-            match processArgs2 Float.Me.MyType with
+            match peekStack2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() = a2.Raw<float>()))
             | _ -> ()
 

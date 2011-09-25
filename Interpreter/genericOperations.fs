@@ -140,13 +140,11 @@ module GenericOperations =
                 pushToExec (Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["DO*RANGE"]))
 
         static member internal doTimes pushIndex tp =
-            if (peekStack2 Integer.Me.MyType).Length < 2 || (peekStack tp) = Unchecked.defaultof<PushTypeBase> then ()
-            else
-                match (processArgs1 Integer.Me.MyType), (processArgs1 tp) with
-                | a1, code 
-                    when a1 <> Unchecked.defaultof<PushTypeBase> && code <> Unchecked.defaultof<PushTypeBase> -> 
-                        Ops.doRange (1L - a1.Raw<int64>()) 0L code pushIndex
-                | _ -> ()
+            if areAllStacksNonEmpty [tp; Integer.Me.MyType] 
+            then
+                match (processArgs1 Integer.Me.MyType).Raw<int64>(), (processArgs1 tp) with
+                | a1, code -> 
+                        Ops.doRange (1L - a1) 0L code pushIndex
             
         [<GenericPushOperation("DO*COUNT", 
             Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack", 
@@ -164,7 +162,7 @@ module GenericOperations =
             Description = "Executes the item on top of the CODE stack recursively, while iterating through the range arguments", 
             AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoRange tp =
-            if (peekStack2 Integer.Me.MyType).Length < 2 || (peekStack tp) = Unchecked.defaultof<PushTypeBase> then ()
+            if (peekStack2 Integer.Me.MyType).Length < 2 || isEmptyStack tp then ()
             else
                 match (processArgs2 Integer.Me.MyType), (processArgs1 tp) with
                 | [a1; a2], code ->
@@ -185,4 +183,4 @@ module GenericOperations =
             Console.WriteLine("-------------")
             if isEmptyStack tp then ()
             else
-                stockTypes.Stacks.[tp].asList |> List.iter (fun e -> Console.WriteLine(e))
+                stockTypes.Stacks.[tp] |> Seq.iter (fun e -> Console.WriteLine(e))

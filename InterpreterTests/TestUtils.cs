@@ -1,11 +1,12 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using push.parser;
+using push.stack;
 using push.types;
 using push.types.stock;
-using push.stack;
-using push.parser;
+using Push = push.parser.Ast.Push;
+using PushTypeBase = push.types.Type.PushTypeBase;
 
 namespace InterpreterTests
 {
@@ -50,7 +51,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="item">Name of the Push type</param>
         /// <returns>The stack</returns>
-        internal static Stack.Stack<push.types.Type.PushTypeBase> StackOf(string item)
+        internal static Stack.Stack<PushTypeBase> StackOf(string item)
         {
             return TypeFactory.stockTypes.Stacks[item];
         }
@@ -62,7 +63,7 @@ namespace InterpreterTests
         /// <returns>List representing the stack</returns>
         internal static List<push.types.Type.PushTypeBase> ListOf(string item)
         {
-            return StackOf(item).asList.ToList();
+            return StackOf(item).ToList();
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace InterpreterTests
             {
                 return default (T);
             }
-            return StackOf(item).asList.First().Raw<T>();
+            return Elem<T>(item, 0);
         }
 
         /// <summary>
@@ -109,7 +110,7 @@ namespace InterpreterTests
             {
                 return string.Empty;
             }
-            return TestUtils.Top<push.parser.Ast.Push>("CODE").StructuredFormatDisplay as string;
+            return TestUtils.Top<Push>("CODE").StructuredFormatDisplay as string;
         }
         /// <summary>
         /// Runs Push parser and extracts results
@@ -127,6 +128,18 @@ namespace InterpreterTests
 
             return res;
 
+        }
+
+        /// <summary>
+        /// Returns the n-the element of the stack
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="stack">Name of the stack</param>
+        /// <param name="index">Index of the element from the top of the stack</param>
+        /// <returns>Contained value</returns>
+        internal static T Elem<T>(string stack, int index)
+        {
+            return ListOf(stack)[index].Raw<T>();
         }
     }
 }

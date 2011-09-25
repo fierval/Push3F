@@ -178,3 +178,6 @@ module TypeFactory =
 
     let isEmptyStack stack =
         stockTypes.Stacks.[stack].isEmpty
+
+    let areAllStacksNonEmpty (stackTypes : string list) =
+        stackTypes |> List.forall(fun e -> not (e |> isEmptyStack))

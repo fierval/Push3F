@@ -3,6 +3,8 @@
 [<AutoOpen>]
 module Stack =
     open push.exceptions.PushExceptions
+    open System.Collections.Generic
+    open System.Collections
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Stack<'a> = 
@@ -11,14 +13,20 @@ module Stack =
             member private t.StructuredFormatDisplay = 
                 if t.length = 0 then "()"
                 else
-                    let str = t.asList |> List.fold (fun st e -> st + e.ToString() + "; ") "("
+                    let str = t |> Seq.fold (fun st e -> st + e.ToString() + "; ") "("
                     str.Substring(0, str.Length - 2) + ")" 
             member t.length =
                 match t with
                 | StackNode(x) -> x.Length
-            member t.asList = 
+            member internal t.asList = 
                 match t with StackNode(x) -> x
             member t.isEmpty = t.length = 0
+
+            interface IEnumerable<'a> with
+                member x.GetEnumerator() = (x.asList |> List.toSeq).GetEnumerator()
+
+            interface IEnumerable with
+                member x.GetEnumerator() =  (x.asList |> List.toSeq).GetEnumerator() :> IEnumerator
 
     let peek = function
         | StackNode([]) -> Unchecked.defaultof<'a>

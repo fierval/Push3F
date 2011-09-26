@@ -56,7 +56,7 @@ module StockTypesCode =
                         if b.Equals(ofA) then containers := push (PushList topInB) !containers
                         else
                             match b with
-                            | PushList blist -> if blist.Length < ofA.asPushList.Length then () else stackOfInB := shove (!stackOfInB).length blist !stackOfInB
+                            | PushList blist -> if blist.Length < ofA.toList.Length then () else stackOfInB := shove (!stackOfInB).length blist !stackOfInB
                             | _ -> ()
                         stop := topLevelOnly
                     stackOfInB := (snd (pop !stackOfInB))
@@ -68,8 +68,7 @@ module StockTypesCode =
             | [a1; a2] -> 
                 let l1appendl2 = 
                     match (a1.Raw<Push>().toList), (a2.Raw<Push>().toList) with
-                    | PushList lst1, PushList lst2 -> PushList (lst1 @ lst2)
-                    | _ -> PushList []
+                    | lst1, lst2 -> PushList (lst1 @ lst2)
 
                 pushResult (Code(l1appendl2))
             |_ -> ()
@@ -106,7 +105,7 @@ module StockTypesCode =
         [<PushOperation("CONS", Description = "if fst is on top of the stack, and snd right udner: (CONS snd fst) -> (snd fst)")>]
         static member Cons() =
             match processArgs2 Code.Me.MyType with
-            | [a1; a2] -> pushResult (Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().asPushList)))
+            | [a1; a2] -> pushResult (Code(PushList (a1.Raw<Push>() :: a2.Raw<Push>().toList)))
             | _ -> ()
 
         [<PushOperation("CONTAINER", Description = "Returns the container of the second item in the first")>]
@@ -390,7 +389,7 @@ module StockTypesCode =
             let rec inputCodeMaxSize points acc =
                 if points = 1 then pickRandomConst :: acc
                     else
-                        let sizesThisLevel = (decompose (points - 1) (points - 1) List.empty).asPushList |> 
+                        let sizesThisLevel = (decompose (points - 1) (points - 1) List.empty).toList |> 
                                                 List.map(fun e -> 
                                                             match e with 
                                                             |Value v -> v.Raw<int64>()

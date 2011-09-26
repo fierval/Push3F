@@ -15,11 +15,13 @@ module Stack =
                 else
                     let str = t |> Seq.fold (fun st e -> st + e.ToString() + "; ") "("
                     str.Substring(0, str.Length - 2) + ")" 
+
             member t.length =
-                match t with
-                | StackNode(x) -> x.Length
+                t |> Seq.length
+
             member internal t.asList = 
                 match t with StackNode(x) -> x
+
             member t.isEmpty = t.length = 0
 
             interface IEnumerable<'a> with

@@ -84,9 +84,9 @@ module GenericOperations =
 
         [<GenericPushOperation("YANKDUP", Description = "Yanks an item out of the stack and pushes it on top of the stack")>]
         static member yankdup tp =
-            let arg = Ops.getIntArgument tp
-            if arg = Unchecked.defaultof<PushTypeBase> then ()
+            if isEmptyStack Integer.Me.MyType then () 
             else
+                let arg = Ops.getIntArgument tp
                 let newStack = yankdup (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
                 Ops.Replace tp newStack
         
@@ -121,7 +121,7 @@ module GenericOperations =
         static member DoStar tp =
             evalStar tp true
 
-        static member internal doRange start finish (code : PushTypeBase) pushIndex=
+        static member internal doRange start finish (code : PushTypeBase) =
             let next = 
                 if start < finish then start + 1L
                 elif start > finish then start - 1L
@@ -135,16 +135,21 @@ module GenericOperations =
 
             pushResult (Integer(start))
             pushToExec (code.Raw<Push>())
-            if not pushIndex
-            then                
-                pushToExec (Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["DO*RANGE"]))
 
         static member internal doTimes pushIndex tp =
+            // creates a new item consiting of the code item preceded by INTEGER.POP
+            let concatPopIntegerAndCode (code : #PushTypeBase) =
+                fst (createPushObject (stockTypes.Types.[code.MyType].GetType())
+                    [|PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"])::code.Raw<Push>().toList))|])
+
             if areAllStacksNonEmpty [tp; Integer.Me.MyType] 
             then
                 match (processArgs1 Integer.Me.MyType).Raw<int64>(), (processArgs1 tp) with
                 | a1, code -> 
-                        Ops.doRange (1L - a1) 0L code pushIndex
+                        if not pushIndex then
+                            Ops.doRange (1L - a1) 0L (concatPopIntegerAndCode code)
+                        else
+                            Ops.doRange (1L - a1) 0L code
             
         [<GenericPushOperation("DO*COUNT", 
             Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack", 
@@ -168,7 +173,7 @@ module GenericOperations =
                 | [a1; a2], code ->
                     let start = a1.Raw<int64>()
                     let finish = a2.Raw<int64>() 
-                    Ops.doRange start finish code true
+                    Ops.doRange start finish code
                 | _ -> ()
 
         [<GenericPushOperation("WRITE", Description="Write the top value out to the console")>]

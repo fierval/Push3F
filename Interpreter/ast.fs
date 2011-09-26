@@ -43,18 +43,11 @@ module Ast =
                             compare x p
                     | _ -> -1
             
-            // the following two interfaces are used by the
+            // the following interface is used by the
             // powerpack two collections Set and Map
             interface IComparer<Push> with
                 member x.Compare (p1, p2) =
                     ((p1) :> IComparable).CompareTo p2
-
-            interface IEqualityComparer<Push> with
-                member x.Equals (p1, p2) =
-                    ((p1) :> IComparable).CompareTo p2 = 0
-
-                member x.GetHashCode(objct) =
-                    objct.GetHashCode()
 
             static member private compareValues (v1 : PushTypeBase) (v2 : PushTypeBase) =
                 
@@ -95,19 +88,7 @@ module Ast =
                 | _ -> false
 
             override t.GetHashCode() =
-                // does not really convert "to string"
-                // but in the case of lists trying to minimize recursion
-                // by making the function tail-recursive
-                let rec toString p = 
-                    match p with
-                    | Value v -> v.ToString()
-                    | Operation (name, m) -> (name + "." + m.Name)
-                    | PushList l -> 
-                        match l with
-                        | [] -> System.String.Empty
-                        | _ -> toString l.Head + toString (PushList(l.Tail))
-
-                (toString t).GetHashCode()
+                  t.ToString().GetHashCode()
 
             static member op_Equality (left : Push, right : Push) =
                 if left = Unchecked.defaultof<Push> then right = Unchecked.defaultof<Push>
@@ -116,14 +97,9 @@ module Ast =
 
             member t.toList = 
                 match t with
-                | Value v -> PushList [t]
-                | Operation (n, m) -> PushList [t]
-                | PushList l -> t
-
-            member t.asPushList = 
-                match t.toList with 
+                | Value v -> [t]
+                | Operation (n, m) -> [t]
                 | PushList l -> l
-                | _ -> []
 
             member t.isList = 
                 match t with

@@ -38,9 +38,9 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
            
-            Assert.AreEqual(4, res.asPushList.Length);
+            Assert.AreEqual(4, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
-            Assert.AreEqual("a", ((Push.Value)res.asPushList[0]).Item.Raw<string>());
+            Assert.AreEqual("a", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
         [TestMethod]
@@ -56,9 +56,9 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(4, res.asPushList.Length);
+            Assert.AreEqual(4, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
-            Assert.AreEqual("a", ((Push.Value)res.asPushList[0]).Item.Raw<string>());
+            Assert.AreEqual("a", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
         [TestMethod]
@@ -74,9 +74,9 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(2, res.asPushList.Length);
+            Assert.AreEqual(2, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
-            Assert.AreEqual("c", ((Push.Value)res.asPushList[0]).Item.Raw<string>());
+            Assert.AreEqual("c", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
 
@@ -93,7 +93,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.asPushList.Length);
+            Assert.AreEqual(0, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
         }
 
@@ -110,7 +110,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.asPushList.Length);
+            Assert.AreEqual(0, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
         }
 
@@ -127,7 +127,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.asPushList.Length);
+            Assert.AreEqual(0, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
         }
 
@@ -144,7 +144,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.asPushList.Length);
+            Assert.AreEqual(0, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
         }
 
@@ -161,9 +161,9 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(4, res.asPushList.Length);
+            Assert.AreEqual(4, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
-            Assert.AreEqual("g", ((Push.Value)res.asPushList[0]).Item.Raw<string>());
+            Assert.AreEqual("g", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
         [TestMethod]
@@ -179,9 +179,9 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(3, res.asPushList.Length);
+            Assert.AreEqual(3, res.toList.Length);
             Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
-            Assert.AreEqual("g", ((Push.Value)res.asPushList[0]).Item.Raw<string>());
+            Assert.AreEqual("g", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
         [TestMethod]
@@ -197,7 +197,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.asPushList.Length);
+            Assert.AreEqual(0, res.toList.Length);
         }
 
     }

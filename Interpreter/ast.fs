@@ -88,7 +88,7 @@ module Ast =
                 | _ -> false
 
             override t.GetHashCode() =
-                  t.ToString().GetHashCode()
+                  t.ToString(fun i -> " (").GetHashCode()
 
             static member op_Equality (left : Push, right : Push) =
                 if left = Unchecked.defaultof<Push> then right = Unchecked.defaultof<Push>

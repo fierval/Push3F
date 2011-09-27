@@ -318,11 +318,18 @@ module StockTypesCode =
 
         [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
         static member Size() =
+            let rec getSize (top : Push) =
+                match top with
+                | PushList l -> 
+                    match l with
+                    | [] -> 1
+                    | hd::tl -> getSize hd + getSize (PushList(tl))
+                | _ -> 1
+
             if isEmptyStack Code.Me.MyType then pushResult (Integer (0L))
             else
-                match (peekStack Code.Me.MyType).Raw<Push>() with
-                | PushList l -> pushResult (Integer(int64 (l.Length)))
-                | _ -> pushResult (Integer(1L))
+                let size = getSize ((peekStack Code.Me.MyType).Raw<Push>())
+                pushResult (Integer(int64 size))
         
         [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]
         static member Subst() = Code.Noop()

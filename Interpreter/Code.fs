@@ -239,11 +239,11 @@ module StockTypesCode =
             |> Map.iter
                 (fun key m -> 
                             m 
-                            |> Map.iter (fun key elem -> pushResult (Code(Operation(key, elem)))))
+                            |> Map.iter (fun k elem -> pushResult (Code(Operation(key, elem)))))
 
         [<PushOperation("LENGTH", Description = "Pushes the length of the top item")>]
         static member Length() =
-            if isEmptyStack Code.Me.MyType then pushResult (Integer(0L))
+            if isEmptyStack Code.Me.MyType then ()
             else
                 match (peekStack Code.Me.MyType).Raw<Push>() with
                 | PushList l -> pushResult (Integer (int64 (l.Length)))

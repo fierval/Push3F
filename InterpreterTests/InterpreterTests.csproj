@@ -60,6 +60,9 @@
     <Compile Include="Code\CarTest.cs" />
     <Compile Include="Code\CdrTest.cs" />
     <Compile Include="Code\ConsTest.cs" />
+    <Compile Include="Code\ListTest.cs" />
+    <Compile Include="Code\LengthTest.cs" />
+    <Compile Include="Code\InstructionsTest.cs" />
     <Compile Include="Code\DoTimesTest.cs" />
     <Compile Include="Code\DoCountTest.cs" />
     <Compile Include="Code\DoRangeTest.cs" />

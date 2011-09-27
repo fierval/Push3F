@@ -7,7 +7,7 @@ using push.core;
 namespace InterpreterTests
 {
     [TestClass]
-    public class NthTest
+    public class NthRestTest
     {
 
         [TestInitialize()]
@@ -18,42 +18,42 @@ namespace InterpreterTests
  
         [TestMethod]
         [Description ("Tests Container operation: most basic test")]
-        public void SimpleNthTest()
+        public void SimpleNthRestTest()
         {
-            var prog = "(CODE.QUOTE(a b (c d) e) 3 CODE.NTH)";
+            var prog = "(CODE.QUOTE(a b (c d) e) 3 CODE.NTHREST)";
             Program.ExecPush(prog);
-            Assert.AreEqual("(c d)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("e", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
-        public void NthEmptyTest()
+        public void NthRestEmptyTest()
         {
-            var prog = "(CODE.QUOTE () CODE.QUOTE () 0 CODE.NTH)";
+            var prog = "(CODE.QUOTE () CODE.QUOTE () 0 CODE.NTHREST)";
             Program.ExecPush(prog);
             Assert.AreEqual("()", TestUtils.GetTopCodeString());
         }
 
 
         [TestMethod]
-        public void NthValueTest()
+        public void NthRestValueTest()
         {
-            var prog = "(CODE.QUOTE a 10 CODE.NTH)";
+            var prog = "(CODE.QUOTE a 10 CODE.NTHREST)";
             Program.ExecPush(prog);
-            Assert.AreEqual("(a)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("()", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
-        public void NthValueValueItselfResultTest()
+        public void NthRestValueValueItselfResultTest()
         {
-            var prog = "(CODE.QUOTE a 1 CODE.NTH)";
+            var prog = "(CODE.QUOTE a 1 CODE.NTHREST)";
             Program.ExecPush(prog);
-            Assert.AreEqual("a", TestUtils.GetTopCodeString());
+            Assert.AreEqual("()", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
-        public void NoIntegerArgumentNthTest()
+        public void NoIntegerArgumentNthRestTest()
         {
-            var prog = "(CODE.QUOTE (a b c) CODE.NTH)";
+            var prog = "(CODE.QUOTE (a b c) CODE.NTHREST)";
             Program.ExecPush(prog);
             Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
         }

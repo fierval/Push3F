@@ -292,12 +292,10 @@ module StockTypesCode =
 
         [<PushOperation("NULL", Description = "Pushes TRUE into the BOOLEAN stack if the top code item is an empty list. FALSE otherwise")>]
         static member Null() =
-            match peekStack Code.Me.MyType with
-            | a when a <> Unchecked.defaultof<PushTypeBase> ->
-                match a.Raw<Push>() with
-                | PushList [] -> pushResult (Bool(true))
+            if not (isEmptyStack Code.Me.MyType) then
+                match (peekStack Code.Me.MyType).Raw<Push>().toList with
+                | [] -> pushResult (Bool(true))
                 | _ -> pushResult (Bool(false))
-            | _ -> pushResult (Bool(false))
 
         [<PushOperation("POSITION", Description = "Pushes a position of the second item within the first items on top of the integer stack. -1 if no occurences")>]
         static member Position() =
@@ -309,8 +307,8 @@ module StockTypesCode =
                         match l |> List.tryFindIndex (fun e -> e = scnd) with
                         | Some i -> pushResult (Integer (int64 i))
                         | _ -> pushResult (Integer (-1L))
-                    | _ -> pushResult (Integer (-1L))
-                | _ -> pushResult (Integer (-1L))
+                    | _ -> ()
+                | _ -> ()
                         
         [<PushOperation("QUOTE", Description = "Pushes top of the EXEC stack to the CODE stack")>]
         static member Quote (context:string) (tp : string) =
@@ -320,12 +318,11 @@ module StockTypesCode =
 
         [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
         static member Size() =
-            match peekStack Code.Me.MyType with
-            |a when a <> Unchecked.defaultof<PushTypeBase> ->
-                match a.Raw<Push>() with
+            if isEmptyStack Code.Me.MyType then pushResult (Integer (0L))
+            else
+                match (peekStack Code.Me.MyType).Raw<Push>() with
                 | PushList l -> pushResult (Integer(int64 (l.Length)))
-                | _ -> pushResult (Integer(0L))
-            | _ -> pushResult (Integer(0L))
+                | _ -> pushResult (Integer(1L))
         
         [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]
         static member Subst() = Code.Noop()

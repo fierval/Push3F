@@ -258,7 +258,7 @@ module StockTypesCode =
         [<PushOperation("MEMBER", Description = "Pushes TRUE if the second is the member of the first")>]
         static member Member() =
             match peekStack2 Code.Me.MyType with
-            | [aFst; aSnd] -> Code.isMember aSnd aFst false
+            | [aFst; aSnd] -> Code.isMember aFst aSnd false
             | _ -> pushResult (Bool (false))
 
         [<PushOperation("NOOP", Description = "Does nothing")>]

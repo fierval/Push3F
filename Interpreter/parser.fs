@@ -28,7 +28,7 @@ module Parser =
     let internal pushProgram, internal pushProgramRef = createParserForwardedToRef()
 
 
-    let internal listSeries = (sepEndBy pushProgram spaces1) |>> PushList
+    let internal listSeries = (sepEndBy pushProgram spaces) |>> PushList
 
     let internal pushList = between openList closeList listSeries
 

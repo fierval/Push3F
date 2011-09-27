@@ -1,22 +1,12 @@
-﻿using System.Linq;
-using System.Reflection;
-using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.types;
-using push.types.stock;
-using ExtensionAssembly;
-using BadClass;
-using NonstaticOp;
-using Type = push.types.Type;
-using push.parser;
-using Push = push.parser.Ast.Push;
 using Code = push.types.stock.StockTypesCode.Code;
+using Push = push.parser.Ast.Push;
 
 namespace InterpreterTests
 {
     [TestClass]
-    public class CodeContainerTest
+    public class MemberTest
     {
 
         [TestInitialize()]

@@ -275,7 +275,7 @@ module StockTypesCode =
         static member Nth() =
             if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType]
             then
-                Code.getNth ((processArgs1 Code.Me.MyType).Raw<Push>().toList)
+                Code.getNth ((peekStack Code.Me.MyType).Raw<Push>().toList)
 
         [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]

@@ -7,7 +7,7 @@ using push.core;
 namespace InterpreterTests
 {
     [TestClass]
-    public class CodeContainerTest
+    public class MemberTest
     {
 
         [TestInitialize()]

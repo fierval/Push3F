@@ -6,7 +6,7 @@ using Push = push.parser.Ast.Push;
 namespace InterpreterTests
 {
     [TestClass]
-    public class MemberTest
+    public class ContainerTest
     {
 
         [TestInitialize()]

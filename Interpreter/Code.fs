@@ -265,40 +265,28 @@ module StockTypesCode =
         static member Noop() =
             ()
 
+        static member private getNth (code : Push list) =
+            let index = Code.getIndex (code.Length)
+            if index = 0 then pushResult (Code(PushList(code)))
+            else
+                pushResult (Code(code.[index - 1]))
+
         [<PushOperation("NTH", Description = "Pushes the n-th member of the top element onto the stack")>]
         static member Nth() =
-            if isEmptyStack Integer.Me.MyType then ()
-            else          
-                match peekStack Code.Me.MyType with
-                | aTop when aTop <> Unchecked.defaultof<PushTypeBase> ->
-                    let top = aTop.Raw<Push>()
-                    match top with
-                    | PushList top -> 
-                        let index = Code.getIndex (top.Length)
-                        if index = 0 then pushResult aTop
-                        else
-                            pushResult (Code(top.[index - 1]))
-                    | _ -> pushResult (Code(PushList([aTop.Raw<Push>()]))) // coerce the expression to the list
-
-                | _ -> ()
+            if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType]
+            then
+                Code.getNth ((processArgs1 Code.Me.MyType).Raw<Push>().toList)
 
         [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]
         static member NthRest() =
-            let a = peekStack Code.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> then pushResult (Code(PushList []))
-            else
+            if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType] then
                 let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
-
                 match arg with
                 | PushList l ->
-                    if isEmptyStack Integer.Me.MyType then ()
-                    else 
-                        let index = Code.getIndex l.Length
-                        if index = 0 then pushResult a
-                        else
-                            let lst = [for i = index to l.Length - 1 do yield l.[i]]
-                            pushResult (Code(PushList(lst)))
+                        match l with
+                        | hd::tl -> Code.getNth tl
+                        | _ -> Code.getNth l
 
                 | _ -> pushResult(Code(PushList []))
 

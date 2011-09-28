@@ -35,15 +35,13 @@ module StockTypesName =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
-        // generates a random string of maximum size
-        static member GetRandomString maxSize =
-            let rnd = new Random(int (DateTime.UtcNow.Ticks))
+         // generates a random string of maximum size
+        static member GetRandomString (rnd : Random) maxSize =
             let size = rnd.Next(1, maxSize) // limit it in size to 20 characters
             let chars = 
                 [|
             
-                for i = 0 to size do
-                    yield (char(int(26. * rnd.NextDouble()) + 65))
+                    for i = 0 to size do yield (char(int(26. * rnd.NextDouble()) + 65))
                 |]
             new System.String(chars)
            
@@ -59,7 +57,7 @@ module StockTypesName =
 
         [<PushOperation("RAND", Description = "Pushes a random generated NAME to the name stack")>]
         static member Rand () =
-            pushResult (Name (Name.GetRandomString 15))
+            pushResult (Name (Name.GetRandomString (Random(int DateTime.UtcNow.Ticks)) 15))
 
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
@@ -67,4 +65,4 @@ module StockTypesName =
             let rnd = new Random(int (DateTime.UtcNow.Ticks))
             let selectedName = fst ((stockTypes.Bindings |> Map.toList).[rnd.Next(stockTypes.Bindings.Count)])
             pushResult (Name (selectedName))
-        
+   

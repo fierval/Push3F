@@ -337,11 +337,11 @@ module StockTypesCode =
         // random code generation
         [<PushOperation("RAND", Description = "Generates random code")>]
         static member Rand() = 
-            let initRandom = Random(int DateTime.UtcNow.Ticks)
+            let initRandom = new Random(int DateTime.UtcNow.Ticks)
 
             // given a choice, generate a random name, random code, random integer
-            let pickRandomConst = 
-                let randomType = initRandom.Next(1, int Types.Max)
+            let pickRandomConst () = 
+                let randomType = initRandom.Next(1, int Types.Max + 1)
             
                 let keyFromIndex index map = (map |> Map.toList).[index]
 
@@ -351,8 +351,8 @@ module StockTypesCode =
                     let indexTypes = initRandom.Next(0, stockTypes.Operations.Count)
                     let typeName = fst (stockTypes.Operations |> keyFromIndex indexTypes)
                     let indexOps = initRandom.Next(0, (stockTypes.Operations.[typeName].Count))
-                    let op = (stockTypes.Operations.[typeName] |> keyFromIndex indexOps)
-                    Operation(fst op, snd op)
+                    let op = snd (stockTypes.Operations.[typeName] |> keyFromIndex indexOps)
+                    Operation(typeName, op)
 
                 // generate a random constant
                 | Types.Const -> 
@@ -360,39 +360,35 @@ module StockTypesCode =
                     | 0 -> Value(Integer(int64(initRandom.Next())))
                     | 1 -> Value (Float(initRandom.NextDouble()))
                     | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
-                    | _ -> failwith "cannot happen"
+                    | _ -> failwith "unknown constant type"
                     
                 // either generates a random name or gets a random definition
                 | Types.Name -> 
-                    if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString 15)) 
+                    if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString initRandom 15)) 
                     else
-                        let index = initRandom.Next(0, stockTypes.Bindings.Count - 1)
+                        let index = initRandom.Next(0, stockTypes.Bindings.Count)
                         let key = fst (stockTypes.Bindings |> keyFromIndex index)
-                        stockTypes.Bindings.[key].Raw<Push>()
-                | _ -> failwith "this is never reached"
+                        let binding = stockTypes.Bindings.[key]
+                        match binding.Value with
+                        | :? Push as code -> code
+                        | _ -> Value(binding)
+                | _ -> failwith "unknown type"
 
             // gets a list or random values
             let rec decompose num maxParts acc =
-                if num = 1 || maxParts = 1 then PushList ((Value(Integer(1L)))::acc)
+                if num = 1 || maxParts = 1 then 1::acc
                 else
-                    let thisPart = initRandom.Next(1, num - 1)
-                    decompose (num - thisPart) (maxParts - 1) (Value(Integer(int64 thisPart))::acc)
+                    let thisPart = initRandom.Next(1, num)
+                    decompose (num - thisPart) maxParts (thisPart::acc)
 
-            let rec inputCodeMaxSize points acc =
-                if points = 1 then pickRandomConst :: acc
+            let rec inputCodeMaxSize points =
+                if points = 1 then pickRandomConst ()
                     else
-                        let sizesThisLevel = (decompose (points - 1) (points - 1) List.empty).toList |> 
-                                                List.map(fun e -> 
-                                                            match e with 
-                                                            |Value v -> v.Raw<int64>()
-                                                            | _ -> failwith "cannot happen")
-                        [
-                            for i in sizesThisLevel do
-                                yield! inputCodeMaxSize (int i) acc
-                        ] 
+                        let sizesThisLevel = decompose (points - 1) (points - 1) List.empty
+                        PushList(sizesThisLevel |> List.map(fun e -> inputCodeMaxSize e))
             
             let points = initRandom.Next(1, Code.Me.maxCodePoints)
 
-            let res = inputCodeMaxSize points List.empty
+            let res = inputCodeMaxSize points
 
-            pushResult (Code(PushList res))
+            pushResult (Code res)

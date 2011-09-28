@@ -104,13 +104,13 @@ namespace InterpreterTests
         /// <summary>
         /// Returns the top of the CODE stack in string representation
         /// </summary>
-        internal static string GetTopCodeString()
+        internal static string GetTopCodeString(string name = "CODE")
         {
-            if (IsEmpty("CODE"))
+            if (IsEmpty(name))
             {
                 return string.Empty;
             }
-            return TestUtils.Top<Push>("CODE").StructuredFormatDisplay as string;
+            return TestUtils.Top<Push>(name).StructuredFormatDisplay as string;
         }
         /// <summary>
         /// Runs Push parser and extracts results

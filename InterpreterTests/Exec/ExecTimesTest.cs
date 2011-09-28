@@ -5,7 +5,7 @@ using push.types;
 namespace InterpreterTests
 {
     [TestClass]
-    public class DoCountTest
+    public class ExecTimesTest
     {
         [TestInitialize()]
         public void OpsTestInitialize()
@@ -14,23 +14,24 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void DoCountSimple()
+        [Description("Computes the Fibonacci sequence")]
+        public void DoTimesSimple()
         {
-            var prog = "(5 CODE.QUOTE (INTEGER.DUP INTEGER.*) CODE.DO*COUNT)";
+            var prog = "(1 1 5 EXEC.DO*TIMES (INTEGER.DUP 2 INTEGER.YANKDUP INTEGER.+) )";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
-            Assert.AreEqual(16, TestUtils.Elem<long>("INTEGER", 4));
+            Assert.AreEqual(13, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(7, TestUtils.LengthOf("INTEGER"));
         }
 
         [TestMethod]
-        public void DoEmptyCountTest()
+        public void DoEmptyTimesTest()
         {
-            var prog = "(CODE.QUOTE INTEGER.* CODE.DO*COUNT)";
+            var prog = "(EXEC.DO*TIMES INTEGER.*)";
             Program.ExecPush(prog);
 
             Assert.IsTrue(TestUtils.IsEmpty("EXEC"));
-            Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
     }
 }

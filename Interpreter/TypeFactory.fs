@@ -115,6 +115,7 @@ module TypeFactory =
             ptypes <- origPtypes
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes
+            bindings <- Map.empty
 
 
     let internal stockTypes = new StockTypes()         

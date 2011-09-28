@@ -60,6 +60,7 @@
     <Compile Include="Code\CarTest.cs" />
     <Compile Include="Code\CdrTest.cs" />
     <Compile Include="Code\ConsTest.cs" />
+    <Compile Include="Code\PositionTest.cs" />
     <Compile Include="Code\RandTest.cs" />
     <Compile Include="Code\SizeTest.cs" />
     <Compile Include="Code\NthRestTest.cs" />
@@ -77,6 +78,10 @@
     <Compile Include="Code\ExtractTest.cs" />
     <Compile Include="Code\DiscrepancyTest.cs" />
     <Compile Include="Code\DefinitionTest.cs" />
+    <Compile Include="Exec\ExecCountTest.cs" />
+    <Compile Include="Exec\ExecRangeTest.cs" />
+    <Compile Include="Exec\ExecDoTest.cs" />
+    <Compile Include="Exec\ExecTimesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="StackTests.cs" />

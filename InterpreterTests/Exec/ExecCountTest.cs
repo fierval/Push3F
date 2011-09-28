@@ -5,7 +5,7 @@ using push.types;
 namespace InterpreterTests
 {
     [TestClass]
-    public class DoCountTest
+    public class ExecCountTest
     {
         [TestInitialize()]
         public void OpsTestInitialize()
@@ -14,9 +14,10 @@ namespace InterpreterTests
         }
 
         [TestMethod]
+        [Description("Computes factorial of a number pushed on top of the integer stack")]
         public void DoCountSimple()
         {
-            var prog = "(5 CODE.QUOTE (INTEGER.DUP INTEGER.*) CODE.DO*COUNT)";
+            var prog = "(5 EXEC.DO*COUNT (INTEGER.DUP INTEGER.*))";
             Program.ExecPush(prog);
 
             Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
@@ -26,11 +27,11 @@ namespace InterpreterTests
         [TestMethod]
         public void DoEmptyCountTest()
         {
-            var prog = "(CODE.QUOTE INTEGER.* CODE.DO*COUNT)";
+            var prog = "(EXEC.DO*COUNT INTEGER.*)";
             Program.ExecPush(prog);
 
             Assert.IsTrue(TestUtils.IsEmpty("EXEC"));
-            Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
     }
 }

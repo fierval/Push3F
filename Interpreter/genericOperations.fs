@@ -128,10 +128,14 @@ module GenericOperations =
                 else start
 
             if start <> finish then
+                // push the code first:
+                // if it goes to the CODE stack - the order makes no difference.
+                // if it goes to the EXEC stack - it should be preserved before other stuff
+                // is pushed on that stack.
+                pushResult code
                 pushToExec (Operation(code.MyType, stockTypes.Operations.[code.MyType].["DO*RANGE"]))
                 pushToExec (Value(Integer(finish)))
                 pushToExec (Value(Integer(next)))
-                pushResult code
 
             pushResult (Integer(start))
             pushToExec (code.Raw<Push>())

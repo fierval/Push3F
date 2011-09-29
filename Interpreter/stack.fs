@@ -59,8 +59,13 @@ module Stack =
                         popManyTail (n - 1) tl (hd::fst acc, StackNode(tl))
                 popManyTail n stack.asList ([],empty)
 
+    let popManyReverse n stack = 
+        match popMany n stack with
+        | [], _ -> [], stack
+        | lst, st -> List.rev lst, st
+
     let splitIntoLists n (stack : Stack<'a>) = 
-        let res = popMany n stack
+        let res = popManyReverse n stack
         fst res, (snd res).asList
 
     let pop = function
@@ -71,11 +76,6 @@ module Stack =
     let reverse = function
         | StackNode([]) -> StackNode([])
         | StackNode (x) -> StackNode(List.rev x)
-
-    let popManyReverse n stack = 
-        match popMany n stack with
-        | [], _ -> [], stack
-        | lst, st -> List.rev lst, st
 
     let append (st1:Stack<'a>) (st2:Stack<'a>) = StackNode(st1.asList @ st2.asList)
 

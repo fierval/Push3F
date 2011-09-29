@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.types;
 using push.types.stock;
 using Type = push.types.Type;
+using push.core;
 
 namespace InterpreterTests
 {
@@ -119,17 +120,12 @@ namespace InterpreterTests
         [TestMethod]
         public void ShoveTest()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(35L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(34L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(33L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(32L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(31L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(3L);
+            string prog = "(35 34 33 32 31 3 INTEGER.SHOVE)";
 
-            TypeFactory.exec("INTEGER", "SHOVE");
+            Program.ExecPush(prog);
 
             Assert.AreEqual(5, TestUtils.StackOf("INTEGER").length);
-            Assert.AreEqual(31L, TestUtils.ListOf("INTEGER")[3].Raw<long>());
+            Assert.AreEqual(31L, TestUtils.Elem<long>("INTEGER", 3));
         }
 
         [TestMethod]

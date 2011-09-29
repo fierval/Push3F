@@ -17,7 +17,7 @@ module StockTypesFloat =
         static member Me = Float()
 
         override t.ToString() =
-            base.ToString()
+            t.Raw<float>().ToString("F")
 
         // custom parsing
         static member parse s =
@@ -77,19 +77,19 @@ module StockTypesFloat =
 
         [<PushOperation("<")>]
         static member Lt() =
-            match peekStack2 Float.Me.MyType with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() < a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation(">")>]
         static member Gt() =
-            match peekStack2 Float.Me.MyType with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() > a2.Raw<float>()))
             | _ -> ()
 
         [<PushOperation("=")>]
         static member Eq() =
-            match peekStack2 Float.Me.MyType with
+            match processArgs2 Float.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<float>() = a2.Raw<float>()))
             | _ -> ()
 

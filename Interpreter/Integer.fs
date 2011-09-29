@@ -75,19 +75,19 @@ module StockTypesInteger =
 
         [<PushOperation("<")>]
         static member Lt() =
-            match peekStack2 Integer.Me.MyType with
+            match processArgs2 Integer.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<int64>() < a2.Raw<int64>()))
             | _ -> ()
 
         [<PushOperation(">")>]
         static member Gt() =
-            match peekStack2 Integer.Me.MyType with
+            match processArgs2 Integer.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<int64>() > a2.Raw<int64>()))
             | _ -> ()
 
         [<PushOperation("=")>]
         static member Eq() =
-            match peekStack2 Integer.Me.MyType with
+            match processArgs2 Integer.Me.MyType with
             | [a1; a2] -> pushResult(Bool(a1.Raw<int64>() = a2.Raw<int64>()))
             | _ -> ()
 

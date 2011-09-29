@@ -11,7 +11,6 @@ module GenericOperations =
     open System
 
     type Ops ()=
-
         static member private Replace key value =
             stockTypes.Stacks <- stockTypes.Stacks.Replace(key, value)
 
@@ -52,8 +51,16 @@ module GenericOperations =
             if isEmptyStack tp || isEmptyStack "INTEGER" then ()
             else
                 let arg = Ops.getIntArgument tp
-                let value = processArgs1 tp
-                Ops.Replace tp (shove (int (arg.Raw<int64>())) value stockTypes.Stacks.[tp])
+                let argVal = int (arg.Raw<int64>())
+                if argVal >= 0 && stockTypes.Stacks.[tp].length >= argVal
+                then
+                    let value = processArgs1 tp
+                    match argVal with
+                    | 0 -> pushResult value
+                    | _ -> 
+                        Ops.Replace tp (shove argVal value stockTypes.Stacks.[tp])
+                else //restore the state of the integer stack
+                    pushResult arg
 
         [<GenericPushOperation("SWAP", Description = "Swaps two top values of the stack")>]
         static member swap tp =
@@ -103,13 +110,11 @@ module GenericOperations =
             else
                 match processArgs2 tp with
                 | [a1; a2] ->
-                    if not ((processArgs1 Bool.Me.MyType).Raw<bool>())
+                    if (processArgs1 Bool.Me.MyType).Raw<bool>()
                     then 
                         pushToExec (a2.Raw<Push>())
-                        pushResult a1
                     else
                         pushToExec (a1.Raw<Push>())
-                        pushResult a2
                 | _ -> ()
 
  
@@ -193,3 +198,4 @@ module GenericOperations =
             if isEmptyStack tp then ()
             else
                 stockTypes.Stacks.[tp] |> Seq.iter (fun e -> Console.WriteLine(e))
+            Console.WriteLine()

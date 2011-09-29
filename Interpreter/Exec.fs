@@ -16,6 +16,8 @@ module StockTypesExec =
         new () = {inherit PushTypeBase ()} 
         new (p : Push) = {inherit PushTypeBase(p)} 
 
+        [<DefaultValue>] static val mutable private yCount : int64
+
         static member private Me = new Exec()
 
         override t.ToString() =
@@ -41,7 +43,7 @@ module StockTypesExec =
         static member S () =
             Ops.stackdepth Exec.Me.MyType
             match processArgs1 Integer.Me.MyType with
-            | a when a <> Unchecked.defaultof<PushTypeBase> && a.Raw<int64>() = 3L ->
+            | a when a <> Unchecked.defaultof<PushTypeBase> && a.Raw<int64>() >= 3L ->
                 let a = processArgs1 Exec.Me.MyType
                 let b = processArgs1 Exec.Me.MyType
                 let c = processArgs1 Exec.Me.MyType
@@ -54,17 +56,17 @@ module StockTypesExec =
 
         [<PushOperation("Y", Description = "Inserts below the top: (EXEC.Y <top>)")>]
         static member Y () =
-            if isEmptyStack Exec.Me.MyType then ()
+            if not (isEmptyStack Exec.Me.MyType)
+            then
+                // duplicate top of the stack
+                Ops.dup Exec.Me.MyType
 
-            // duplicate top of the stack
-            Ops.dup Exec.Me.MyType
+                // push this operation on top of the stack
+                pushResult (Exec(Operation("EXEC", Exec.Me.GetType().GetMethod("Y"))))
 
-            // push this operation on top of the stack
-            pushResult (Exec(Operation("Y", Exec.Me.GetType().GetMethod("Y"))))
-
-            // and then shove it underneath the second item of the stack
-            pushResult (Integer(2L))
-            Ops.shove Exec.Me.MyType
+                // and then shove it underneath the second item of the stack
+                pushResult (Integer(1L))
+                Ops.shove Exec.Me.MyType
 
         [<PushOperation("DUMPALLSTACKS", Description= "Writes out all the stacks to the console")>]
         static member DumpAllStacks () =

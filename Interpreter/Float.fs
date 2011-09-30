@@ -125,9 +125,7 @@ module StockTypesFloat =
     
         [<PushOperation("RAND", Description = "Pushes a random float. Range is determined by MIN-RANDOM-FLOAT and MAX-RANDOM-FLOAT")>]
         static member Rand () =
-            let rnd = new Random(Float.RandomSeed)
-            let rslt = rnd.NextDouble()
-            pushResult (Float(rslt))
+            pushResult (Float(Float.Random.NextDouble()))
 
         [<PushOperation("SIN", Description = "Pushes the sin of the top item")>]
         static member Sin() =

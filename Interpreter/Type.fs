@@ -19,21 +19,19 @@ module Type =
         val mutable private myType : string
 
         [<DefaultValue>]
-        static val mutable private rndSeed : int
+        static val mutable private rnd : Random
 
         new (v) as this = PushTypeBase()
                             then this.value <- v
 
         member t.Value with get() = t.value
 
-        static member RandomSeed 
+        static member Random 
             with get () = 
-                if PushTypeBase.rndSeed = Unchecked.defaultof<int> 
+                if PushTypeBase.rnd = Unchecked.defaultof<Random> 
                 then 
-                    PushTypeBase.rndSeed <- Random(int DateTime.UtcNow.Ticks).Next(0, System.Int32.MaxValue) 
-                else
-                    PushTypeBase.rndSeed <- Random(PushTypeBase.rndSeed).Next(0, System.Int32.MaxValue)
-                PushTypeBase.rndSeed
+                    PushTypeBase.rnd <- Random(int DateTime.UtcNow.Ticks)
+                PushTypeBase.rnd
 
         static member private GetMyType (me : #PushTypeBase) =
             if System.String.IsNullOrEmpty(me.myType)

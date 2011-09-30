@@ -337,7 +337,7 @@ module StockTypesCode =
         // random code generation
         [<PushOperation("RAND", Description = "Generates random code")>]
         static member Rand() = 
-            let initRandom = new Random(Code.RandomSeed)
+            let initRandom = Code.Random
 
             // given a choice, generate a random name, random code, random integer
             let pickRandomConst () = 
@@ -364,7 +364,7 @@ module StockTypesCode =
                     
                 // either generates a random name or gets a random definition
                 | Types.Name -> 
-                    if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString initRandom 15)) 
+                    if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString 15)) 
                     else
                         let index = initRandom.Next(0, stockTypes.Bindings.Count)
                         let key = fst (stockTypes.Bindings |> keyFromIndex index)

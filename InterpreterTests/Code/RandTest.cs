@@ -25,7 +25,6 @@ namespace InterpreterTests
             for (int i = 0; i < 1000; i++)
             {
                 Program.ExecPush(prog);
-                Thread.Sleep(1);
             }
         }
     }

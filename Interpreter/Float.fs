@@ -54,7 +54,7 @@ module StockTypesFloat =
         static member Divide() =
             match processArgs2 Float.Me.MyType with
             | [a1; a2] -> 
-                if a1.Raw<float>() = 0. 
+                if a2.Raw<float>() = 0. 
                 then 
                     pushResult a1
                     pushResult a2
@@ -125,7 +125,7 @@ module StockTypesFloat =
     
         [<PushOperation("RAND", Description = "Pushes a random float. Range is determined by MIN-RANDOM-FLOAT and MAX-RANDOM-FLOAT")>]
         static member Rand () =
-            let rnd = new Random(int DateTime.UtcNow.Ticks)
+            let rnd = new Random(Float.RandomSeed)
             let rslt = rnd.NextDouble()
             pushResult (Float(rslt))
 

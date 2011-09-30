@@ -15,7 +15,7 @@ module StockTypesInteger =
         new (n : int64) = {inherit PushTypeBase(n)}
 
         static member Me = Integer()
-
+            
         // custom parsing
         static member parse s =
             let result = ref Unchecked.defaultof<int64>
@@ -54,7 +54,7 @@ module StockTypesInteger =
         static member Divide() =
             match processArgs2 Integer.Me.MyType with
             | [a1; a2] -> 
-                if a1.Raw<int64>() = 0L
+                if a2.Raw<int64>() = 0L
                 then 
                     pushResult a1
                     pushResult a2
@@ -117,7 +117,6 @@ module StockTypesInteger =
     
         [<PushOperation("RAND", Description = "Pushes a random int64. Range is determined by MIN-RANDOM-INTEGER and MAX-RANDOM-INTEGER")>]
         static member Rand () =
-            let rnd = new Random(int DateTime.UtcNow.Ticks)
-            let rslt = rnd.Next(0, Int32.MaxValue)
-            pushResult (Integer(int64 rslt))
+            let rnd = new Random(Integer.RandomSeed)
+            pushResult (Integer(int64 (rnd.Next(0, Int32.MaxValue))))
 

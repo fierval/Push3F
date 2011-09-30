@@ -57,12 +57,12 @@ module StockTypesName =
 
         [<PushOperation("RAND", Description = "Pushes a random generated NAME to the name stack")>]
         static member Rand () =
-            pushResult (Name (Name.GetRandomString (Random(int DateTime.UtcNow.Ticks)) 15))
+            pushResult (Name (Name.GetRandomString (Random(Name.RandomSeed)) 15))
 
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
             if stockTypes.Bindings.IsEmpty then ()
-            let rnd = new Random(int (DateTime.UtcNow.Ticks))
+            let rnd = new Random(Name.RandomSeed)
             let selectedName = fst ((stockTypes.Bindings |> Map.toList).[rnd.Next(stockTypes.Bindings.Count)])
             pushResult (Name (selectedName))
    

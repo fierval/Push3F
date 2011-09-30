@@ -337,7 +337,7 @@ module StockTypesCode =
         // random code generation
         [<PushOperation("RAND", Description = "Generates random code")>]
         static member Rand() = 
-            let initRandom = new Random(int DateTime.UtcNow.Ticks)
+            let initRandom = new Random(Code.RandomSeed)
 
             // given a choice, generate a random name, random code, random integer
             let pickRandomConst () = 

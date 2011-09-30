@@ -81,6 +81,6 @@ module StockTypesBool =
 
         [<PushOperation("RAND", Description = "Generates a random boolean")>]
         static member Rand() =
-            let rnd = new Random(int DateTime.UtcNow.Ticks)
+            let rnd = new Random(Bool.RandomSeed)
             let res = if rnd.NextDouble() > 0.5 then true else false
             pushResult(Bool(res))

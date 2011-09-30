@@ -78,6 +78,7 @@
     <Compile Include="Code\ExtractTest.cs" />
     <Compile Include="Code\DiscrepancyTest.cs" />
     <Compile Include="Code\DefinitionTest.cs" />
+    <Compile Include="Exec\KTest.cs" />
     <Compile Include="Exec\STest.cs" />
     <Compile Include="Exec\YTest.cs" />
     <Compile Include="Exec\ExecCountTest.cs" />

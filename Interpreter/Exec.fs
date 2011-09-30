@@ -36,8 +36,9 @@ module StockTypesExec =
 
         [<PushOperation("K", Description = "Removes the second item on the exec stack")>]
         static member K () =
-            pushResult (Integer(2L))
+            pushResult (Integer(1L))
             Ops.yank Exec.Me.MyType
+            Ops.pop Exec.Me.MyType
 
         [<PushOperation("S", Description = "Pops A, B, C, then push (B C), then push C, then push A")>]
         static member S () =

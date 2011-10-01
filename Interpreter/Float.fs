@@ -70,8 +70,8 @@ module StockTypesFloat =
                     pushResult a1
                     pushResult a2
                 else
-                    let quot = Math.Floor(a1.Raw<float>()) / Math.Floor(a2.Raw<float>())
-                    let res =  a1.Raw<float>() - (float quot) * a2.Raw<float>()
+                    let quot = Math.Floor(Math.Floor(a1.Raw<float>()) / Math.Floor(a2.Raw<float>()))
+                    let res =  a1.Raw<float>() - quot * a2.Raw<float>()
                     pushResult(Float(res))
             | _ -> ()
 
@@ -94,8 +94,8 @@ module StockTypesFloat =
             | _ -> ()
 
         [<PushOperation("FROMINTEGER", Description = "Pushes int64 converted into float onto FLOAT stack")>]
-        static member fromFloat() =
-            let top = processArgs1 Float.Me.MyType
+        static member fromInteger() =
+            let top = processArgs1 Integer.Me.MyType
             if top <> Unchecked.defaultof<PushTypeBase> 
             then pushResult (Float(float (top.Raw<int64>())))
 

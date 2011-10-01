@@ -92,10 +92,10 @@ module StockTypesInteger =
             | _ -> ()
 
         [<PushOperation("FROMFLOAT", Description = "Pushes int64 converted into int64 onto INTEGER stack")>]
-        static member fromint64() =
+        static member fromFloat() =
             let top = processArgs1 "FLOAT"
             if top <> Unchecked.defaultof<PushTypeBase> 
-            then pushResult (Integer(int64 (top.Raw<int64>())))
+            then pushResult (Integer(int64 (top.Raw<float>())))
 
         [<PushOperation("FROMBOOLEAN", Description = "Pushes 1 onto INTEGER stack if top boolean is true, 0 otherwise")>]
         static member fromBool() =

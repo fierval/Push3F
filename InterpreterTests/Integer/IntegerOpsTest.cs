@@ -102,5 +102,28 @@ namespace InterpreterTests
 
             Assert.AreEqual(5, TestUtils.LengthOf("INTEGER"));
         }
+
+        [TestMethod]
+        public void FromBooleanTest()
+        {
+            var prog = "(TRUE INTEGER.FROMBOOLEAN)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(1, TestUtils.Top<long>("INTEGER"));
+
+            prog = "(FALSE INTEGER.FROMBOOLEAN)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
+        }
+
+        [TestMethod]
+        public void FromFloatTest()
+        {
+            var prog = "(5.6 INTEGER.FROMFLOAT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(5, TestUtils.Top<long>("INTEGER"));
+        }
     }
 }

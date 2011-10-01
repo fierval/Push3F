@@ -81,5 +81,5 @@ module StockTypesBool =
 
         [<PushOperation("RAND", Description = "Generates a random boolean")>]
         static member Rand() =
-            let res = if Bool.Random.NextDouble() > 0.5 then true else false
+            let res = if Bool.Random.Next(0, 2) > 0 then true else false
             pushResult(Bool(res))

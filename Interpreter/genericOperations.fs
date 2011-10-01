@@ -207,7 +207,11 @@ module GenericOperations =
             if not (isEmptyStack "LITERAL") then
                 let file = (processArgs1 "LITERAL").Raw<string>()
                 if File.Exists (file) then
-                    pushResult (createPushObjectOfType tp [|(processArgs1 tp).Raw<Push>().Deserialize(file)|])
+                    try
+                        pushResult (createPushObjectOfType tp [|Push.Deserialize(file)|])
+                    with
+                    | e -> ()
+
 
         [<GenericPushOperation("SAVE", 
             Description = "Saves top of the EXEC (or CODE) stack in a file",
@@ -215,4 +219,7 @@ module GenericOperations =
         static member SaveFile (tp : string) =
             if areAllStacksNonEmpty ["LITERAL"; tp] then
                 let file = (processArgs1 "LITERAL").Raw<string>()
-                pushResult (createPushObjectOfType tp [|(processArgs1 tp).Raw<Push>().Serialize(file)|])
+                try
+                    (processArgs1 tp).Raw<Push>().Serialize(file)
+                with
+                | e -> ()

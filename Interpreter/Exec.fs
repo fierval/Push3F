@@ -9,7 +9,7 @@ module StockTypesExec =
     open System.Reflection
     open System
 
-    [<PushType("EXEC", Description = "The heart of the language")>]
+    [<PushType("EXEC", Description = "Actual execution stack")>]
     type Exec =
         inherit PushTypeBase
 

@@ -104,7 +104,7 @@ module Ast =
                 use stream = File.Open(file, FileMode.Create, FileAccess.Write)
                 formatter.Serialize(stream, t)
 
-            member t.Deserialize (file) = 
+            static member Deserialize (file) = 
                 let formatter = new BinaryFormatter() :> IFormatter
                 use stream = File.OpenRead(file)
                 formatter.Deserialize(stream) :?> Push

@@ -14,7 +14,6 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        [Description("Computes factorial of a number pushed on top of the integer stack")]
         public void DoCountSimple()
         {
             var prog = "(5 EXEC.DO*COUNT (INTEGER.DUP INTEGER.*))";

@@ -18,12 +18,9 @@ module Program =
 
     let report (s, e) full =
         if full then 
-            printfn "%s" (e.ToString())
+            raise (PushException (e.ToString()))
         else 
-            printfn "%s" s
-
-    let exceptionReport (e : Exception) =
-        printfn "%s" (e.ToString())
+            raise (PushException(s))
 
     let internal execProgram program shouldPushCode =
         pushResult (Exec(program))

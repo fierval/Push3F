@@ -21,5 +21,15 @@ namespace InterpreterTests
 
             Assert.AreEqual(true, TestUtils.Top<bool>("BOOLEAN"));
         }
+
+        [TestMethod]
+        public void ConcatTest()
+        {
+            var prog = "(\"a\" \"b\" LITERAL.+ )";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("ab", TestUtils.Top<string>("LITERAL"));
+        }
+
       }
 }

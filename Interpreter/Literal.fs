@@ -36,6 +36,13 @@ module StockTypesLiteral =
             | [a1; a2] -> pushResult(Bool(a1.Raw<string>() = a2.Raw<string>()))
             | _ -> ()
 
+        [<PushOperation("+", Description="Concatenate two top literals")>]
+        static member Concat() =
+            match processArgs2 Literal.Me.MyType with
+            | [a1; a2] -> pushResult(Literal(a1.Raw<string>() + a2.Raw<string>()))
+            | _ -> ()
+
+
         [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack")>]
         static member Rand() =
             pushResult (Literal (Name.GetRandomString 15))

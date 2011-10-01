@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.core;
 using push.types;
+using System.Linq;
 
 namespace InterpreterTests
 {
@@ -20,7 +21,7 @@ namespace InterpreterTests
             Program.ExecPush(prog);
 
             Assert.AreEqual(true, TestUtils.Top<bool>("BOOLEAN"));
-            
+
             prog = "(ONE TWO NAME.=)";
             Program.ExecPush(prog);
 
@@ -35,7 +36,7 @@ namespace InterpreterTests
 
             Assert.AreEqual(1, TestUtils.LengthOf("NAME"));
 
-       }
+        }
 
         [TestMethod]
         public void QuoteTest()
@@ -46,5 +47,15 @@ namespace InterpreterTests
             Assert.AreEqual(5, TestUtils.Top<long>("INTEGER"));
             Assert.AreEqual("a", TestUtils.Top<string>("NAME"));
         }
+
+        [TestMethod]
+        public void RandomPositionTest()
+        {
+            var prog = @"(a 5 INTEGER.DEFINE b 6 INTEGER.DEFINE d 7 INTEGER.DEFINE e 8 INTEGER.DEFINE NAME.RANDBOUNDNAME CODE.DEFINITION)";
+            Program.ExecPush(prog);
+
+            Assert.IsTrue(Enumerable.Range(5, 3).Where(i => i == (int) TestUtils.Top<long>("INTEGER")).Count() == 1);
+        }
+
     }
 }

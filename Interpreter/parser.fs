@@ -20,6 +20,7 @@ module Parser =
                                     pushSimpleTypes
                                     attempt pushIdentifier
                                     attempt pushOperation
+                                    attempt pushLiteral
                                       ]
 
     // pushProgram must be defined now, so we could use it inside the pushList definition.

@@ -182,3 +182,5 @@ module TypeFactory =
 
     let areAllStacksNonEmpty (stackTypes : string list) =
         stackTypes |> List.forall(fun e -> not (e |> isEmptyStack))
+
+    let createPushObjectOfType tp args = fst (createPushObject (stockTypes.Types.[tp].GetType()) args)

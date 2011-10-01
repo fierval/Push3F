@@ -8,9 +8,13 @@ module Ast =
     open System.Diagnostics
     open System.Collections.Generic
     open Microsoft.FSharp.Collections.Tagged
+    open System.Runtime.Serialization.Formatters.Binary
+    open System.Runtime.Serialization
+    open System.IO
 
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<CustomEquality;CustomComparison>]
+    [<Serializable>]
     type Push = 
         | Value of PushTypeBase
         | PushList of Push list
@@ -95,6 +99,16 @@ module Ast =
                 elif right = Unchecked.defaultof<Push> then left = Unchecked.defaultof<Push>
                 else left.Equals(right)
 
+            member t.Serialize (file) =
+                let formatter = new BinaryFormatter() :> IFormatter
+                use stream = File.Open(file, FileMode.Create, FileAccess.Write)
+                formatter.Serialize(stream, t)
+
+            member t.Deserialize (file) = 
+                let formatter = new BinaryFormatter() :> IFormatter
+                use stream = File.OpenRead(file)
+                formatter.Deserialize(stream) :?> Push
+                
             member t.toList = 
                 match t with
                 | Value v -> [t]

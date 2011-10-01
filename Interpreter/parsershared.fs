@@ -36,7 +36,7 @@ module ParserShared =
 
         between (str "\"") (str "\"")
                 (stringsSepBy (manySatisfy (fun c -> c <> '"' && c <> '\\'))
-                              (str "\\" >>. (escape <|> unicodeEscape)))
+                              (str "\\" >>. (unicodeEscape <|> escape)))
   
     let internal isAsciiIdStart c =    isAsciiLetter c || c = '_'
 
@@ -128,8 +128,12 @@ module ParserShared =
             value.GetType().GetProperties(BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance)
             |> Array.find (fun p -> p.PropertyType = typeof<ExtendedTypeParser>))
     
-    let internal pushExtended (dlgt : ExtendedTypeParser) = attempt (stringToken >>= (dlgt.Invoke >> createValue))
 
+    let createLiteral (s : string) = fst (createPushObject (stockTypes.Types.["LITERAL"].GetType()) [| s.Trim([|'\"'|]) |])
+
+    let internal pushExtended (dlgt : ExtendedTypeParser) = attempt (stringToken >>= (dlgt.Invoke >> createValue))
+    let internal pushLiteral = stringLiteral |>> createLiteral >>= createValue
+     
     // dynamically create the list of simple type parsers
     // also, filter out types that do not implement a parser
     let pushSimpleTypes =

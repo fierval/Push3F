@@ -30,8 +30,6 @@ module StockTypesExec =
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
 
-        // code type is "quoatable", however CODE.QUOTE is implemented
-        // by simply pushing the next item from the EXEC stack to the code stack
         override t.isQuotable with get() = false
 
         [<PushOperation("K", Description = "Removes the second item on the exec stack")>]

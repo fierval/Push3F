@@ -64,6 +64,7 @@
     <Compile Include="genericOperations.fs" />
     <Compile Include="Float.fs" />
     <Compile Include="Code.fs" />
+    <Compile Include="Literal.fs" />
     <Compile Include="Exec.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

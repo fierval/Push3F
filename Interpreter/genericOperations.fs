@@ -9,6 +9,7 @@ module GenericOperations =
     open push.parser
     open push.types.stock
     open System
+    open System.IO
 
     type Ops ()=
         static member private Replace key value =
@@ -198,3 +199,20 @@ module GenericOperations =
             else
                 stockTypes.Stacks.[tp] |> Seq.iter (fun e -> Console.WriteLine(e))
             Console.WriteLine()
+
+        [<GenericPushOperation("OPEN", 
+            Description= "Opens a file, the name of which is given by the top of the LITERAL stack, pushes the result to the EXEC (or CODE) stack.",
+            AppliesTo=[|"EXEC"; "CODE"|])>]
+        static member OpenFile (tp : string) =
+            if not (isEmptyStack "LITERAL") then
+                let file = (processArgs1 "LITERAL").Raw<string>()
+                if File.Exists (file) then
+                    pushResult (createPushObjectOfType tp [|(processArgs1 tp).Raw<Push>().Deserialize(file)|])
+
+        [<GenericPushOperation("SAVE", 
+            Description = "Saves top of the EXEC (or CODE) stack in a file",
+            AppliesTo=[|"EXEC"; "CODE"|])>]
+        static member SaveFile (tp : string) =
+            if areAllStacksNonEmpty ["LITERAL"; tp] then
+                let file = (processArgs1 "LITERAL").Raw<string>()
+                pushResult (createPushObjectOfType tp [|(processArgs1 tp).Raw<Push>().Serialize(file)|])

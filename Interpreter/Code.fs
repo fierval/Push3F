@@ -147,15 +147,11 @@ module StockTypesCode =
              
         [<PushOperation("DEFINITION", Description = "Pushes the definition of the name on top of the NAME stack onto the code stack.")>]
         static member Definition() =
-            let arg = peekStack "NAME"
-            if arg = Unchecked.defaultof<PushTypeBase> then ()
+            if isEmptyStack "NAME" then ()
             else
-                match arg.Raw<string>() with
-                | s when not (System.String.IsNullOrEmpty(s)) -> 
-                    match tryGetBinding s with
-                    | Some definition -> pushResult definition
-                    | None -> ()
-                | _ -> ()
+                match (processArgs1 "NAME").Raw<string>() |> tryGetBinding with
+                | Some definition -> pushResult definition
+                | None -> ()
  
         [<PushOperation("DISCREPANCY", Description = "Pushes the measure of discrepancy between to code items on the INTEGER stack.")>]
         static member Discrepancy () =

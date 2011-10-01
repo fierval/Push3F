@@ -17,7 +17,7 @@ namespace InterpreterTests
         [TestMethod]
         public void ConsimpleTest()
         {
-            var prog = "(a CODE.QUOTE ((b c d) CODE.FIRST) CODE.DEFINE CODE.DEFINITION)";
+            var prog = "(a CODE.QUOTE ((b c d) CODE.FIRST) CODE.DEFINE NAME.QUOTE a CODE.DEFINITION)";
             Program.ExecPush(prog);
 
             Assert.AreEqual("((b c d) CODE.CAR)", TestUtils.Top<Push>("CODE").StructuredFormatDisplay);

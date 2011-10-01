@@ -48,7 +48,7 @@ module StockTypesName =
         [<PushOperation("=")>]
         static member Eq() =
             match processArgs2 Name.Me.MyType with
-            | [a1; a2] -> pushResult(Bool(a1.Raw<int64>() = a2.Raw<int64>()))
+            | [a1; a2] -> pushResult(Bool(a1.Raw<string>() = a2.Raw<string>()))
             | _ -> ()
 
         [<PushOperation("QUOTE", Description = "Next NAME is simply pushed onto the name stack")>]
@@ -62,6 +62,7 @@ module StockTypesName =
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
             if stockTypes.Bindings.IsEmpty then ()
-            let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(stockTypes.Bindings.Count)])
-            pushResult (Name (selectedName))
+            else
+                let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(stockTypes.Bindings.Count)])
+                pushResult (Name (selectedName))
    

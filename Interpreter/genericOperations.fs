@@ -23,10 +23,9 @@ module GenericOperations =
         
         [<GenericPushOperation("DEFINE", Description = "Binds the name to the current top of the designated stack")>]
         static member define tp =
-            let stack = stockTypes.Stacks.["NAME"]
-            if stack.length = 0 then ()
-            else
-                let name = (peek stack).Value :?> string
+            if areAllStacksNonEmpty ["NAME"; tp]  
+            then
+                let name = (processArgs1 "NAME").Raw<string>()
                 let value = processArgs1 tp
                 match stockTypes.Bindings.TryFind(name) with
                 | Some v -> stockTypes.Bindings <- stockTypes.Bindings.Replace(name, value)

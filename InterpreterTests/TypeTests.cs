@@ -57,7 +57,7 @@ namespace InterpreterTests
 
             var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types);
 
-            Assert.AreEqual(6, sysTypes.Count());
+            Assert.AreEqual(7, sysTypes.Count());
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace InterpreterTests
         public void CreateStacksTest()
         {
             var stacks = TypeFactory.stockTypes.stacks;
-            Assert.AreEqual(6, stacks.Count);
+            Assert.AreEqual(7, stacks.Count);
         }
 
         [TestMethod]
@@ -164,10 +164,10 @@ namespace InterpreterTests
 
             var res = TestUtils.StackOf("URL");
 
-            Assert.AreEqual(7, TypeFactory.stockTypes.Stacks.Count);
+            Assert.AreEqual(8, TypeFactory.stockTypes.Stacks.Count);
             Assert.IsNotNull(TestUtils.StackOf("URL"));
 
-            Assert.AreEqual(7, TypeFactory.stockTypes.Operations.Count);
+            Assert.AreEqual(8, TypeFactory.stockTypes.Operations.Count);
         }
     
         [TestMethod]

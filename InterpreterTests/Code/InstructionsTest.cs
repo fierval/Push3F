@@ -14,12 +14,12 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void InsertSimple()
+        public void InstructionsSimple()
         {
             var prog = "CODE.INSTRUCTIONS";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(162, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(179, TestUtils.LengthOf("CODE"));
         }
     }
 }

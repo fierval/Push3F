@@ -54,7 +54,7 @@ namespace InterpreterTests
             var prog = @"(a 5 INTEGER.DEFINE b 6 INTEGER.DEFINE d 7 INTEGER.DEFINE e 8 INTEGER.DEFINE NAME.RANDBOUNDNAME CODE.DEFINITION)";
             Program.ExecPush(prog);
 
-            Assert.IsTrue(Enumerable.Range(5, 3).Where(i => i == (int) TestUtils.Top<long>("INTEGER")).Count() == 1);
+            Assert.IsTrue(Enumerable.Range(5, 4).Where(i => i == (int) TestUtils.Top<long>("INTEGER")).Count() == 1);
         }
 
     }

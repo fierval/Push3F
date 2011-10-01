@@ -63,6 +63,6 @@ module StockTypesName =
         static member RandBoundName () =
             if stockTypes.Bindings.IsEmpty then ()
             else
-                let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(stockTypes.Bindings.Count)])
+                let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(0, stockTypes.Bindings.Count)])
                 pushResult (Name (selectedName))
    

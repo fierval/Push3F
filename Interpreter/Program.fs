@@ -1,5 +1,6 @@
 ﻿namespace push.core
 
+[<AutoOpen>]
 module Program =
     open System
     open System.IO
@@ -13,6 +14,7 @@ module Program =
 
     [<System.Flags>]
     type ExecutionFlags =
+    | None = 0u
     | FullErrorReport = 1u
     | ShouldPushCode = 2u
 

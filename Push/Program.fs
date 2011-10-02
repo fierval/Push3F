@@ -7,7 +7,5 @@ module Program =
     [<EntryPoint>]
     let Main(args) = 
 
-        MyConsole.Run args
+        PushCmd.Run args
 
-        // main entry point return
-        0

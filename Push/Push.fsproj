@@ -40,7 +40,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Arguments.fs" />
-    <Compile Include="MyConsole.fs" />
+    <Compile Include="PushCmd.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -55,7 +55,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Interpreter\Push.Core.fsproj">
+    <ProjectReference Include="..\Interpreter\Push.Core.fsproj">
       <Name>Push.Core</Name>
       <Project>{90365ab0-39d6-4217-9056-aa3d18147e30}</Project>
       <Private>True</Private>

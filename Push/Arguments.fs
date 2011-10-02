@@ -7,7 +7,7 @@ open System.Text.RegularExpressions
 module Arguments =
 
     // Type for simple argument checking
-    type ArgInfo = { Command:string; Description:string; Required:bool }
+    type ArgInfo = { Command:string; Description:string; Required:bool; DefaultValue : obj }
 
     // Displays the help arguments
     let DisplayHelp (defs:ArgInfo list) =
@@ -21,26 +21,26 @@ module Arguments =
                 Console.WriteLine helpText )
 
     // Displays the found arguments
-    let DisplayArgs (args:Dictionary<string, string>) =
+    let DisplayArgs (args:Dictionary<string, obj>) =
         match args.Keys.Count with
         | 0 -> Console.WriteLine "No arguments found."
         | _ ->
             Console.WriteLine "Arguments Found:"
             for arg in args.Keys do
-                if String.IsNullOrEmpty(args.[arg]) then
+                if null = args.[arg] then
                     Console.WriteLine (sprintf "-%s" arg)
                 else
-                    Console.WriteLine (sprintf "-%s '%s'" arg args.[arg])
+                    Console.WriteLine (sprintf "-%s '%s'" arg (args.[arg].ToString()))
 
     // Parse the input arguments
     let ParseArgs (args:string array) (defs:ArgInfo list) =
 
-        let parsedArgs = new Dictionary<string, string>()
+        let parsedArgs = new Dictionary<string, obj>()
 
         // Ensure help is supported if defintions provided
         let fullDefs = 
             if not (List.exists (fun def -> String.Equals(def.Command, "help")) defs) then
-                {ArgInfo.Command="help"; Description="Display Help Text"; Required=false } :: defs
+                {ArgInfo.Command="help"; Description="Display Help Text"; Required=false; DefaultValue = null } :: defs
             else
                 defs
 
@@ -57,7 +57,7 @@ module Arguments =
         let captureArg command value =
             match defs with
             | [] -> parsedArgs.Add(command, value)
-            | _ ->                
+            | _ -> 
                 if not (List.exists (fun def -> String.Equals(def.Command, command)) fullDefs) then
                     reportError (sprintf "Command '%s' Not in definition list." command)
                 else
@@ -74,14 +74,14 @@ module Arguments =
                 match head with
                 | IsCommand command ->
                     match tail with
-                    | [] -> captureArg command String.Empty
+                    | [] -> captureArg command (box(String.Empty))
                     | iHead::iTail -> 
                         match iHead with
                         | IsCommand iCommand ->
-                            captureArg command String.Empty
+                            captureArg command (box(String.Empty))
                             loop tail
                         | _ ->
-                            captureArg command iHead
+                            captureArg command (box(iHead))
                             loop iTail
                 | _ -> reportError (sprintf "Expected a command but got '%s'" head)
         loop (Array.toList args)
@@ -95,5 +95,10 @@ module Arguments =
             |> List.iter ( fun def ->
                 if not (parsedArgs.ContainsKey(def.Command)) then
                     reportError (sprintf "Command '%s' found but in argument list." def.Command))
-                  
+            defs
+            |> List.filter (fun def -> not def.Required)
+            |> List.iter (fun def -> 
+                if not (parsedArgs.ContainsKey(def.Command)) then
+                    parsedArgs.Add(def.Command, def.DefaultValue))
+
         parsedArgs

@@ -141,6 +141,7 @@ module GenericOperations =
                 if tp = "CODE" then
                     Ops.pushCodeToExec
 
+        // everything bottle-necsk through here
         static member internal doRange start finish (code : PushTypeBase) =
             let next = 
                 if start < finish then start + 1L

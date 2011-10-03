@@ -32,7 +32,7 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void InsertNoIntegerArgumentTest()
+        public void DoStarTest()
         {
             var prog = "(EXEC.DO* (3 5 INTEGER.*) EXEC.DO* (5 INTEGER.+))";
             Program.ExecPush(prog);

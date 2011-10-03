@@ -1,15 +1,15 @@
 ﻿namespace push.types
 
+open System.Reflection
+open push.exceptions
+open push.stack
+open push.parser
+open push.types.stock
+open System
+open System.IO
+
 [<AutoOpen>]
 module GenericOperations =
-
-    open System.Reflection
-    open push.exceptions
-    open push.stack
-    open push.parser
-    open push.types.stock
-    open System
-    open System.IO
 
     type Ops ()=
         static member private Replace key value =
@@ -119,18 +119,27 @@ module GenericOperations =
                     let a1 = a1.Raw<Push>()
                     let a2 = a2.Raw<Push>()
                     match (isCodeStack, isTrue) with
-                    | (true, true) | (false, false) -> if isCodeStack then pushToCode a1 else pushToExec a1
-                    | (true, false) | (false, true) -> if isCodeStack then pushToCode a2 else pushToExec a2
+                    | (true, true) | (false, false) -> pushToExec a1
+                    | (true, false) | (false, true) -> pushToExec a2
                 | _ -> ()
 
+
+        static member private pushCodeToExec =
+            let code = processArgs1 "CODE"
+            pushToExec (code.Raw<Push>())
  
         [<GenericPushOperation("DO", Description = "Pop the CODE stack & execute the top", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member Do tp =
-            eval tp true
+            if not (isEmptyStack tp) then
+                if tp = "CODE" then
+                    Ops.pushCodeToExec
 
         [<GenericPushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoStar tp =
-            evalStar tp true
+            if not (isEmptyStack tp) then
+                Ops.dup tp
+                if tp = "CODE" then
+                    Ops.pushCodeToExec
 
         static member internal doRange start finish (code : PushTypeBase) =
             let next = 

@@ -32,7 +32,7 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void InsertNoIntegerArgumentTest()
+        public void DoStarTest()
         {
             var prog = "(CODE.QUOTE (5 INTEGER.+) CODE.QUOTE (3 5 INTEGER.*) CODE.DO* CODE.DO*)";
             Program.ExecPush(prog);
@@ -43,10 +43,10 @@ namespace InterpreterTests
         [TestMethod]
         public void DoStarEmptyTest()
         {
-            var prog = "(CODE.DO*)";
+            var prog = "(CODE.POP CODE.DO*)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(CODE.DO*)", TestUtils.GetTopCodeString());
+            Assert.IsTrue(TestUtils.IsEmpty("CODE"));
         }
     }
 }

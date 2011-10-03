@@ -1,11 +1,11 @@
 ﻿namespace push.parser
+open System
+open push.types
+open push.stack
+
 
 [<AutoOpen>]
 module Eval =
-    open System
-    open push.types
-    open push.stack
-
     let internal (|FindStack|_|) str = 
         match stockTypes.Stacks.TryFind(str), str with
         | (Some stack, name) -> Some(stack, name)
@@ -19,7 +19,7 @@ module Eval =
     let mapToPushTypeStack (stack : Stack<#PushTypeBase>) =
         StackNode(stack.asList |> List.map (fun e -> e.Value :?> Push))
 
-    let internal evalStack name shouldPopFirst topOnly=
+    let internal evalStack name =
         let mapToPushTypeBaseStack (stack : Stack<Push>) =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
 
@@ -31,7 +31,7 @@ module Eval =
             | v when startingLength = 0 -> None
             | s -> Some s
 
-        while ((topOnly && stockTypes.Stacks.[name].length >= startingLength && startingLength <> 0) || (not topOnly && not (isEmptyStack name))) do
+        while not (isEmptyStack name) do
             let top = (processArgs1 name).Raw<Push>()
             if getState name = State.Quote then ()
             else
@@ -54,27 +54,12 @@ module Eval =
                     let newRunningStack = append (updatedStack |> mapToPushTypeBaseStack) (stockTypes.Stacks.[name])
                     stockTypes.Stacks <- stockTypes.Stacks.Replace(name, newRunningStack)
 
-        if not shouldPopFirst
-        then 
-            match preserveTop with
-            | Some t -> pushResult t
-            | _ -> ()
-            
-
     // evaluates an object on the top of the stack
-    let eval stackName topOnly =
+    let eval stackName =
         match stackName with
-        | FindStack (stack, name) -> evalStack name true topOnly
+        | FindStack (stack, name) -> evalStack name 
         | _ -> ()
         
-    // evaluates an object on top of the stack and pops
-    // the stack after evaluating.
-    let evalStar stackName topOnly=
-        match stackName with
-        | FindStack (stack, name) -> evalStack  name false topOnly
-        | _ -> ()
-
-
     let internal pushToStack name (pushObj : Push) = 
         let execObj = makePushBaseType pushObj name 
         pushResult execObj
@@ -83,8 +68,4 @@ module Eval =
     let internal pushToExec = pushToStack "EXEC"
 
     // pushes an item on to the CODE stack to be evaluated right away
-    let internal pushToCode push = 
-        let code = "CODE"
-        pushToStack code push
-        let op = Operation(code, stockTypes.Operations.[code].["DO"])
-        pushToExec op
+    let internal pushToCode push = pushToStack "CODE"

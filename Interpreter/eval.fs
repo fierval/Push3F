@@ -20,16 +20,9 @@ module Eval =
         StackNode(stack.asList |> List.map (fun e -> e.Value :?> Push))
 
     let internal evalStack name =
+
         let mapToPushTypeBaseStack (stack : Stack<Push>) =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e name))
-
-        let stack = stockTypes.Stacks.[name]
-        let startingLength = stack.length
-
-        let preserveTop = 
-            match peekStack name with
-            | v when startingLength = 0 -> None
-            | s -> Some s
 
         while not (isEmptyStack name) do
             let top = (processArgs1 name).Raw<Push>()

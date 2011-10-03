@@ -114,14 +114,13 @@ module GenericOperations =
             else
                 match processArgs2 tp with
                 | [a1; a2] ->
-                    let toPush = a1
                     let isCodeStack = tp = "CODE"
                     let isTrue = (processArgs1 Bool.Me.MyType).Raw<bool>()
                     let a1 = a1.Raw<Push>()
                     let a2 = a2.Raw<Push>()
                     match (isCodeStack, isTrue) with
-                    | (true, true) | (false, false) -> pushToExec a1
-                    | (true, false) | (false, true) -> pushToExec a2
+                    | (true, true) | (false, false) -> if isCodeStack then pushToCode a1 else pushToExec a1
+                    | (true, false) | (false, true) -> if isCodeStack then pushToCode a2 else pushToExec a2
                 | _ -> ()
 
  

@@ -74,7 +74,17 @@ module Eval =
         | FindStack (stack, name) -> evalStack  name false topOnly
         | _ -> ()
 
-    // pushes an item on to the EXEC stack to be evaluated
-    let pushToExec (pushObj : Push) =
-        let execObj = makePushBaseType pushObj "EXEC" 
+
+    let internal pushToStack name (pushObj : Push) = 
+        let execObj = makePushBaseType pushObj name 
         pushResult execObj
+
+    // pushes an item on to the EXEC stack to be evaluated
+    let internal pushToExec = pushToStack "EXEC"
+
+    // pushes an item on to the CODE stack to be evaluated right away
+    let internal pushToCode push = 
+        let code = "CODE"
+        pushToStack code push
+        let op = Operation(code, stockTypes.Operations.[code].["DO"])
+        pushToExec op

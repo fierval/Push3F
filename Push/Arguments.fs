@@ -35,7 +35,7 @@ module Arguments =
     // Parse the input arguments
     let ParseArgs (args:string array) (defs:ArgInfo list) =
 
-        let parsedArgs = new Dictionary<string, obj>()
+        let parsedArgs = new Dictionary<string, obj>(StringComparer.InvariantCultureIgnoreCase)
 
         // Ensure help is supported if defintions provided
         let fullDefs = 
@@ -58,7 +58,7 @@ module Arguments =
             match defs with
             | [] -> parsedArgs.Add(command, value)
             | _ -> 
-                if not (List.exists (fun def -> String.Equals(def.Command, command)) fullDefs) then
+                if not (List.exists (fun def -> String.Equals(def.Command, command, StringComparison.InvariantCultureIgnoreCase)) fullDefs) then
                     reportError (sprintf "Command '%s' Not in definition list." command)
                 else
                     parsedArgs.Add(command, value)            

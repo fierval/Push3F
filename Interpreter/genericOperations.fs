@@ -24,7 +24,7 @@ module GenericOperations =
         
         [<GenericPushOperation("DEFINE", Description = "Binds the name to the current top of the designated stack")>]
         static member define tp =
-            if areAllStacksNonEmpty ["NAME"; tp]  
+            if areAllStacksNonEmpty ["NAME"; tp] && (tp <> "NAME" || stockTypes.Stacks.["NAME"].length > 1)
             then
                 let name = (processArgs1 "NAME").Raw<string>()
                 let value = processArgs1 tp
@@ -106,15 +106,22 @@ module GenericOperations =
 
         [<GenericPushOperation("IF", Description = "Execute either the first or the second item on top of the code stack", AppliesTo=[|"CODE"; "EXEC"|])>]
         static member If tp =
+            //things are different for CODE and EXEC:
+            //(5 3 INTEGER.< EXEC.IF 1 0) - should push the top item of the EXEC to the INTEGER stack
+            // while (5 3 INTEGER.< CODE.QUOTE 1 CODE.QUOTE 0 CODE.IF) should push the second item of 
+            // the CODE stack in order to conform to the "readability" of programs. 
             if isEmptyStack Bool.Me.MyType then ()
             else
                 match processArgs2 tp with
                 | [a1; a2] ->
-                    if (processArgs1 Bool.Me.MyType).Raw<bool>()
-                    then 
-                        pushToExec (a2.Raw<Push>())
-                    else
-                        pushToExec (a1.Raw<Push>())
+                    let toPush = a1
+                    let isCodeStack = tp = "CODE"
+                    let isTrue = (processArgs1 Bool.Me.MyType).Raw<bool>()
+                    let a1 = a1.Raw<Push>()
+                    let a2 = a2.Raw<Push>()
+                    match (isCodeStack, isTrue) with
+                    | (true, true) | (false, false) -> pushToExec a1
+                    | (true, false) | (false, true) -> pushToExec a2
                 | _ -> ()
 
  

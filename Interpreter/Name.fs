@@ -66,3 +66,7 @@ module StockTypesName =
                 let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(0, stockTypes.Bindings.Count)])
                 pushResult (Name (selectedName))
    
+        [<PushOperation("DUMPBINDINGS", Description = "Dumps all current bindings to the console") >]
+        static member DumpBindings() =
+            if not stockTypes.Bindings.IsEmpty then 
+                stockTypes.Bindings |> Map.iter(fun key value -> Console.WriteLine("{0}          {1}", key, value.StructuredFormatDisplay))

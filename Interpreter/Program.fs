@@ -22,7 +22,7 @@ module Program =
         if full then 
             raise (PushException (e.ToString()))
         else 
-            raise (PushException(s))
+            failwith s
 
     let internal execProgram program shouldPushCode =
         pushResult (Exec(program))

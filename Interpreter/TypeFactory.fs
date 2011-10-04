@@ -142,11 +142,9 @@ module TypeFactory =
     // given the MethodInfo of the operation, execute it.
     let execOperation (args : obj []) (mi : MethodInfo) =
         // if this is an operation, requiring type parameter
-        if mi.GetParameters().Length > 1
+        if mi.GetParameters().Length >= 1
         then
             mi.Invoke(null, args)
-        elif mi.GetParameters().Length > 0 then
-            mi.Invoke(null, if args.Length = 1 then args else [|args.[1]|]) 
         else
             mi.Invoke(null, Array.empty)
         |> ignore

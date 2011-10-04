@@ -27,7 +27,7 @@ module Program =
     let internal execProgram program shouldPushCode =
         pushResult (Exec(program))
         if shouldPushCode then pushResult (Code(program))
-        eval "EXEC"
+        eval ()
 
     // the callback type for the function used
     type internal parseFunc = string -> ParserResult<Push, unit>

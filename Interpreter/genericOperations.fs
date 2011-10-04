@@ -137,9 +137,12 @@ module GenericOperations =
         [<GenericPushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.", AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoStar tp =
             if not (isEmptyStack tp) then
-                Ops.dup tp
-                if tp = "CODE" then
-                    Ops.pushCodeToExec
+                // In attempt to prevent an infinite loop if CODE.DO* is on top of the CODE stack.
+                if tp = "CODE" && ((peekStack tp).Raw<Push>().ToString(fun i -> " ").StartsWith("CODE.DO*")) then ()
+                else
+                    Ops.dup tp
+                    if tp = "CODE" then
+                        Ops.pushCodeToExec
 
         // everything bottle-necsk through here
         static member internal doRange start finish (code : PushTypeBase) =

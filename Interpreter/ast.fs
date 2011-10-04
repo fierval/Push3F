@@ -73,7 +73,7 @@ module Ast =
             override t.ToString() = 
                 t.ToString(fun a -> (String.Format("\n{0}(", System.String('\t', a))))
 
-            member private t.ToString(seed : int -> string) =
+            member internal t.ToString(seed : int -> string) =
                 let rec toString o (seed : int -> string) acc =
                     match o with
                     | Value v -> v.ToString()

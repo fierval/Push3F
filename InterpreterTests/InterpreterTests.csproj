@@ -79,6 +79,7 @@
     <Compile Include="Code\ExtractTest.cs" />
     <Compile Include="Code\DiscrepancyTest.cs" />
     <Compile Include="Code\DefinitionTest.cs" />
+    <Compile Include="E2ETests.cs" />
     <Compile Include="Exec\ExecIOTest.cs" />
     <Compile Include="Exec\KTest.cs" />
     <Compile Include="Exec\STest.cs" />

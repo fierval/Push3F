@@ -110,7 +110,7 @@ module StockTypesCode =
 
         [<PushOperation("CONTAINER", Description = "Returns the container of the second item in the first")>]
         static member Container() =
-            match peekStack2 Code.Me.MyType with
+            match processArgs2 Code.Me.MyType with
             | [aFst; aSnd] -> 
                 match aFst.Raw<Push>() with
                 | PushList l -> 
@@ -129,7 +129,7 @@ module StockTypesCode =
 
                             pushResult (Code(res.asList.[containerIndex]))
                 | _ -> pushResult (Code(PushList []))
-            | _ -> pushResult (Code(PushList []))
+            | _ -> ()
             
 
         static member isMember (aFst : PushTypeBase) (aSnd : PushTypeBase) digDeeper =
@@ -141,7 +141,7 @@ module StockTypesCode =
 
         [<PushOperation("CONTAINS", Description = "Returns true if the second item contains the first")>]
         static member Contains() =
-            match peekStack2 Code.Me.MyType with
+            match processArgs2 Code.Me.MyType with
             | [aFst; aSnd] -> Code.isMember aFst aSnd true
             | _ -> pushResult (Bool (false))
              
@@ -155,7 +155,7 @@ module StockTypesCode =
  
         [<PushOperation("DISCREPANCY", Description = "Pushes the measure of discrepancy between to code items on the INTEGER stack.")>]
         static member Discrepancy () =
-            match peekStack2 Code.Me.MyType with
+            match processArgs2 Code.Me.MyType with
             | [a1; a2] -> pushResult (Integer (int64 (Push.discrepancy (a1.Raw<Push>()) (a2.Raw<Push>()))))
             | _ -> ()
 
@@ -169,7 +169,7 @@ module StockTypesCode =
         static member ExtractSubItem() =
             if isEmptyStack Code.Me.MyType || isEmptyStack Integer.Me.MyType then ()
             else
-                let topCode = peekStack Code.Me.MyType
+                let topCode = processArgs1 Code.Me.MyType
                 match topCode.Raw<Push>() with
                 | PushList l -> 
                     let index = Code.getIndex (l.Length)
@@ -241,7 +241,7 @@ module StockTypesCode =
         static member Length() =
             if isEmptyStack Code.Me.MyType then ()
             else
-                match (peekStack Code.Me.MyType).Raw<Push>() with
+                match (processArgs1 Code.Me.MyType).Raw<Push>() with
                 | PushList l -> pushResult (Integer (int64 (l.Length)))
                 | _ -> pushResult (Integer (1L))
 
@@ -271,7 +271,7 @@ module StockTypesCode =
         static member Nth() =
             if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType]
             then
-                Code.getNth ((peekStack Code.Me.MyType).Raw<Push>().toList)
+                Code.getNth ((processArgs1 Code.Me.MyType).Raw<Push>().toList)
 
         [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]
@@ -289,13 +289,13 @@ module StockTypesCode =
         [<PushOperation("NULL", Description = "Pushes TRUE into the BOOLEAN stack if the top code item is an empty list. FALSE otherwise")>]
         static member Null() =
             if not (isEmptyStack Code.Me.MyType) then
-                match (peekStack Code.Me.MyType).Raw<Push>().toList with
+                match (processArgs1 Code.Me.MyType).Raw<Push>().toList with
                 | [] -> pushResult (Bool(true))
                 | _ -> pushResult (Bool(false))
 
         [<PushOperation("POSITION", Description = "Pushes a position of the second item within the first items on top of the integer stack. -1 if no occurences")>]
         static member Position() =
-            match peekStack2 Code.Me.MyType with
+            match processArgs2 Code.Me.MyType with
                 | [aFst; aSnd] -> 
                     match aFst.Raw<Push>() with
                     | PushList l -> 
@@ -324,7 +324,7 @@ module StockTypesCode =
 
             if isEmptyStack Code.Me.MyType then pushResult (Integer (0L))
             else
-                let size = getSize ((peekStack Code.Me.MyType).Raw<Push>())
+                let size = getSize ((processArgs1 Code.Me.MyType).Raw<Push>())
                 pushResult (Integer(int64 size))
         
         [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]

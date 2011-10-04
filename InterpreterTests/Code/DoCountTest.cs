@@ -19,8 +19,8 @@ namespace InterpreterTests
             var prog = "(5 CODE.QUOTE (INTEGER.DUP INTEGER.*) CODE.DO*COUNT)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
-            Assert.AreEqual(16, TestUtils.Elem<long>("INTEGER", 4));
+            Assert.AreEqual(16, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(0, TestUtils.Elem<long>("INTEGER", 4));
         }
 
         [TestMethod]

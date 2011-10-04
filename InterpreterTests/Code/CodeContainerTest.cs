@@ -29,7 +29,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
            
             Assert.AreEqual(4, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
             Assert.AreEqual("a", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
@@ -47,7 +47,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(4, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
             Assert.AreEqual("a", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
@@ -65,7 +65,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(2, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
             Assert.AreEqual("c", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
@@ -84,7 +84,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(0, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(0, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
 
         [TestMethod]
@@ -118,7 +118,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(0, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(0, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
         }
 
         [TestMethod]
@@ -152,7 +152,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(4, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
             Assert.AreEqual("g", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 
@@ -170,7 +170,7 @@ namespace InterpreterTests
             var res = TestUtils.Top<Push>("CODE");
 
             Assert.AreEqual(3, res.toList.Length);
-            Assert.AreEqual(3, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
             Assert.AreEqual("g", ((Push.Value)res.toList[0]).Item.Raw<string>());
         }
 

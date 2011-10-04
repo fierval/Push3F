@@ -15,7 +15,10 @@ module Eval =
         let mapToPushTypeBaseStack (stack : Stack<Push>) =
             StackNode (stack.asList |> List.map (fun e -> makePushBaseType e exec))
 
-        while not (isEmptyStack exec) do
+        let mutable executionSteps = 0
+
+        while not (isEmptyStack exec || executionSteps >= 100000) do
+            executionSteps <- executionSteps + 1
             let top = (processArgs1 exec).Raw<Push>()
             if getState exec = State.Quote then ()
             else

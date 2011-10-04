@@ -64,12 +64,11 @@ module GenericOperations =
 
         [<GenericPushOperation("SWAP", Description = "Swaps two top values of the stack")>]
         static member swap tp =
-            let args = processArgs2 tp
-            if args.Length < 2 then ()
-            else
-                let hd, tl = args.Head, (args.Tail).Head
-                stockTypes.pushResult tl
-                stockTypes.pushResult hd
+            match processArgs2 tp with
+            | [a1; a2] ->
+                stockTypes.pushResult a2
+                stockTypes.pushResult a1
+            | _ -> ()
 
         [<GenericPushOperation("STACKDEPTH", Description = "Pushes the number of items of the stack on top of the INTEGER stack.")>]
         static member stackdepth tp =

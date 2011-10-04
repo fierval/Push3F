@@ -19,7 +19,7 @@ namespace InterpreterTests
             var prog = "(5 2.0 EXEC.Y (INTEGER.DUP INTEGER.* 1. FLOAT.- FLOAT.DUP 0. FLOAT.> EXEC.IF () EXEC.POP))";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(390625, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(625, TestUtils.Top<long>("INTEGER"));
         }
 
         [TestMethod]

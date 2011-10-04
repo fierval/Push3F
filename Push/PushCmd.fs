@@ -17,39 +17,43 @@ module PushCmd =
 
         // Parse Arguments into a Dictionary
         let parsedArgs = Arguments.ParseArgs args defs
-        let mutable startFile = Unchecked.defaultof<string>
 
-        let mutable flags = ExecutionFlags.None
-        if parsedArgs.["detailedError"] <> null then 
-            if bool.Parse(parsedArgs.["detailedError"] :?> string) then flags <- flags ||| ExecutionFlags.FullErrorReport
+        if parsedArgs.Count < 3 then 
+            Console.Error.Flush()
+        else
+            let mutable startFile = Unchecked.defaultof<string>
 
-        if parsedArgs.["pushCode"] <> null then 
-            if bool.Parse(parsedArgs.["pushCode"] :?> string) then flags <- flags ||| ExecutionFlags.ShouldPushCode
+            let mutable flags = ExecutionFlags.None
+            if parsedArgs.["detailedError"] <> null then 
+                if bool.Parse(parsedArgs.["detailedError"] :?> string) then flags <- flags ||| ExecutionFlags.FullErrorReport
 
-        if parsedArgs.["startFile"] <> null then startFile <- (parsedArgs.["startFile"] :?> string)
+            if parsedArgs.["pushCode"] <> null then 
+                if bool.Parse(parsedArgs.["pushCode"] :?> string) then flags <- flags ||| ExecutionFlags.ShouldPushCode
 
-        if not (String.IsNullOrEmpty startFile) then
-            try
-                Program.ExecPushProgram("(\"" + startFile + "\" EXEC.OPEN)", flags)
-            with
-            | e -> Console.WriteLine ("{0}", e.Message)
+            if parsedArgs.["startFile"] <> null then startFile <- (parsedArgs.["startFile"] :?> string)
 
-        let mutable stop = false
-        while (not stop) do
-            let mutable runIt = false
-            let mutable str = String.Empty
-            
-            while(not runIt && not stop) do
-                Console.Write(">")
-                let curStr = Console.ReadLine()
-                if curStr.Trim() = "quit" then stop <- true
-                else
-                    str <- str + " " + curStr.TrimEnd()
-                    if str.[str.Length - 1] = ';' then str <- str.Substring(0, str.Length - 1); runIt <- true
-                    Console.WriteLine(str.Trim())
-            if (not stop) then
+            if not (String.IsNullOrEmpty startFile) then
                 try
-                    Program.ExecPushProgram (str, flags)
+                    Program.ExecPushProgram("(\"" + startFile + "\" EXEC.OPEN)", flags)
                 with
                 | e -> Console.WriteLine ("{0}", e.Message)
+
+            let mutable stop = false
+            while (not stop) do
+                let mutable runIt = false
+                let mutable str = String.Empty
+            
+                while(not runIt && not stop) do
+                    Console.Write(">")
+                    let curStr = Console.ReadLine()
+                    if curStr.Trim() = "quit" then stop <- true
+                    else
+                        str <- str + " " + curStr.TrimEnd()
+                        if str.[str.Length - 1] = ';' then str <- str.Substring(0, str.Length - 1); runIt <- true
+                        Console.WriteLine(str.Trim())
+                if (not stop) then
+                    try
+                        Program.ExecPushProgram (str, flags)
+                    with
+                    | e -> Console.WriteLine ("{0}", e.Message)
         0

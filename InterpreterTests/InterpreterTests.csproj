@@ -86,7 +86,6 @@
     <Compile Include="Exec\YTest.cs" />
     <Compile Include="Exec\ExecCountTest.cs" />
     <Compile Include="Exec\ExecRangeTest.cs" />
-    <Compile Include="Exec\ExecDoTest.cs" />
     <Compile Include="Exec\ExecTimesTest.cs" />
     <Compile Include="Float\FloatOpsTest.cs" />
     <Compile Include="Integer\IntegerOpsTest.cs" />

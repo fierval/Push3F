@@ -19,7 +19,7 @@ namespace InterpreterTests
             var prog = "CODE.INSTRUCTIONS";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(182, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(180, TestUtils.LengthOf("CODE"));
         }
     }
 }

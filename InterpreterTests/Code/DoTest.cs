@@ -37,7 +37,7 @@ namespace InterpreterTests
             var prog = "(CODE.QUOTE (5 INTEGER.+) CODE.QUOTE (3 5 INTEGER.*) CODE.DO* CODE.DO*)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual(15, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(20, TestUtils.Top<long>("INTEGER"));
         }
 
         [TestMethod]

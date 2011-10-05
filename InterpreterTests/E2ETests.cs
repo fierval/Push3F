@@ -73,14 +73,46 @@ namespace InterpreterTests
         [Description("Reverse list")]
         public void ReverseListTest()
         {
-            var prog = @"(10 20 30 40 50 60 70 80)";
-            Program.ExecPush(prog);
+            var prog = @"(CODE.QUOTE (10 20 30 40 50 60 70 80))";
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
 
             prog = @"(CODE.DO* INTEGER.STACKDEPTH EXEC.DO*TIMES
                             CODE.FROMINTEGER CODE.STACKDEPTH EXEC.DO*TIMES
                             CODE.CONS)";
 
-            Program.ExecPush(prog);
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+            Assert.AreEqual("(80 70 60 50 40 30 20 10)", TestUtils.GetTopCodeString());
         }
+
+        [TestMethod]
+        [Description("Reverse list")]
+        public void ReverseList2Test()
+        {
+            var prog = @"(CODE.QUOTE (10 20 30 40 50 60 70 80))";
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+
+            prog = @"(CODE.DO*TIMES (CODE.DO* CODE.LIST
+                        (((INTEGER.STACKDEPTH EXEC.DO*TIMES)
+                        (BOOLEAN.YANKDUP CODE.FROMINTEGER))
+                        CODE.FROMINTEGER INTEGER.SWAP)
+                        (CODE.YANKDUP INTEGER.% (BOOLEAN.AND)
+                        CODE.STACKDEPTH EXEC.DO*TIMES)) (CODE.CONS)
+                        (BOOLEAN.SHOVE (CODE.EXTRACT EXEC.S
+                        (EXEC.FLUSH CODE.IF BOOLEAN.YANK
+                        (CODE.FROMINTEGER CODE.ATOM (CODE.SWAP
+                        BOOLEAN.SHOVE (INTEGER.MAX) (CODE.QUOTE
+                        CODE.APPEND CODE.IF)) ((CODE.ATOM CODE.SHOVE
+                        EXEC.POP (CODE.DO*TIMES BOOLEAN.SHOVE) INTEGER.ROT)
+                        (INTEGER.> BOOLEAN.AND CODE.DO* INTEGER.ROT)
+                        CODE.CONS INTEGER.ROT ((CODE.NTHCDR) INTEGER.ROT
+                        BOOLEAN.DUP) INTEGER.SHOVE (CODE.FROMNAME
+                        (CODE.CONS CODE.FROMINTEGER)))) CODE.LENGTH
+                        INTEGER.MAX EXEC.Y)) (BOOLEAN.= (CODE.QUOTE
+                        INTEGER.SWAP) CODE.POP) INTEGER.FLUSH))";
+
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+            Assert.AreEqual("(80 70 60 50 40 30 20 10)", TestUtils.GetTopCodeString());
+        }
+
     }
 }

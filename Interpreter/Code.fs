@@ -165,6 +165,18 @@ module StockTypesCode =
             | v when v = 0L -> 0
             | x ->  Math.Abs(int x) % (ofBase + 1)
 
+        [<PushOperation("DO", Description = "Pop the CODE stack & execute the top")>]
+        static member Do () =
+            if not (isEmptyStack Code.Me.MyType) then
+                (processArgs1 Code.Me.MyType).Raw<Push>() |> pushToExec
+
+        [<PushOperation("DO*", Description = "Peek the CODE stack & execute the top. Then pop the CODE stack.")>]
+        static member DoStar () =
+            if not (isEmptyStack Code.Me.MyType) then
+                let code = (peekStack Code.Me.MyType).Raw<Push>()
+                let pop = (Operation(Code.Me.MyType, stockTypes.Operations.[Code.Me.MyType].["POP"]))
+                PushList[code; pop] |> pushToExec
+
         [<PushOperation("EXTRACT", Description = "Extract from the top code item a sub-item indexed by the top of INTEGER stack")>]
         static member ExtractSubItem() =
             if isEmptyStack Code.Me.MyType || isEmptyStack Integer.Me.MyType then ()

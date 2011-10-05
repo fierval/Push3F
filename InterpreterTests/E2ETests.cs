@@ -115,7 +115,7 @@ namespace InterpreterTests
         }
 
          [TestMethod]
-        [Description("Reverse list")]
+        [Description("Compute parity")]
         public void ParityTest()
         {
             var prog = @"(TRUE TRUE FALSE FALSE TRUE TRUE FALSE TRUE FALSE TRUE FALSE FALSE)";

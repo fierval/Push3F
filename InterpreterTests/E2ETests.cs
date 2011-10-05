@@ -114,5 +114,27 @@ namespace InterpreterTests
             Assert.AreEqual("(80 70 60 50 40 30 20 10)", TestUtils.GetTopCodeString());
         }
 
-    }
+         [TestMethod]
+        [Description("Reverse list")]
+        public void ParityTest()
+        {
+            var prog = @"(TRUE TRUE FALSE FALSE TRUE TRUE FALSE TRUE FALSE TRUE FALSE FALSE)";
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+
+            prog = @"((BOOLEAN.STACKDEPTH)
+                        (EXEC.DO*TIMES) (BOOLEAN.= BOOLEAN.NOT)
+                        )";
+
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+            Assert.IsTrue(TestUtils.Top<bool>("BOOLEAN"));
+
+            prog = @"(BOOLEAN.POP (TRUE TRUE FALSE FALSE TRUE TRUE FALSE TRUE FALSE FALSE) (BOOLEAN.STACKDEPTH)
+                        (EXEC.DO*TIMES) (BOOLEAN.= BOOLEAN.NOT))";
+
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+            Assert.IsFalse(TestUtils.Top<bool>("BOOLEAN"));
+
+        }
+
+   }
 }

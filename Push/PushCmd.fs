@@ -4,9 +4,29 @@ open System
 open System.Collections.Generic
 open Arguments
 open push.core
+open push.parser
 
 module PushCmd =
     
+    type State =
+    | Start
+    | List
+    | End
+
+    let writeInitialHelp = 
+        (fun _ ->
+            let strList = 
+                [
+                    "Welcome to Push 3 Interpreter. Just start typing at the prompt:"
+                    "Push instructions separated by whitespace are executed separately."
+                    "A single Push program is contained withing a list."
+                    " ';' at the end of the line resets the interpreter"
+                ]
+            Console.ForegroundColor <- ConsoleColor.Green
+            strList |> List.iter (fun str -> Console.WriteLine(str))
+            Console.WriteLine()
+            Console.ResetColor()
+         )
     let Run args =
 
         // Define what arguments are expected
@@ -21,6 +41,8 @@ module PushCmd =
         if parsedArgs.Count < 3 then 
             Console.Error.Flush()
         else
+            writeInitialHelp ()
+
             let mutable startFile = Unchecked.defaultof<string>
 
             let mutable flags = ExecutionFlags.None
@@ -42,18 +64,41 @@ module PushCmd =
             while (not stop) do
                 let mutable runIt = false
                 let mutable str = String.Empty
-            
-                while(not runIt && not stop) do
+                let mutable state = State.Start
+                let flags = flags // mutable variables cannot be part of closures, so assigning to the immubable
+                        
+                while(state <> State.End && not stop) do
+                    let continueParsing st = 
+                        (fun s -> 
+                            let prog = st + " " + s
+                            if parsingSucceeded prog then Program.ExecPushProgram(prog, flags); String.Empty
+                            else
+                                prog
+                            )
+                             
                     Console.Write(">")
-                    let curStr = Console.ReadLine()
+                    let curStr = Console.ReadLine().Trim()
                     if curStr.Trim() = "quit" then stop <- true
-                    else
-                        str <- str + " " + curStr.TrimEnd()
-                        if str.[str.Length - 1] = ';' then str <- str.Substring(0, str.Length - 1); runIt <- true
-                        Console.WriteLine(str.Trim())
-                if (not stop) then
-                    try
-                        Program.ExecPushProgram (str, flags)
-                    with
-                    | e -> Console.WriteLine ("{0}", e.Message)
+                    if curStr.EndsWith(";") then state <- State.End
+
+                    let startOfList = (curStr.StartsWith("("))
+                    if not stop then
+                        match startOfList, state with
+                        | (false, State.Start) ->
+                            let strings = curStr.Split([|'\t'; ' '|])
+                            try
+                                strings |> Array.iter (fun e -> Program.ExecPushProgram(e, flags))
+                                state <- State.End
+                            with
+                            | e -> Console.WriteLine(e.Message)
+                        |  (_, (State.List | State.Start)) ->
+                            try
+                                str <- continueParsing str curStr
+                                state <- if String.IsNullOrEmpty(str) then State.End else State.List
+
+                            with
+                            | e -> 
+                                Console.WriteLine (e.Message)
+                                state <- State.End
+                        | _ -> ()
         0

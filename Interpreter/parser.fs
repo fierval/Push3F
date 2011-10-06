@@ -53,4 +53,9 @@ module Parser =
                             | Success(r,_,_) -> 
                                 box(r)
                             | Failure(s, e, _) -> box((s,e))
-                               
+    
+    let parsingSucceeded str = 
+        match parsePushString str with
+        | Success(_,_,_) -> true
+        | _ -> false
+                                               

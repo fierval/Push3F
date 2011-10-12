@@ -61,11 +61,15 @@ namespace InterpreterTests
             Program.ExecPush(prog);
 
             Assert.AreEqual(0, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(5, TestUtils.Elem<long>("INTEGER", 1));
+
+            TypeFactory.stockTypes.cleanAllStacks();
 
             prog = "(10 6 INTEGER.%)";
             Program.ExecPush(prog);
 
             Assert.AreEqual(4, TestUtils.Top<long>("INTEGER"));
+            Assert.AreEqual(1, TestUtils.LengthOf("INTEGER"));
         }
 
         [TestMethod]
@@ -125,5 +129,24 @@ namespace InterpreterTests
 
             Assert.AreEqual(5, TestUtils.Top<long>("INTEGER"));
         }
+
+        [TestMethod]
+        public void AddTest()
+        {
+            var prog = "(5 6 INTEGER.+)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(11, TestUtils.Top<long>("INTEGER"));
+        }
+
+        [TestMethod]
+        public void AddOneMissingTest()
+        {
+            var prog = "(5 INTEGER.+)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual(5, TestUtils.Top<long>("INTEGER"));
+        }
+
     }
 }

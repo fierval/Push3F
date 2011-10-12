@@ -5,6 +5,7 @@ open push.exceptions
 open push.stack
 open push.parser
 open push.types.stock
+open push.types
 open System
 open System.IO
 
@@ -17,6 +18,18 @@ module GenericOperations =
 
         static member private getIntArgument tp =
             processArgs1 Integer.Me.MyType
+
+        [<GenericPushOperation("<", AppliesTo=[|"INTEGER"; "FLOAT"|])>]
+        static member Lt tp =
+            dualOp (<) tp Bool.Me.MyType
+
+        [<GenericPushOperation(">", AppliesTo=[|"INTEGER"; "FLOAT"|])>]
+        static member Gt tp =
+            dualOp (>) tp Bool.Me.MyType
+
+        [<GenericPushOperation("=")>]
+        static member Eq tp =
+            dualOp (=) tp Bool.Me.MyType
           
         [<GenericPushOperation("FLUSH", Description = "Empties the designated stack")>]
         static member flush tp =
@@ -91,13 +104,6 @@ module GenericOperations =
                 let newStack = yankdup (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
                 Ops.Replace tp newStack
         
-        [<GenericPushOperation("=", Description = "Compares two top pieces of code", AppliesTo=[|"EXEC"; "CODE"|])>]
-        static member Eq tp = 
-            match processArgs2 tp with
-            | [a1; a2] -> 
-                pushResult (Bool (a1.Raw<Push>() = a2.Raw<Push>()))
-            | _ -> ()
-
         [<GenericPushOperation("IF", Description = "Execute either the first or the second item on top of the code stack", AppliesTo=[|"CODE"; "EXEC"|])>]
         static member If tp =
             //things are different for CODE and EXEC:

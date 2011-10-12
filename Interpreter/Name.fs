@@ -45,12 +45,6 @@ module StockTypesName =
                 |]
             new System.String(chars)
            
-        [<PushOperation("=")>]
-        static member Eq() =
-            match processArgs2 Name.Me.MyType with
-            | [a1; a2] -> pushResult(Bool(a1.Raw<string>() = a2.Raw<string>()))
-            | _ -> ()
-
         [<PushOperation("QUOTE", Description = "Next NAME is simply pushed onto the name stack")>]
         static member Quote () =
             setState Name.Me.MyType State.Quote

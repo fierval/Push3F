@@ -17,6 +17,9 @@ module StockTypesBool =
         new (b : bool) = {inherit PushTypeBase(b)}
 
         static member Me = Bool()
+        static member simpleOp f = simpleOp f Bool.Me.MyType
+        static member monoOp f stack = monoOp f stack Bool.Me.MyType
+        static member singleOp f = Bool.monoOp f Bool.Me.MyType
 
         // custom parsing
         static member parse s =
@@ -34,52 +37,28 @@ module StockTypesBool =
         override t.ToString() =
             base.ToString()
 
-        [<PushOperation("=", Description = "TRUE if top two booleans are equal false otherwise")>]
-        static member Eq() = 
-            match processArgs2 Bool.Me.MyType with
-            | [a1; a2] -> 
-                pushResult(Bool(a1.Raw<bool>() = a2.Raw<bool>()))
-            | _ -> ()
-    
         [<PushOperation("AND", Description = "Logical AND of the top two booleans")>]
         static member And() = 
-            match processArgs2 Bool.Me.MyType with
-            | [a1; a2] -> 
-                pushResult(Bool(a1.Raw<bool>() && a2.Raw<bool>()))
-            | _ -> ()
+            Bool.simpleOp (&&)
 
         [<PushOperation("FROMFLOAT", Description = "Pushies FALSE if top of the FLOAT stack is 0.0. True otherwise")>]
         static member fromFloat() =
-            let top = processArgs1 "FLOAT"
-            if top <> Unchecked.defaultof<PushTypeBase> 
-            then
-                match top.Raw<float>() with
-                | 0.0 -> pushResult (Bool(false))
-                | _ -> pushResult (Bool (true))
+            Bool.monoOp (fun f -> f <> 0.) "FLOAT"
 
         [<PushOperation("FROMINTEGER", Description = "Pushies FALSE if top of the INTEGER stack is 0. True otherwise")>]
         static member fromInt() =
-            let top = processArgs1 "INTEGER"
-            if top <> Unchecked.defaultof<PushTypeBase> 
-            then
-                match top.Raw<int64>() with
-                | 0L -> pushResult (Bool(false))
-                | _ -> pushResult (Bool (true))
-
+            Bool.monoOp (fun f -> f <> 0L) "INTEGER"
 
         [<PushOperation("NOT", Description = "Logical OR of the top of the stack")>]
         static member Not() = 
-            let a = processArgs1 Bool.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> then () else pushResult(Bool(not (a.Raw<bool>())))
+            Bool.singleOp (not)
 
         [<PushOperation("OR", Description = "Logical OR of the top two booleans")>]
         static member Or() = 
-            match processArgs2 Bool.Me.MyType with
-            | [a1; a2] -> 
-                pushResult(Bool(a1.Raw<bool>() || a2.Raw<bool>()))
-            | _ -> ()
+            Bool.simpleOp (||)
 
         [<PushOperation("RAND", Description = "Generates a random boolean")>]
         static member Rand() =
-            let res = if Bool.Random.Next(0, 2) > 0 then true else false
-            pushResult(Bool(res))
+            push {
+                return! result Bool.Me.MyType (Bool.Random.Next(0, 2) > 0)
+            }

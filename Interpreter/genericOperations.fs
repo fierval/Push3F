@@ -48,7 +48,8 @@ module GenericOperations =
         [<GenericPushOperation("DUP", Description = "Pushes the duplicate of the top of the stack")>]
         static member dup tp =
             if stockTypes.Stacks.[tp].length = 0 then ()
-            else stockTypes.pushResult (peek stockTypes.Stacks.[tp])
+            else 
+                stockTypes.pushResult (peek stockTypes.Stacks.[tp])
 
         [<GenericPushOperation("POP", Description = "Pops the top of the stack")>]
         static member pop tp =
@@ -158,8 +159,9 @@ module GenericOperations =
         static member internal doTimes pushIndex tp =
             // creates a new item consiting of the code item preceded by INTEGER.POP
             let concatPopIntegerAndCode (code : #PushTypeBase) =
-                fst (createPushObject (stockTypes.Types.[code.MyType].GetType())
-                    [|PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"])::code.Raw<Push>().toList))|])
+                makePushBaseType
+                    (PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"]))::(code.Raw<Push>().toList)))
+                    code.MyType
 
             if areAllStacksNonEmpty [tp; Integer.Me.MyType] && (peekStack Integer.Me.MyType).Raw<int64>() > 0L 
             then

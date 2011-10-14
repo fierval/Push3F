@@ -58,4 +58,5 @@ module Parser =
         match parsePushString str with
         | Success(_,_,_) -> true
         | _ -> false
-                                               
+
+    let parseGetCode str = (parsePushString >> extractResult) str :?> Push                                           

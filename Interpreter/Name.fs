@@ -20,10 +20,14 @@ module StockTypesName =
 
         override t.isQuotable with get() = true
 
-        override t.Eval = 
-            match tryGetBinding (t.Raw<string>()) with
-            | Some value -> value
-            | None -> t :> PushTypeBase
+        override t.Eval =
+            if getState Name.Me.MyType = State.Quote then
+                setState Name.Me.MyType State.Exec
+                t :> PushTypeBase
+            else
+                match tryGetBinding (t.Raw<string>()) with
+                | Some value -> value
+                | None -> t :> PushTypeBase
 
         override t.ToString() =
           base.ToString()
@@ -51,12 +55,13 @@ module StockTypesName =
 
         [<PushOperation("RAND", Description = "Pushes a random generated NAME to the name stack")>]
         static member Rand () =
-            pushResult (Name (Name.GetRandomString 15))
+            push {
+                return! result Name.Me.MyType (Name.GetRandomString 15)
+            }
 
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
-            if stockTypes.Bindings.IsEmpty then ()
-            else
+            if not stockTypes.Bindings.IsEmpty then
                 let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(0, stockTypes.Bindings.Count)])
                 pushResult (Name (selectedName))
    

@@ -38,16 +38,16 @@ module Parser =
                                  pushList
                                 ]
 
-    let internal push = ws >>. pushProgram .>> ws .>> eof
+    let internal pushParser = ws >>. pushProgram .>> ws .>> eof
     
     // UTF8 is the default, but it will detect UTF16 or UTF32 byte-order marks automatically
     let parsePushFile fileName =
-        runParserOnFile push () fileName System.Text.Encoding.UTF8
+        runParserOnFile pushParser () fileName System.Text.Encoding.UTF8
 
     let parsePushStream stream encoding =
-        runParserOnStream push () "" stream System.Text.Encoding.UTF8
+        runParserOnStream pushParser () "" stream System.Text.Encoding.UTF8
    
-    let parsePushString str = run push str
+    let parsePushString str = run pushParser str
     
     let extractResult = function  
                             | Success(r,_,_) -> 

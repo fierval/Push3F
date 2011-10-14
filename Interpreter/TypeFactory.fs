@@ -104,7 +104,7 @@ module TypeFactory =
 
         member private t.pushResultToStack key resObj =
             let stack = stacks.[key]
-            stacks <- stacks.Replace(key, push resObj stack)
+            stacks <- stacks.Replace(key, pushStack resObj stack)
 
         member t.pushResult (resObj : PushTypeBase) =
             let key = resObj.MyType

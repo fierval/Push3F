@@ -22,7 +22,7 @@ module Eval =
                 // push in the reverse order
                 let updatedStack = 
                     l |> List.rev
-                    |> List.fold (fun stack e -> push e stack) empty
+                    |> List.fold (fun stack e -> pushStack e stack) empty
                     
                 let newRunningStack = append (updatedStack |> mapToPushTypeBaseStack) (stockTypes.Stacks.[exec])
                 stockTypes.Stacks <- stockTypes.Stacks.Replace(exec, newRunningStack)

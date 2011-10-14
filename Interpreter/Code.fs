@@ -25,6 +25,7 @@ module StockTypesCode =
         new (p : Push) as t = {inherit PushTypeBase(p)} then t.maxCodePoints <- 20
 
         static member private Me = new Code()
+        static member simpleOp f = simpleOp f Code.Me.MyType
 
         override t.ToString() =
           base.ToString()
@@ -47,13 +48,13 @@ module StockTypesCode =
             let containers : Stack<Push> ref = ref empty
             let stackOfInB = ref stackOfInB
             match ofA with
-            | PushList [] -> containers := push (PushList (peek !stackOfInB)) !containers; !containers
+            | PushList [] -> containers := pushStack (PushList (peek !stackOfInB)) !containers; !containers
             | _ ->
                 let stop = ref false
                 while not (!stackOfInB).isEmpty  && not !stop do
                     let topInB = peek !stackOfInB
                     for b in topInB do
-                        if b.Equals(ofA) then containers := push (PushList topInB) !containers
+                        if b.Equals(ofA) then containers := pushStack (PushList topInB) !containers
                         else
                             match b with
                             | PushList blist -> if blist.Length < ofA.toList.Length then () else stackOfInB := shove (!stackOfInB).length blist !stackOfInB
@@ -64,21 +65,11 @@ module StockTypesCode =
 
         [<PushOperation("APPEND", Description = "Appends two top pieces of code. Converts either one to list if necessary")>]
         static member Append() =
-            match processArgs2 Code.Me.MyType with
-            | [a1; a2] -> 
-                let l1appendl2 = 
-                    match (a1.Raw<Push>().toList), (a2.Raw<Push>().toList) with
-                    | lst1, lst2 -> PushList (lst1 @ lst2)
-
-                pushResult (Code(l1appendl2))
-            |_ -> ()
+            Code.simpleOp (fun (a : Push) (b : Push) -> PushList(a.toList @ b.toList))
 
         [<PushOperation("ATOM", Description = "TRUE if the top item is atomic, FALSE otherwise")>]
         static member Atom() =
-            let a = peekStack Code.Me.MyType
-            if a = Unchecked.defaultof<PushTypeBase> then ()
-            else
-                pushResult (Bool(not (a.Raw<Push>().isList)))
+            monoOp (fun (a : Push) -> not a.isList) Code.Me.MyType Bool.Me.MyType
                    
         [<PushOperation("CAR", Description = "Pushes the first item of the top of the stack. If top of the stack is an atom - no effect")>]
         [<PushOperation("FIRST", Description = "This is a more explicit name for the CAR operation")>]
@@ -114,7 +105,7 @@ module StockTypesCode =
             | [aFst; aSnd] -> 
                 match aFst.Raw<Push>() with
                 | PushList l -> 
-                        let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) false
+                        let res = Code.getContainers (aSnd.Raw<Push>()) (pushStack l empty) false
                         if res.isEmpty then pushResult (Code (PushList []))
                         else // if we have several containers, find the index of the one with min length
                             let containerIndex = 
@@ -135,7 +126,7 @@ module StockTypesCode =
         static member isMember (aFst : PushTypeBase) (aSnd : PushTypeBase) digDeeper =
             match aFst.Raw<Push>() with
             | PushList l -> 
-                    let res = Code.getContainers (aSnd.Raw<Push>()) (push l empty) (not digDeeper)
+                    let res = Code.getContainers (aSnd.Raw<Push>()) (pushStack l empty) (not digDeeper)
                     pushResult (Bool (not res.isEmpty))
             | _ -> pushResult (Bool (false))
 

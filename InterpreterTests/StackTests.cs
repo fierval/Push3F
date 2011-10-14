@@ -62,13 +62,13 @@ namespace InterpreterTests
         #endregion
 
         [TestMethod]
-        [Description("Tests push/pop")]
+        [Description("Tests pushStack/pop")]
         public void PushPopTest()
         {
             Stack.Stack<string> stack = Stack.empty<string>();
 
-            stack = Stack.push("a", stack);
-            stack = Stack.push("b", stack);
+            stack = Stack.pushStack("a", stack);
+            stack = Stack.pushStack("b", stack);
             
             var res = Stack.pop(stack);
 
@@ -86,11 +86,11 @@ namespace InterpreterTests
         {
             Stack.Stack<int> stack = Stack.empty<int>();
 
-            stack = Stack.push(1, stack);
-            stack = Stack.push(2, stack);
-            stack = Stack.push(3, stack);
-            stack = Stack.push(4, stack);
-            stack = Stack.push(5, stack);
+            stack = Stack.pushStack(1, stack);
+            stack = Stack.pushStack(2, stack);
+            stack = Stack.pushStack(3, stack);
+            stack = Stack.pushStack(4, stack);
+            stack = Stack.pushStack(5, stack);
 
             var res = Stack.popMany(3, stack);
 
@@ -124,13 +124,13 @@ namespace InterpreterTests
         public void LengthTest()
         {
             var stack = Stack.empty<int>();
-            stack = Stack.push(1, stack);
-            stack = Stack.push(2, stack);
-            stack = Stack.push(3, stack);
+            stack = Stack.pushStack(1, stack);
+            stack = Stack.pushStack(2, stack);
+            stack = Stack.pushStack(3, stack);
 
             Assert.AreEqual<int>(3, stack.length);
 
-            stack = Stack.push(4, stack);
+            stack = Stack.pushStack(4, stack);
 
             Assert.AreEqual<int>(4, stack.length);
 
@@ -141,9 +141,9 @@ namespace InterpreterTests
         public void ReverseTest()
         {
             var stack = Stack.empty<int>();
-            stack = Stack.push(1, stack);
-            stack = Stack.push(2, stack);
-            stack = Stack.push(3, stack);
+            stack = Stack.pushStack(1, stack);
+            stack = Stack.pushStack(2, stack);
+            stack = Stack.pushStack(3, stack);
 
             var rev = Stack.reverse(stack);
 
@@ -156,10 +156,10 @@ namespace InterpreterTests
         public void DupTest()
         {
             var stack = Stack.empty<int>();
-            stack = Stack.push(1, stack);
-            stack = Stack.push(2, stack);
-            stack = Stack.push(3, stack);
-            stack = Stack.push(4, stack);
+            stack = Stack.pushStack(1, stack);
+            stack = Stack.pushStack(2, stack);
+            stack = Stack.pushStack(3, stack);
+            stack = Stack.pushStack(4, stack);
 
             var dup = Stack.yankdup(2, stack);
             Assert.AreEqual(5, dup.length);
@@ -172,10 +172,10 @@ namespace InterpreterTests
         public void YankTest()
         {
             var stack = Stack.empty<int>();
-            stack = Stack.push(1, stack);
-            stack = Stack.push(2, stack);
-            stack = Stack.push(3, stack);
-            stack = Stack.push(4, stack);
+            stack = Stack.pushStack(1, stack);
+            stack = Stack.pushStack(2, stack);
+            stack = Stack.pushStack(3, stack);
+            stack = Stack.pushStack(4, stack);
 
             var yank = Stack.yank(2, stack);
             Assert.AreEqual(4, yank.length);

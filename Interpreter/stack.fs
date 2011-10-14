@@ -38,7 +38,7 @@ module Stack =
         | StackNode([]) -> []
         | StackNode(hd::tl) -> tl
  
-    let push hd tl = 
+    let pushStack hd tl = 
         match tl with
         |StackNode(x) -> StackNode(hd::x)
  
@@ -91,9 +91,9 @@ module Stack =
             StackNode(totalList)
 
     let shove n (value : 'a) (stack : 'a Stack) =
-        if n = 0 then push value stack
+        if n = 0 then pushStack value stack
         else
             let res = popManyReverse n stack
             match fst res with
             | [] -> stack
-            | _ -> append (StackNode(fst res)) (push value (snd res))
+            | _ -> append (StackNode(fst res)) (pushStack value (snd res))

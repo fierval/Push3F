@@ -2,12 +2,11 @@
 
 [<AutoOpen>]
 module StockTypesLiteral =
-    open push.types
     open push.parser
-    open push.stack
     open push.types.stock
     open System.Reflection
     open System
+    open push.types
 
     [<PushType("LITERAL", Description = "Double-quoted literals")>]
     type Literal =
@@ -30,19 +29,12 @@ module StockTypesLiteral =
 
         override t.isQuotable with get() = false
 
-        [<PushOperation("=")>]
-        static member Eq() =
-            match processArgs2 Literal.Me.MyType with
-            | [a1; a2] -> pushResult(Bool(a1.Raw<string>() = a2.Raw<string>()))
-            | _ -> ()
-
         [<PushOperation("+", Description="Concatenate two top literals")>]
         static member Concat() =
-            match processArgs2 Literal.Me.MyType with
-            | [a1; a2] -> pushResult(Literal(a1.Raw<string>() + a2.Raw<string>()))
-            | _ -> ()
-
+            simpleOp (fun (a:string) b -> a + b) Literal.Me.MyType
 
         [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack")>]
         static member Rand() =
-            pushResult (Literal (Name.GetRandomString 15))
+            push {
+                return! result Literal.Me.MyType (Name.GetRandomString 15)
+            }

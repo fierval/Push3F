@@ -13,17 +13,22 @@ module PopModule =
         let execType = stockTypes.Types.[name].GetType()
         fst (createPushObject execType [|e|])
 
-
-    let internal popOne<'a> stack : PushMonad<'a> = 
+    let internal topOne<'a> stack (getTop : string -> PushTypeBase) : PushMonad<'a> = 
         (fun state ->
             if isEmptyStack stack 
             then
                 state |> List.iter(fun e -> pushResult e) 
                 Unchecked.defaultof<'a>, List.empty 
             else 
-                let arg = processArgs1 stack
+                let arg = getTop stack
                 arg.Raw<'a>(), arg :: state
         )
+
+    let internal popOne<'a> stack : PushMonad<'a> = 
+        topOne stack processArgs1
+
+    let internal peekOne<'a> stack : PushMonad<'a> = 
+        topOne stack peekStack
 
     let internal result stack value : PushMonad<'a> = 
         (fun state -> 
@@ -35,6 +40,9 @@ module PopModule =
             let newState = values |> List.fold(fun values e -> (makePushBaseType stack e)::state) state
             Unchecked.defaultof<'a>, newState
         )
+
+    let internal zero<'a> : PushMonad<'a> =
+        (fun state -> Unchecked.defaultof<'a>, [])
 
     type internal PushBuilder () =
 

@@ -133,7 +133,7 @@ module Ast =
                 let diffElementOccurrence (map1 : Map<Push, int, Push>) (map2 : Map<Push, int, Push>) elem =
                     let inMap1 = if map1.ContainsKey elem then map1.[elem] else 0
                     let inMap2 = if map2.ContainsKey elem then map2.[elem] else 0
-                    Math.Abs(inMap1 - inMap2)
+                    int64 (Math.Abs(inMap1 - inMap2))
 
                 let union left right =
                     let rightSet = PushSet.Create(PushList(right), right)
@@ -149,7 +149,7 @@ module Ast =
                     let allElems = union lstDistinctT lstDistinctP
                     allElems |> List.sumBy 
                                     (fun e -> diffElementOccurrence mapT mapP e)
-                | _ -> Math.Abs((t :> IComparable).CompareTo p)
+                | _ -> int64 (Math.Abs((t :> IComparable).CompareTo p))
             
     and
         PushSet = Set<Push, Push>

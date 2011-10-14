@@ -134,8 +134,7 @@ namespace InterpreterTests
             Code.Container();
             var res = TestUtils.Top<Push>("CODE");
 
-            Assert.AreEqual(0, res.toList.Length);
-            Assert.AreEqual(1, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual("b", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]

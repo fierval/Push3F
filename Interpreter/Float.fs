@@ -15,7 +15,7 @@ module StockTypesFloat =
         new (f : float) = {inherit PushTypeBase(f)}
 
         static member Me = Float()
-        static member simpleOp f = simpleOp f Float.Me.MyType
+        static member simpleOp (f : float -> float -> float) = simpleOp f Float.Me.MyType
         static member monoOp f stack = monoOp f stack Float.Me.MyType
         static member singleOp f = Float.monoOp f Float.Me.MyType
 
@@ -37,15 +37,15 @@ module StockTypesFloat =
 
         [<PushOperation("+")>]
         static member Add() =
-            Float.simpleOp (fun (a:float) b -> a + b)
+            Float.simpleOp (fun a b -> a + b)
             
         [<PushOperation("*")>]
         static member Multiply() =
-           Float.simpleOp (fun (a:float) b -> a * b)
+           Float.simpleOp (fun a b -> a * b)
 
         [<PushOperation("-")>]
         static member Subtract() =
-            Float.simpleOp (fun (a:float) b -> a - b)
+            Float.simpleOp (fun a b -> a - b)
 
         [<PushOperation("/")>]
         static member Divide() =
@@ -63,9 +63,9 @@ module StockTypesFloat =
             let getMod stack = 
                 push {
                     let! right = popOne stack
-                    let! left = popOne stack
+                    let! left = popOne<float> stack
                     if right <> 0. then
-                        let quot = Math.Floor(Math.Floor(float left) / Math.Floor(right))
+                        let quot = Math.Floor(Math.Floor(left) / Math.Floor(right))
                         let! res = result stack (left - quot * right)
                         return res                        
                 }
@@ -86,11 +86,11 @@ module StockTypesFloat =
 
         [<PushOperation("MAX")>]
         static member Max () =
-            Float.simpleOp (fun (a : float) b -> max a b)
+            Float.simpleOp (fun a b -> max a b)
 
         [<PushOperation("MIN")>]
         static member Min () =
-            Float.simpleOp (fun (a : float) b -> min a b)
+            Float.simpleOp (fun a b -> min a b)
     
         [<PushOperation("RAND", Description = "Pushes a random float. Range is determined by MIN-RANDOM-FLOAT and MAX-RANDOM-FLOAT")>]
         static member Rand () =

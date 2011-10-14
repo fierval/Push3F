@@ -15,7 +15,7 @@ module StockTypesInteger =
         new (n : int64) = {inherit PushTypeBase(n)}
 
         static member Me = Integer()
-        static member simpleOp f = simpleOp f Integer.Me.MyType
+        static member simpleOp (f : int64 -> int64 -> int64) = simpleOp f Integer.Me.MyType
         static member monoOp f stack = monoOp f stack Integer.Me.MyType
             
         // custom parsing
@@ -36,15 +36,15 @@ module StockTypesInteger =
 
         [<PushOperation("+")>]
         static member Add() =
-            Integer.simpleOp (fun (a:int64) b -> a + b)
+            Integer.simpleOp (fun a b -> a + b)
             
         [<PushOperation("*")>]
         static member Multiply() =
-           Integer.simpleOp (fun (a:int64) b -> a * b)
+           Integer.simpleOp (fun a b -> a * b)
 
         [<PushOperation("-")>]
         static member Subtract() =
-            Integer.simpleOp (fun (a:int64) b -> a - b)
+            Integer.simpleOp (fun a b -> a - b)
 
         [<PushOperation("/")>]
         static member Divide() =
@@ -78,11 +78,11 @@ module StockTypesInteger =
 
         [<PushOperation("MAX")>]
         static member Max () =
-            Integer.simpleOp (fun (a : int64) b -> max a b)
+            Integer.simpleOp (fun a b -> max a b)
 
         [<PushOperation("MIN")>]
         static member Min () =
-            Integer.simpleOp (fun (a : int64) b -> min a b)
+            Integer.simpleOp (fun a b -> min a b)
     
         [<PushOperation("RAND", Description = "Pushes a random int64. Range is determined by MIN-RANDOM-INTEGER and MAX-RANDOM-INTEGER")>]
         static member Rand () =

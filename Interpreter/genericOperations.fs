@@ -91,38 +91,41 @@ module GenericOperations =
 
         [<GenericPushOperation("YANK", Description = "Tears an item out of the stack. The index is designated by the top of the INTEGER stack")>]
         static member yank tp =
-            if isEmptyStack Integer.Me.MyType || (peekStack Integer.Me.MyType).Raw<int64>() < 0L || int64 (stockTypes.Stacks.[tp].length) <= (peekStack Integer.Me.MyType).Raw<int64>() then () 
-            else
-                let arg = Ops.getIntArgument tp
-                let newStack = yank (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
-                Ops.Replace tp newStack 
+            push {
+                let! arg = popOne Integer.Me.MyType
+                if arg >= 0L && int64 (stockTypes.Stacks.[tp].length) > arg then
+                    let newStack = yank (int arg) stockTypes.Stacks.[tp]
+                    Ops.Replace tp newStack 
+                    return! zero
+            }
 
         [<GenericPushOperation("YANKDUP", Description = "Yanks an item out of the stack and pushes it on top of the stack")>]
         static member yankdup tp =
-            if isEmptyStack Integer.Me.MyType || (peekStack Integer.Me.MyType).Raw<int64>() < 0L || int64 (stockTypes.Stacks.[tp].length) <= (peekStack Integer.Me.MyType).Raw<int64>() then () 
-            else
-                let arg = Ops.getIntArgument tp
-                let newStack = yankdup (int (arg.Raw<int64>())) stockTypes.Stacks.[tp]
-                Ops.Replace tp newStack
-        
+            push {
+                let! arg = popOne Integer.Me.MyType
+                if arg >= 0L && int64 (stockTypes.Stacks.[tp].length) > arg then
+                    let newStack = yankdup (int arg) stockTypes.Stacks.[tp]
+                    Ops.Replace tp newStack 
+                    return! zero
+            }
+
         [<GenericPushOperation("IF", Description = "Execute either the first or the second item on top of the code stack", AppliesTo=[|"CODE"; "EXEC"|])>]
         static member If tp =
             //things are different for CODE and EXEC:
             //(5 3 INTEGER.< EXEC.IF 1 0) - should push the top item of the EXEC to the INTEGER stack
             // while (5 3 INTEGER.< CODE.QUOTE 1 CODE.QUOTE 0 CODE.IF) should push the second item of 
             // the CODE stack in order to conform to the "readability" of programs. 
-            if isEmptyStack Bool.Me.MyType then ()
-            else
-                match processArgs2 tp with
-                | [a1; a2] ->
-                    let isCodeStack = tp = "CODE"
-                    let isTrue = (processArgs1 Bool.Me.MyType).Raw<bool>()
-                    let a1 = a1.Raw<Push>()
-                    let a2 = a2.Raw<Push>()
-                    match (isCodeStack, isTrue) with
-                    | (true, true) | (false, false) -> pushToExec a1
-                    | (true, false) | (false, true) -> pushToExec a2
-                | _ -> ()
+            push {
+                let! a2 = popOne tp : PushMonad<Push>
+                let! a1 = popOne tp : PushMonad<Push>
+                let! isTrue = popOne Bool.Me.MyType
+                let res = 
+                    match (tp = "CODE", isTrue) with
+                    | (true, true) | (false, false) -> a1
+                    | (true, false) | (false, true) -> a2
+
+                return! result "EXEC" res
+            }
 
         // everything bottle-necsk through here
         static member internal doRange start finish (code : Push) tp =

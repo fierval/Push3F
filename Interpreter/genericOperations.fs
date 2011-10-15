@@ -154,15 +154,15 @@ module GenericOperations =
             let concatPopIntegerAndCode (code : Push) =
                 PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"]))::(code.toList))
             
-            if areAllStacksNonEmpty [tp; Integer.Me.MyType] && (peekStack Integer.Me.MyType).Raw<int64>() > 0L 
-            then
-                match (processArgs1 Integer.Me.MyType).Raw<int64>(), (processArgs1 tp).Raw<Push>() with
-                | a1, code -> 
-                        if not pushIndex then
-                            Ops.doRange  0L (1L - a1) (concatPopIntegerAndCode code) tp
-                        else
-                            Ops.doRange  0L (1L - a1) code tp
-            
+            push {
+                let! code = popOne tp
+                let! range = popOne Integer.Me.MyType
+                if range > 0L then
+                    let code = if not pushIndex then (concatPopIntegerAndCode code) else code
+                    Ops.doRange  0L (1L - range) code tp
+                    return! zero
+            }
+
         [<GenericPushOperation("DO*COUNT", 
             Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack", 
             AppliesTo=[|"EXEC"; "CODE"|])>]

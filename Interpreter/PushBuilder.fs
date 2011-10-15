@@ -9,6 +9,8 @@ module PopModule =
 
     type internal PushMonad<'a> = List<PushTypeBase> -> 'a * List<PushTypeBase>
 
+    let nullState = Unchecked.defaultof<List<PushTypeBase>>
+
     let internal makePushBaseType e name =
         let execType = stockTypes.Types.[name].GetType()
         fst (createPushObject execType [|e|])
@@ -18,7 +20,7 @@ module PopModule =
             if isEmptyStack stack 
             then
                 state |> List.iter(fun e -> pushResult e) 
-                Unchecked.defaultof<'a>, List.empty 
+                Unchecked.defaultof<'a>, nullState 
             else 
                 let arg = getTop stack
                 arg.Raw<'a>(), arg :: state
@@ -49,7 +51,7 @@ module PopModule =
         member this.Bind (p : PushMonad<'a>, f : 'a -> PushMonad<'b>) : PushMonad<'b> =
             (fun state -> 
                 let value, state = p state
-                if state = List.empty then
+                if state = nullState then
                     Unchecked.defaultof<'b>, state 
                 else
                     f value state
@@ -57,7 +59,7 @@ module PopModule =
         
         member this.Return (x : 'a) : PushMonad<'a> =
             (fun state ->
-                if state <> List.empty then 
+                if state <> nullState && state <> List.empty then 
                     pushResult state.Head
                     x, state.Tail
                 else
@@ -66,7 +68,7 @@ module PopModule =
         member this.ReturnFrom (m : PushMonad<'a>) : PushMonad<'a> = 
             (fun state -> 
                 let value, state = m state
-                if state <> List.empty then 
+                if state <> nullState && state <> List.empty then 
                     pushResult state.Head
                     value, state.Tail
                 else

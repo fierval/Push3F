@@ -29,7 +29,7 @@ namespace InterpreterTests
             var prog = "(CODE.QUOTE INTEGER.* CODE.DO*RANGE)";
             Program.ExecPush(prog);
 
-            Assert.IsTrue(TestUtils.IsEmpty("EXEC"));
+            Assert.IsTrue(TestUtils.IsEmpty("INTEGER"));
             Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
         }
 
@@ -39,8 +39,8 @@ namespace InterpreterTests
             var prog = "(CODE.QUOTE INTEGER.* 1 CODE.DO*RANGE)";
             Program.ExecPush(prog);
 
-            Assert.IsTrue(TestUtils.IsEmpty("EXEC"));
             Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1, TestUtils.LengthOf("INTEGER"));
         }
 
         [TestMethod]

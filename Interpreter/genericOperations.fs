@@ -124,53 +124,44 @@ module GenericOperations =
                     | (true, false) | (false, true) -> pushToExec a2
                 | _ -> ()
 
-
-        static member private pushCodeToExec =
-            let code = processArgs1 "CODE"
-            pushToExec (code.Raw<Push>())
- 
         // everything bottle-necsk through here
-        static member internal doRange start finish (code : PushTypeBase) =
+        static member internal doRange start finish (code : Push) tp =
             let next = 
                 if start < finish then start + 1L
                 elif start > finish then start - 1L
                 else start
 
-            let  codePush = code.Raw<Push>()
-
             if start <> finish then
                 let quote = Operation("CODE", stockTypes.Operations.["CODE"].["QUOTE"])
-                let op = Operation(code.MyType, stockTypes.Operations.[code.MyType].["DO*RANGE"])
+                let op = Operation(tp, stockTypes.Operations.[tp].["DO*RANGE"])
 
                 let valFinish = Value(Integer(finish))
                 let valNext = Value(Integer(next))
                 let newLoopList = 
-                    if code.MyType <> "CODE" 
+                    if tp <> "CODE" 
                     then 
-                        PushList([valNext; valFinish; op; codePush]) 
+                        PushList([valNext; valFinish; op; code]) 
                     else 
-                        PushList([valNext; valFinish; quote; codePush; op])
+                        PushList([valNext; valFinish; quote; code; op])
                 
                 pushToExec newLoopList
 
             pushResult (Integer(start))
-            pushToExec codePush
+            pushToExec code
 
         static member internal doTimes pushIndex tp =
             // creates a new item consiting of the code item preceded by INTEGER.POP
-            let concatPopIntegerAndCode (code : #PushTypeBase) =
-                makePushBaseType
-                    (PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"]))::(code.Raw<Push>().toList)))
-                    code.MyType
-
+            let concatPopIntegerAndCode (code : Push) =
+                PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"]))::(code.toList))
+            
             if areAllStacksNonEmpty [tp; Integer.Me.MyType] && (peekStack Integer.Me.MyType).Raw<int64>() > 0L 
             then
-                match (processArgs1 Integer.Me.MyType).Raw<int64>(), (processArgs1 tp) with
+                match (processArgs1 Integer.Me.MyType).Raw<int64>(), (processArgs1 tp).Raw<Push>() with
                 | a1, code -> 
                         if not pushIndex then
-                            Ops.doRange  0L (1L - a1) (concatPopIntegerAndCode code)
+                            Ops.doRange  0L (1L - a1) (concatPopIntegerAndCode code) tp
                         else
-                            Ops.doRange  0L (1L - a1) code
+                            Ops.doRange  0L (1L - a1) code tp
             
         [<GenericPushOperation("DO*COUNT", 
             Description = "Executes the item on top of the CODE stack recursively, the number of times is set by the INTEGER stack", 
@@ -188,14 +179,13 @@ module GenericOperations =
             Description = "Executes the item on top of the CODE stack recursively, while iterating through the range arguments", 
             AppliesTo=[|"EXEC"; "CODE"|])>]
         static member DoRange tp =
-            if (peekStack2 Integer.Me.MyType).Length < 2 || isEmptyStack tp then ()
-            else
-                match (processArgs2 Integer.Me.MyType), (processArgs1 tp) with
-                | [a1; a2], code ->
-                    let start = a1.Raw<int64>()
-                    let finish = a2.Raw<int64>() 
-                    Ops.doRange start finish code
-                | _ -> ()
+            push {
+                let! finish = popOne Integer.Me.MyType
+                let! start = popOne Integer.Me.MyType
+                let! code = popOne tp : PushMonad<Push>
+                Ops.doRange start finish code tp
+                return! zero
+            }
 
         [<GenericPushOperation("WRITE", Description="Write the top value out to the console")>]
         static member Write tp =

@@ -59,5 +59,13 @@ namespace InterpreterTests
             Assert.AreEqual("f", TestUtils.GetTopCodeString());
         }
 
+        [TestMethod]
+        public void ExtractNoIntegerArgumentTest()
+        {
+            var prog = "(CODE.QUOTE (b c) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("(b c)", TestUtils.GetTopCodeString());
+        }
     }
 }

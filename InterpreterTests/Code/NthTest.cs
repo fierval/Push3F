@@ -25,7 +25,7 @@ namespace InterpreterTests
             Assert.AreEqual("(c d)", TestUtils.GetTopCodeString());
         }
 
-        [TestMethod]
+        [TestMethod]    
         public void NthEmptyTest()
         {
             var prog = "(CODE.QUOTE () CODE.QUOTE () 0 CODE.NTH)";

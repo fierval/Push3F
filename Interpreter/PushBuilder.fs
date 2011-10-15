@@ -41,8 +41,8 @@ module PopModule =
             Unchecked.defaultof<'a>, newState
         )
 
-    let internal zero<'a> : PushMonad<'a> =
-        (fun state -> Unchecked.defaultof<'a>, [])
+    let internal zero : PushMonad<unit> =
+        (fun state -> (), [])
 
     type internal PushBuilder () =
 

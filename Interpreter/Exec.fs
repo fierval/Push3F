@@ -35,23 +35,20 @@ module StockTypesExec =
         [<PushOperation("K", Description = "Removes the second item on the exec stack")>]
         static member K () =
             pushResult (Integer(1L))
-            Ops.yank Exec.Me.MyType
+            Ops.yank Exec.Me.MyType |> ignore
             Ops.pop Exec.Me.MyType
 
         [<PushOperation("S", Description = "Pops A, B, C, then push (B C), then push C, then push A")>]
         static member S () =
-            Ops.stackdepth Exec.Me.MyType
-            match processArgs1 Integer.Me.MyType with
-            | a when a <> Unchecked.defaultof<PushTypeBase> && a.Raw<int64>() >= 3L ->
-                let a = processArgs1 Exec.Me.MyType
-                let b = processArgs1 Exec.Me.MyType
-                let c = processArgs1 Exec.Me.MyType
+            push {
+                let! a = popOne<Push> Exec.Me.MyType
+                let! b = popOne<Push> Exec.Me.MyType
+                let! c = popOne<Push> Exec.Me.MyType
 
-                pushResult (Exec(PushList [b.Raw<Push>(); c.Raw<Push>()]))
-                pushResult c
-                pushResult a
-
-            | _ -> ()
+                return! result Exec.Me.MyType (PushList[b; c])
+                return! result Exec.Me.MyType c
+                return! result Exec.Me.MyType a
+            }
 
         [<PushOperation("Y", Description = "Inserts below the top: (EXEC.Y <top>)")>]
         static member Y () =

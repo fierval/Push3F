@@ -130,28 +130,30 @@ module GenericOperations =
 
         // everything bottle-necsk through here
         static member internal doRange start finish (code : Push) tp =
+            let quote = Operation("CODE", stockTypes.Operations.["CODE"].["QUOTE"])
+            let op = Operation(tp, stockTypes.Operations.[tp].["DO*RANGE"])
+
             let next = 
                 if start < finish then start + 1L
                 elif start > finish then start - 1L
                 else start
 
-            if start <> finish then
-                let quote = Operation("CODE", stockTypes.Operations.["CODE"].["QUOTE"])
-                let op = Operation(tp, stockTypes.Operations.[tp].["DO*RANGE"])
-
-                let valFinish = Value(Integer(finish))
-                let valNext = Value(Integer(next))
-                let newLoopList = 
-                    if tp <> "CODE" 
-                    then 
-                        PushList([valNext; valFinish; op; code]) 
-                    else 
-                        PushList([valNext; valFinish; quote; code; op])
+            push {
+                if start <> finish then
+                    let valFinish = Value(Integer(finish))
+                    let valNext = Value(Integer(next))
+                    let newLoopList = 
+                        if tp <> "CODE" 
+                        then 
+                            PushList([valNext; valFinish; op; code]) 
+                        else 
+                            PushList([valNext; valFinish; quote; code; op])
                 
-                pushToExec newLoopList
+                    return! result "EXEC" newLoopList
 
-            pushResult (Integer(start))
-            pushToExec code
+                return! result "INTEGER" start
+                return! result "EXEC" code
+            }
 
         static member internal doTimes pushIndex tp =
             // creates a new item consiting of the code item preceded by INTEGER.POP
@@ -163,7 +165,7 @@ module GenericOperations =
                 let! range = popOne Integer.Me.MyType
                 if range > 0L then
                     let code = if not pushIndex then (concatPopIntegerAndCode code) else code
-                    Ops.doRange  0L (1L - range) code tp
+                    Ops.doRange  0L (1L - range) code tp |> ignore
                     return! zero
             }
 
@@ -187,7 +189,7 @@ module GenericOperations =
                 let! finish = popOne Integer.Me.MyType
                 let! start = popOne Integer.Me.MyType
                 let! code = popOne tp : PushMonad<Push>
-                Ops.doRange start finish code tp
+                Ops.doRange start finish code tp |> ignore
                 return! zero
             }
 

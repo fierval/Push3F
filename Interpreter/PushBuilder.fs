@@ -32,10 +32,10 @@ module PopModule =
     let internal peekOne<'a> stack : PushMonad<'a> = 
         topOne stack peekStack
 
-    let internal result stack value : PushMonad<'a> = 
+    let internal result stack value : PushMonad<unit> = 
         (fun state -> 
             let resultingValue = makePushBaseType value stack
-            value, resultingValue::state)
+            (), resultingValue::state)
 
     let internal resulList stack values : PushMonad<'a> =
         (fun state ->

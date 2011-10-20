@@ -11,18 +11,26 @@ namespace ExtensionAssembly
     {
         static UrlPushType UrlParse(string url)
         {
-            if (!url.Trim().StartsWith("http://", true, CultureInfo.InvariantCulture))
+            try
             {
-                url = "http://" + url;
-            }
+                if (!url.Trim().StartsWith("http://", true, CultureInfo.InvariantCulture))
+                {
+                    return null;
+                }
 
-            Uri uri = new Uri(url);
-            if (uri.HostNameType != UriHostNameType.Dns)
+                Uri uri = new Uri(url);
+                if (uri.HostNameType != UriHostNameType.Dns)
+                {
+                    return null;
+                }
+
+                return new UrlPushType(uri);
+
+            }
+            catch (Exception e)
             {
-                throw new PushExceptions.PushException("Unknown scheme");
+                return null;                
             }
-
-            return new UrlPushType(uri);
         }
 
         public override Type.ExtendedTypeParser Parser

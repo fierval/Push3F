@@ -34,7 +34,12 @@ module TypeFactory =
                         let pushObj, name = createPushObject t Array.empty
                         map |> Map.add name pushObj) Map.empty
 
-
+    
+    let internal discoverGenericTypes (attribute : System.Type) (assembly : string option) =
+        assembly
+        |> loadTypes
+        |> getAnnotatedTypes attribute
+ 
     //static function to run through the assemblies and discover new types
     let internal discoverPushTypes (assembly : string option) =
         discoverByAssemblyAttribute typeof<PushTypeAttribute> assembly
@@ -52,11 +57,15 @@ module TypeFactory =
     // can instantiate it.
     type internal StockTypes(? assembly : string) = 
         let mutable ptypes = discoverPushTypes assembly
+        let mutable genericTypes = discoverGenericTypes typeof<GenericPushTypeAttribute> assembly
+
         // this is a test hook. When adding types, it is good to restore
         // the state to the original one
-        let mutable origPtypes = ptypes
+        let origPtypes = ptypes
+        let origGenericTypes = genericTypes
+
         let mutable stacks = typeStacks ptypes
-        let mutable operations = getOperations ptypes
+        let mutable operations = getOperations ptypes genericTypes
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
         let mutable states = internalStates ptypes
 
@@ -86,9 +95,11 @@ module TypeFactory =
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
             let newTypes = discoverPushTypes (Some assembly)
+            let newGenericTypes = discoverGenericTypes typeof<GenericPushTypeAttribute> (Some assembly)
+            genericTypes <- Seq.append genericTypes newGenericTypes
             ptypes <- ptypes.Append(newTypes)
             stacks <- typeStacks ptypes
-            operations <- getOperations ptypes
+            operations <- getOperations ptypes genericTypes
             states <- internalStates ptypes
 
         // retrieves arguments from the appropriate stack
@@ -113,8 +124,9 @@ module TypeFactory =
         // good for test to clean up the stacks
         member t.cleanAllStacks() =
             ptypes <- origPtypes
+            genericTypes <- origGenericTypes
             stacks <- typeStacks ptypes
-            operations <- getOperations ptypes
+            operations <- getOperations ptypes genericTypes
             bindings <- Map.empty
 
 
@@ -131,6 +143,8 @@ module TypeFactory =
             let arg1, arg2 = List.head args , List.head (List.tail args)
             [arg1; arg2]
         
+    // BUG: This does not really protect from an empty stack
+    // Should always check for the empty stack or use monadic representation
     let processArgs1 sysType = 
         let args = popArguments sysType 1
         if not (args.Length = 1) then Unchecked.defaultof<PushTypeBase>

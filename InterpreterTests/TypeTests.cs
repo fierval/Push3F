@@ -9,6 +9,7 @@ using ExtensionAssembly;
 using BadClass;
 using NonstaticOp;
 using Type = push.types.Type;
+using push.core;
 
 
 namespace InterpreterTests
@@ -168,6 +169,21 @@ namespace InterpreterTests
             Assert.IsNotNull(TestUtils.StackOf("URL"));
 
             Assert.AreEqual(8, TypeFactory.stockTypes.Operations.Count);
+        }
+
+        [TestMethod]
+        [Description("Extend a basic type from an assembly")]
+        public void ExtendTypeFromAssembly()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+
+            TypeFactory.appendStacksFromAssembly("ExtensionAssembly.dll");
+
+            var prog = "(5 INTEGER.TOSTRING)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("5", TestUtils.Top<string>("LITERAL"));
+
         }
     
         [TestMethod]

@@ -46,8 +46,8 @@ module TypesShared =
         snd mi |> Array.fold (fun map e -> map |> Map.add e (fst mi)) map
 
     //for each of the members, we can discover its operations.
-    let internal getOperationsForType ptype attribute =
-        let opAttributes = ptype.GetType().GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) //discover all relevant methods
+    let internal getOperationsForType (ptype : System.Type) attribute =
+        let opAttributes = ptype.GetMethods(BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static) //discover all relevant methods
                             |> Seq.map ( // create a seq of MethodInfo * Attribute []
                                 fun mi -> mi, mi.GetCustomAttributes(attribute, false)) // optimization: only calling GetCustomAttributes() once
                             |> Seq.filter ( // filter the sequence to only have PushOperationAttribute - containing methods
@@ -61,19 +61,20 @@ module TypesShared =
                 fun acc mi -> addToOpsMap mi acc) Map.empty 
 
     // gets generic operations from the Ops type
-    let internal getGenericOperations = 
-        let tp = (Assembly.GetCallingAssembly().GetType("push.types.GenericOperations+Ops"))
-        let opsObj = tp.GetConstructor(Array.empty).Invoke(Array.empty)
-        getOperationsForType opsObj typeof<GenericPushOperationAttribute>
+    let internal getGenericOperations genericTypes = 
+        genericTypes 
+        |> Seq.map(fun t -> getOperationsForType t typeof<GenericPushOperationAttribute> |> Map.toSeq) // produces a sequence of maps, converts to seq of sequences
+        |> Seq.concat // flattens them
+        |> Seq.fold(fun map (str, e) -> Map.add str e map) Map.empty //converts them to a single map
 
     let internal getNonGenericOperations (ptypes : Map<string, 'b>) =
-        ptypes |> Map.map (fun typeName ptype -> (getOperationsForType ptype typeof<PushOperationAttribute>))
+        ptypes |> Map.map (fun typeName ptype -> (getOperationsForType (ptype.GetType()) typeof<PushOperationAttribute>))
 
     // groups all operations into a map of: Map(typeName, Map(operationName, operation))
-    let internal getOperations (ptypes : Map<string, 'b>) =
+    let internal getOperations (ptypes : Map<string, 'b>) (genericTypes : 'c seq)=
         let nonGenericOps = getNonGenericOperations ptypes
         let genericOps = 
-            getGenericOperations 
+            getGenericOperations genericTypes
             |> Map.map 
                 (fun key mi -> 
                     let attr = (mi.GetCustomAttributes(typeof<GenericPushOperationAttribute>, false)).[0] :?> GenericPushOperationAttribute

@@ -12,6 +12,7 @@ open System.IO
 [<AutoOpen>]
 module GenericOperations =
 
+    [<GenericPushType>]
     type Ops ()=
         static member private Replace key value =
             stockTypes.Stacks <- stockTypes.Stacks.Replace(key, value)

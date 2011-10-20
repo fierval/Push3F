@@ -4,8 +4,9 @@
 module TypeAttributes =
     open System
 
+    // new push types are decorated with this attribute
     [<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
-    type PushTypeAttribute(name:string)  =
+    type PushTypeAttribute(name : string)  =
         inherit Attribute()
         
         let mutable name = name
@@ -19,10 +20,18 @@ module TypeAttributes =
             with get() = description
             and set value = description <- value
 
+    // push operations within a push type are decorated with this attribute
     [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
     type PushOperationAttribute(name:string)  =
         inherit PushTypeAttribute(name)
         
+    // types that only contain generic operations are decorated with this attribute.
+    // it can be used to extend regular types by defining operations with GenericPushOperationAttribute
+    // these types do not have a stack associated with them, so they have no names.
+    [<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
+    type GenericPushTypeAttribute () =
+        inherit Attribute()
+
     [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
     type GenericPushOperationAttribute (name : string) =
         inherit PushOperationAttribute (name)

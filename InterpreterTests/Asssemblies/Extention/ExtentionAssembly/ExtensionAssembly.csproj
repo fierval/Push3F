@@ -44,6 +44,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntegerOpExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlPushType.cs" />
   </ItemGroup>

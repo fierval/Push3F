@@ -1,43 +1,41 @@
 ﻿namespace push.types
 
-[<AutoOpen>]
-module TypeAttributes =
-    open System
+open System
 
-    // new push types are decorated with this attribute
-    [<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
-    type PushTypeAttribute(name : string)  =
-        inherit Attribute()
+// new push types are decorated with this attribute
+[<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
+type PushTypeAttribute(name : string)  =
+    inherit Attribute()
         
-        let mutable name = name
-        let mutable description = System.String.Empty
+    let mutable name = name
+    let mutable description = System.String.Empty
 
-        member x.Name 
-            with get() = name
-            and set value = name <- value
+    member x.Name 
+        with get() = name
+        and set value = name <- value
 
-        member x.Description
-            with get() = description
-            and set value = description <- value
+    member x.Description
+        with get() = description
+        and set value = description <- value
 
-    // push operations within a push type are decorated with this attribute
-    [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
-    type PushOperationAttribute(name:string)  =
-        inherit PushTypeAttribute(name)
+// push operations within a push type are decorated with this attribute
+[<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
+type PushOperationAttribute(name:string)  =
+    inherit PushTypeAttribute(name)
         
-    // types that only contain generic operations are decorated with this attribute.
-    // it can be used to extend regular types by defining operations with GenericPushOperationAttribute
-    // these types do not have a stack associated with them, so they have no names.
-    [<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
-    type GenericPushTypeAttribute () =
-        inherit Attribute()
+// types that only contain generic operations are decorated with this attribute.
+// it can be used to extend regular types by defining operations with GenericPushOperationAttribute
+// these types do not have a stack associated with them, so they have no names.
+[<AttributeUsage(AttributeTargets.Class, AllowMultiple = false , Inherited = false) >]
+type GenericPushTypeAttribute () =
+    inherit Attribute()
 
-    [<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
-    type GenericPushOperationAttribute (name : string) =
-        inherit PushOperationAttribute (name)
+[<AttributeUsage(AttributeTargets.Method, AllowMultiple = true , Inherited = false) >]
+type GenericPushOperationAttribute (name : string) =
+    inherit PushOperationAttribute (name)
 
-        let mutable appliesTo = [||]
+    let mutable appliesTo = [||]
 
-        member x.AppliesTo 
-            with get() : string array = appliesTo
-            and set value = appliesTo <- value
+    member x.AppliesTo 
+        with get() : string array = appliesTo
+        and set value = appliesTo <- value

@@ -5,7 +5,6 @@ module TypesShared =
 
     open System.Reflection
     open System.Runtime.CompilerServices
-    open push.types.TypeAttributes
     open push.exceptions.PushExceptions
 
     [<assembly: InternalsVisibleTo ("InterpreterTests")>]

@@ -56,7 +56,7 @@ namespace InterpreterTests
         {
             var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Core.dll"));
 
-            var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types);
+            var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.PushTypeAttribute), types);
 
             Assert.AreEqual(7, sysTypes.Count());
         }
@@ -67,9 +67,9 @@ namespace InterpreterTests
         {
             var types = TypesShared.loadTypes(FSharpOption<string>.Some("Push.Core.dll"));
 
-            var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.TypeAttributes.PushTypeAttribute), types).ToList();
+            var sysTypes = TypesShared.getAnnotatedTypes(typeof(push.types.PushTypeAttribute), types).ToList();
 
-            var names = sysTypes.Select(t => (t.GetCustomAttributes(typeof(push.types.TypeAttributes.PushTypeAttribute), false).Single() as push.types.TypeAttributes.PushTypeAttribute).Name).ToList();
+            var names = sysTypes.Select(t => (t.GetCustomAttributes(typeof(push.types.PushTypeAttribute), false).Single() as push.types.PushTypeAttribute).Name).ToList();
 
             var obj = TypeFactory.createPushObject<Type.PushTypeBase>(sysTypes[0], new object [] {});
 

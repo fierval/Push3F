@@ -7,7 +7,7 @@ using Type = push.types.Type;
 
 namespace NonstaticOp
 {
-    [TypeAttributes.PushType("URLBADOP")]
+    [PushType("URLBADOP")]
     public class UrlPushType : Type.PushTypeBase
     {
         static UrlPushType UrlParse(string url)
@@ -37,7 +37,7 @@ namespace NonstaticOp
         public UrlPushType() : base() { }
         public UrlPushType(Uri url) : base(url) { }
 
-        [TypeAttributes.PushOperation("DOMAIN", Description = "This method should be static")]
+        [PushOperation("DOMAIN", Description = "This method should be static")]
         void ExtractDomain()
         {
             var arg = TypeFactory.processArgs1("URL");

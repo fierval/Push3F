@@ -4,7 +4,6 @@
 module TypeFactory =
 
     open TypesShared
-    open TypeAttributes
     open System.Reflection
     open push.exceptions.PushExceptions
     open Type

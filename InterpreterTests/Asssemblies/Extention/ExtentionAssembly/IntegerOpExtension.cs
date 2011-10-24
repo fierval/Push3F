@@ -7,10 +7,10 @@ using push.types.stock;
 
 namespace ExtensionAssembly
 {
-    [TypeAttributes.GenericPushType]
+    [GenericPushType]
     public class IntegerOpExtension
     {
-        [TypeAttributes.GenericPushOperation("TOSTRING", 
+        [GenericPushOperation("TOSTRING", 
             Description="Converts top integer to a literal", 
             AppliesTo= new string [] {"INTEGER"})]
         public static void ConvertToString()

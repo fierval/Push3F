@@ -6,11 +6,11 @@ using Type = push.types.Type;
 
 namespace BadClass
 {
-    [TypeAttributes.PushType("BADCLASS")]
+    [PushType("BADCLASS")]
     public class BadClass
     {
 
-        [TypeAttributes.PushOperation("DOMAIN", Description = "Extract domain name from the URL")]
+        [PushOperation("DOMAIN", Description = "Extract domain name from the URL")]
         static void ExtractDomain()
         {
         }

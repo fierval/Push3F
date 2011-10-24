@@ -6,7 +6,7 @@ using Type = push.types.Type;
 
 namespace ExtensionAssembly
 {
-    [TypeAttributes.PushType("URL")]
+    [PushType("URL")]
     public class UrlPushType : Type.PushTypeBase
     {
         static UrlPushType UrlParse(string url)
@@ -27,7 +27,7 @@ namespace ExtensionAssembly
                 return new UrlPushType(uri);
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;                
             }
@@ -44,7 +44,7 @@ namespace ExtensionAssembly
         public UrlPushType() : base() {}
         public UrlPushType(Uri url) : base(url) {}
 
-        [TypeAttributes.PushOperation("DOMAIN", Description="Extract domain name from the URL")]
+        [PushOperation("DOMAIN", Description="Extract domain name from the URL")]
         static void ExtractDomain()
         {
             var arg = TypeFactory.processArgs1("URL");

@@ -101,16 +101,22 @@ module PopModule =
 
     let internal push = new PushBuilder()
 
+    // optimized for performance: no need to do anything
+    // if the stack is empty anyway
     let monoOp f stack resStack = push {
-        let! arg = popOne stack
-        let! res = result resStack (f arg)
-        return res
+        if not (isEmptyStack stack) then
+            let! arg = popOne stack
+            let! res = result resStack (f arg)
+            return res
     }
 
+    // optimized for performance: only do something if 2 arguments
+    // are available
     let dualOp f stack resStack = push {
-        let! right = popOne stack
-        let! left = popOne stack
-        return! result resStack (f left right)
+        if stockTypes.Stacks.[stack].length >= 2 then 
+            let! right = popOne stack
+            let! left = popOne stack
+            return! result resStack (f left right)
         }
 
     let simpleOp f stack = dualOp f stack stack

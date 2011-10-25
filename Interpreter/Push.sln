@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonstaticOp", "..\Interpret
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Push", "..\Push\Push.fsproj", "{802A6258-3745-47C3-BF14-6C27CC4E6392}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GeneticLib", "..\GeneticLib\GeneticLib.fsproj", "{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,16 @@ Global
 		{802A6258-3745-47C3-BF14-6C27CC4E6392}.Release|Mixed Platforms.Build.0 = Release|x86
 		{802A6258-3745-47C3-BF14-6C27CC4E6392}.Release|x86.ActiveCfg = Release|x86
 		{802A6258-3745-47C3-BF14-6C27CC4E6392}.Release|x86.Build.0 = Release|x86
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

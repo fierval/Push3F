@@ -18,7 +18,7 @@ module StockTypesExec =
 
         [<DefaultValue>] static val mutable private yCount : int64
 
-        static member private Me = new Exec()
+        static member internal Me = new Exec()
 
         override t.ToString() =
           base.ToString()

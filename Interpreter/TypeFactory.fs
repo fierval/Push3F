@@ -3,12 +3,9 @@
 [<AutoOpen>]
 module TypeFactory =
 
-    open TypesShared
     open System.Reflection
-    open push.exceptions.PushExceptions
-    open Type
-    open push.stack.Stack
-    open push.exceptions.PushExceptions
+    open push.exceptions
+    open push.stack
 
     let internal createPushObject (t:System.Type) (args : obj []) : #PushTypeBase * string =
         let ci =
@@ -142,8 +139,8 @@ module TypeFactory =
             let arg1, arg2 = List.head args , List.head (List.tail args)
             [arg1; arg2]
         
-    // BUG: This does not really protect from an empty stack
-    // Should always check for the empty stack or use monadic representation
+    // This does not really protect from an empty stack in the most general case
+    // Will work here because PushTypeBase Unchecked.defaultof<> is null
     let processArgs1 sysType = 
         let args = popArguments sysType 1
         if not (args.Length = 1) then Unchecked.defaultof<PushTypeBase>
@@ -161,7 +158,7 @@ module TypeFactory =
         else
             mi.Invoke(null, Array.empty)
         |> ignore
-            
+
     // given the push type name and the operation name, 
     // execute the operation
     let internal exec typeName operation =

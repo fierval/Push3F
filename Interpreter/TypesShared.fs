@@ -8,6 +8,8 @@ module TypesShared =
     open push.exceptions.PushExceptions
 
     [<assembly: InternalsVisibleTo ("InterpreterTests")>]
+    [<assembly: InternalsVisibleTo ("GeneticLib")>]
+
     do 
         ()
 

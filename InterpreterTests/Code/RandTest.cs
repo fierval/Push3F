@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.types;
 using Code = push.types.stock.StockTypesCode.Code;
-using Push = push.parser.Ast.Push;
+using Push = push.types.Ast.Push;
 using push.core;
 using System.Threading;
 

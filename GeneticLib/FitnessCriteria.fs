@@ -4,7 +4,7 @@
 module FitnessCriteria =
 
     open System
-    open push.parser
+    open push.types
 
     type FitnessCriterion<'a> =
         { argument : 'a; value : float; evalFunc : 'a -> float}

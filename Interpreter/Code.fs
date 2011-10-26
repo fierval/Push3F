@@ -19,10 +19,10 @@ module StockTypesCode =
     type Code =
         inherit PushTypeBase
 
-        [<DefaultValue>]val mutable private maxCodePoints : int
+        [<DefaultValue>]static val mutable private maxCodePoints : int
 
-        new () as t = {inherit PushTypeBase ()} then t.maxCodePoints <- 20
-        new (p : Push) as t = {inherit PushTypeBase(p)} then t.maxCodePoints <- 20
+        new () = {inherit PushTypeBase ()} 
+        new (p : Push) = {inherit PushTypeBase(p)} 
 
         static member private Me = new Code()
         static member simpleOp (f : Push -> Push -> Push) = simpleOp f Code.Me.MyType
@@ -38,6 +38,12 @@ module StockTypesCode =
         override t.Parser 
             with get() = 
                 Unchecked.defaultof<ExtendedTypeParser>
+
+        static member MaxCodePoints 
+            with get () = 
+                if (Code.maxCodePoints = Unchecked.defaultof<int>) then Code.maxCodePoints <- 100
+                Code.maxCodePoints 
+            and set value = Code.maxCodePoints <- value
 
         static member internal pushArgsBack (args : PushTypeBase list) =
             pushResult args.Head
@@ -312,17 +318,20 @@ module StockTypesCode =
         static member Quote () =
             monoOp (fun (e : Push) -> e) "EXEC" Code.Me.MyType
 
-        [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
-        static member Size() =
-            let rec getSize (top : Push) =
-                match top with
+        static member getSize (top : Push) =
+            let rec getSize (code : Push) =            
+                match code with
                 | PushList l -> 
                     match l with
                     | [] -> 1L
-                    | hd::tl -> getSize hd + getSize (PushList(tl))
+                    | hd::tl -> getSize(hd) + getSize (PushList(tl))
                 | _ -> 1L
+            getSize top 
 
-            monoOp getSize Code.Me.MyType Integer.Me.MyType
+        [<PushOperation("SIZE", Description = "Pushes the number of 'points' to the integer stack.")>]
+        static member Size() =
+
+            monoOp Code.getSize Code.Me.MyType Integer.Me.MyType
 
         
         [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]
@@ -331,9 +340,9 @@ module StockTypesCode =
         // random code generation
         [<PushOperation("RAND", Description = "Generates random code")>]
         static member Rand() = 
-            let initRandom = Code.Random
+            let initRandom = Type.Random
 
-            // given a choice, generate a random name, random code, random integer
+            // given a choice, generate a random name, random code, random const
             let pickRandomConst () = 
                 let randomType = initRandom.Next(1, int Types.Max + 1)
             
@@ -350,10 +359,11 @@ module StockTypesCode =
 
                 // generate a random constant
                 | Types.Const -> 
-                    match initRandom.Next(0, 3) with
+                    match initRandom.Next(0, 4) with
                     | 0 -> Value(Integer(int64(initRandom.Next())))
                     | 1 -> Value (Float(initRandom.NextDouble()))
                     | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
+                    | 3 -> Value(Literal (Name.GetRandomString 20))
                     | _ -> failwith "unknown constant type"
                     
                 // either generates a random name or gets a random definition
@@ -381,7 +391,7 @@ module StockTypesCode =
                         let sizesThisLevel = decompose (points - 1) (points - 1) List.empty
                         PushList(sizesThisLevel |> List.map(fun e -> inputCodeMaxSize e))
             
-            let points = initRandom.Next(1, Code.Me.maxCodePoints)
+            let points = initRandom.Next(1, Code.MaxCodePoints)
 
             let res = inputCodeMaxSize points
 

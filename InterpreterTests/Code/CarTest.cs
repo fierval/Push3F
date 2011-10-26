@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using push.core;
 using push.types;
-using Push = push.parser.Ast.Push;
+using Push = push.types.Ast.Push;
 
 namespace InterpreterTests
 {

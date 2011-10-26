@@ -41,11 +41,11 @@ module StockTypesName =
 
          // generates a random string of maximum size
         static member GetRandomString maxSize =
-            let size = Name.Random.Next(1, maxSize) // limit it in size to 20 characters
+            let size = Type.Random.Next(1, maxSize) // limit it in size to 20 characters
             let chars = 
                 [|
             
-                    for i = 0 to size do yield (char(int(26. * Name.Random.NextDouble()) + 65))
+                    for i = 0 to size do yield (char(int(26. * Type.Random.NextDouble()) + 65))
                 |]
             new System.String(chars)
            
@@ -62,7 +62,7 @@ module StockTypesName =
         [<PushOperation("RANDBOUNDNAME", Description = "Pushes a random bound NAME to the name stack")>]
         static member RandBoundName () =
             if not stockTypes.Bindings.IsEmpty then
-                let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Name.Random.Next(0, stockTypes.Bindings.Count)])
+                let selectedName = fst ((stockTypes.Bindings |> Map.toList).[Type.Random.Next(0, stockTypes.Bindings.Count)])
                 pushResult (Name (selectedName))
    
         [<PushOperation("DUMPBINDINGS", Description = "Dumps all current bindings to the console") >]

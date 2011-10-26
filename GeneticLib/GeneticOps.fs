@@ -1,8 +1,8 @@
 ﻿namespace push.genetics
 
 open push.types
-open push.types.stock
 open push.parser
+open push.types.stock
 open System
 
 type Genetics (config : GenConfig, population : Push list) =
@@ -13,16 +13,6 @@ type Genetics (config : GenConfig, population : Push list) =
     let fitnessCriteria = config.fitnessValues
     let mutable population = population
     let mutable evolvedProgramIndex = -1
-
-    [<DefaultValue>]
-    static val mutable private rnd : Random
-
-    static member Random 
-        with get () = 
-            if Genetics.rnd = Unchecked.defaultof<Random> 
-            then 
-                Genetics.rnd <- Random(int DateTime.UtcNow.Ticks)
-            Genetics.rnd
 
     member t.EvolvedProgram 
         with get () =
@@ -56,7 +46,7 @@ type Genetics (config : GenConfig, population : Push list) =
         // Cumulative sum of probabilities, reverse the result and chop off the first 0.
         let cumulativeProbs = fitnessValues |> List.fold(fun cum e -> (e + cum.Head)::cum) [0.] |> List.rev |> List.tail
             
-        let spin = Genetics.Random.NextDouble()
+        let spin = Type.Random.NextDouble()
 
         // spin the roulette as many times as we have members in our population.
         population

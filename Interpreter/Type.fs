@@ -8,6 +8,8 @@ module Type =
     open System.Diagnostics
     open System
 
+    let Random = Random (int DateTime.UtcNow.Ticks)
+
     [<DebuggerDisplay("Value = {Value}")>]
     [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<AbstractClass>]
@@ -18,20 +20,10 @@ module Type =
         [<DefaultValue>]
         val mutable private myType : string
 
-        [<DefaultValue>]
-        static val mutable private rnd : Random
-
         new (v) as this = PushTypeBase()
                             then this.value <- v
 
         member t.Value with get() = t.value
-
-        static member Random 
-            with get () = 
-                if PushTypeBase.rnd = Unchecked.defaultof<Random> 
-                then 
-                    PushTypeBase.rnd <- Random(int DateTime.UtcNow.Ticks)
-                PushTypeBase.rnd
 
         static member private GetMyType (me : #PushTypeBase) =
             if System.String.IsNullOrEmpty(me.myType)

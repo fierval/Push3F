@@ -1,4 +1,4 @@
-﻿namespace push.parser
+﻿namespace push.types
 
 [<AutoOpen>]
 module Ast = 

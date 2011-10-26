@@ -104,7 +104,7 @@ module PopModule =
 
         member this.Combine (m1 : PushMonad<'a>, m2 : PushMonad<'a>) =
             (fun state -> 
-                let value, state = m1 state
+                let _, state = m1 state
                 m2 state)
 
     let internal push = new PushBuilder()

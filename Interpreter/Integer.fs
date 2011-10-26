@@ -87,6 +87,6 @@ module StockTypesInteger =
         [<PushOperation("RAND", Description = "Pushes a random int64. Range is determined by MIN-RANDOM-INTEGER and MAX-RANDOM-INTEGER")>]
         static member Rand () =
             push {
-                return! result Integer.Me.MyType (int64 (Integer.Random.Next(0, Int32.MaxValue)))
+                return! result Integer.Me.MyType (int64 (Type.Random.Next(0, Int32.MaxValue)))
             }
 

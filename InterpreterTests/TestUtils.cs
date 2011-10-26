@@ -5,7 +5,7 @@ using push.parser;
 using push.stack;
 using push.types;
 using push.types.stock;
-using Push = push.parser.Ast.Push;
+using Push = push.types.Ast.Push;
 using PushTypeBase = push.types.Type.PushTypeBase;
 
 namespace InterpreterTests

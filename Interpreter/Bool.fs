@@ -60,5 +60,5 @@ module StockTypesBool =
         [<PushOperation("RAND", Description = "Generates a random boolean")>]
         static member Rand() =
             push {
-                return! result Bool.Me.MyType (Bool.Random.Next(0, 2) > 0)
+                return! result Bool.Me.MyType (Type.Random.Next(0, 2) > 0)
             }

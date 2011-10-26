@@ -58,5 +58,15 @@ namespace InterpreterTests
             Assert.AreEqual(2, TestUtils.LengthOf("CODE"));
         }
 
+        [TestMethod]
+        public void NoCodeArgumentNthRestTest()
+        {
+            var prog = "(1 CODE.NTHREST)";
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
+            Assert.AreEqual(0, TestUtils.LengthOf("CODE"));
+            Assert.AreEqual(1L, TestUtils.Top<long>("INTEGER"));
+        }
+
+
     }
 }

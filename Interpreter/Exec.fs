@@ -54,13 +54,13 @@ module StockTypesExec =
         static member Y () =
             if not (isEmptyStack Exec.Me.MyType)
             then
-                let op = Operation("EXEC",stockTypes.Operations.["EXEC"].["Y"])
-                let code = (peekStack "EXEC").Raw<Push>()
+                let op = makeOperation Exec.Me.MyType "Y"
+                let code = (peekStack Exec.Me.MyType).Raw<Push>()
 
                 // push this operation on top of the stack
                 PushList ([op; code]) |> pushToExec 
                 Integer(1L) |> pushResult
-                Ops.shove "EXEC"
+                Ops.shove Exec.Me.MyType
 
         [<PushOperation("DUMPALLSTACKS", Description= "Writes out all the stacks to the console")>]
         static member DumpAllStacks () =

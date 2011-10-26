@@ -7,7 +7,12 @@ module PopModule =
     open push.stack
     open push.exceptions
 
-    type internal PushMonad<'a> = List<PushTypeBase> -> 'a * List<PushTypeBase>
+    type internal PushMonad<'a> = List<PushTypeBase> -> 'a option * List<PushTypeBase>
+    
+    let (!!) (some : 'a option) = 
+        match some with
+        | Some v -> v
+        | _ -> Unchecked.defaultof<'a>
 
     let nullState = Unchecked.defaultof<List<PushTypeBase>>
 
@@ -17,13 +22,16 @@ module PopModule =
 
     let internal topOne<'a> stack (getTop : string -> PushTypeBase) : PushMonad<'a> = 
         (fun state ->
-            if isEmptyStack stack 
+            if isEmptyStack stack
             then
                 state |> List.iter(fun e -> pushResult e) 
-                Unchecked.defaultof<'a>, nullState 
-            else 
+                None, nullState 
+            elif state <> nullState
+            then
                 let arg = getTop stack
-                arg.Raw<'a>(), arg :: state
+                Some (arg.Raw<'a>()), arg :: state
+            else
+                None, nullState 
         )
 
     let internal popOne<'a> stack : PushMonad<'a> = 
@@ -35,35 +43,35 @@ module PopModule =
     let internal result stack value : PushMonad<unit> = 
         (fun state -> 
             let resultingValue = makePushBaseType value stack
-            (), resultingValue::state)
+            Some () , resultingValue::state)
 
-    let internal resulList stack values : PushMonad<'a> =
+    let internal resulList stack values : PushMonad<unit> =
         (fun state ->
             let newState = values |> List.fold(fun values e -> (makePushBaseType stack e)::state) state
-            Unchecked.defaultof<'a>, newState
+            Some (), newState
         )
 
     let internal zero : PushMonad<unit> =
-        (fun state -> (), [])
+        (fun state -> None, [])
 
     type internal PushBuilder () =
 
         member this.Bind (p : PushMonad<'a>, f : 'a -> PushMonad<'b>) : PushMonad<'b> =
             (fun state -> 
                 let value, state = p state
-                if state = nullState then
-                    Unchecked.defaultof<'b>, state 
+                if value = None then
+                    None, state 
                 else
-                    f value state
+                    f !!value state
             )
         
         member this.Return (x : 'a) : PushMonad<'a> =
             (fun state ->
                 if state <> nullState && state <> List.empty then 
                     pushResult state.Head
-                    x, state.Tail
+                    Some x, state.Tail
                 else
-                    x, [])
+                    None, [])
 
         member this.ReturnFrom (m : PushMonad<'a>) : PushMonad<'a> = 
             (fun state -> 
@@ -88,7 +96,7 @@ module PopModule =
                 whileLoop cond value accum
             )
                 
-        member this.Zero () : PushMonad<'a> = (fun state -> state |> List.iter (fun e -> pushResult e); Unchecked.defaultof<'a>, [])
+        member this.Zero () : PushMonad<'a> = (fun state -> state |> List.iter (fun e -> pushResult e); None, [])
 
         member this.Delay (f : unit -> PushMonad<'a>) = f ()
 

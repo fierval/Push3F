@@ -158,7 +158,7 @@ module GenericOperations =
         static member internal doTimes pushIndex tp =
             // creates a new item consiting of the code item preceded by INTEGER.POP
             let concatPopIntegerAndCode (code : Push) =
-                PushList((Operation(Integer.Me.MyType, stockTypes.Operations.[Integer.Me.MyType].["POP"]))::(code.toList))
+                PushList((makeOperation Integer.Me.MyType "POP")::(code.toList))
             
             push {
                 let! code = popOne tp

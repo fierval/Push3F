@@ -143,9 +143,8 @@ module StockTypesCode =
             dualOp (fun (a : Push) (b : Push) -> Push.discrepancy a b) Code.Me.MyType Integer.Me.MyType
 
             
-        static member getIndex ofBase =
-            let topInt = processArgs1 Integer.Me.MyType
-            match topInt.Raw<int64>() with
+        static member getIndex index ofBase =
+            match index with
             | v when v = 0L -> 0
             | x ->  Math.Abs(int x) % (ofBase + 1)
 
@@ -157,19 +156,28 @@ module StockTypesCode =
         static member DoStar () =
             push {
                 let! code = peekOne<Push> Code.Me.MyType
-                let pop = (Operation(Code.Me.MyType, stockTypes.Operations.[Code.Me.MyType].["POP"]))
+                let pop = makeOperation Code.Me.MyType "POP"
                 return! result "EXEC" (PushList[code; pop])
             }
+
+        static member extract (code : Push) (index : int64) =
+            match code with
+            | PushList l -> 
+                let index = Code.getIndex index (l.Length)
+                if index = 0 then code else l.[index - 1]
+            | _ -> code
+            
 
         [<PushOperation("EXTRACT", Description = "Extract from the top code item a sub-item indexed by the top of INTEGER stack")>]
         static member ExtractSubItem() =
             push {
                 if not (isEmptyStack Integer.Me.MyType) then 
                     let! topCode = popOne Code.Me.MyType
+                    let! index = popOne Integer.Me.MyType
                     let res = 
                         match topCode with
                         | PushList l -> 
-                            let index = Code.getIndex (l.Length)
+                            let index = Code.getIndex index (l.Length)
                             if index = 0 then topCode else l.[index - 1]
                         | _ -> topCode
                     return! result Code.Me.MyType res
@@ -197,30 +205,31 @@ module StockTypesCode =
         static member FromName() =
             Code.toCode Name.Me.MyType
 
+        static member insert lst i x = 
+            let rec insert lst acc = 
+                match lst with 
+                | []   -> acc 
+                | h::t -> if acc |> List.length = i then 
+                                acc @ [x] @ lst 
+                            else 
+                                insert t (acc @ [h]) 
+            insert lst [] 
+
         [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
         static member Insert() =
-            let insert lst i x = 
-                let rec insert lst acc = 
-                    match lst with 
-                    | []   -> acc 
-                    | h::t -> if acc |> List.length = i then 
-                                  acc @ [x] @ lst 
-                              else 
-                                  insert t (acc @ [h]) 
-                insert lst [] 
-            
+         
             push {
-                if not (isEmptyStack Integer.Me.MyType) then
-                    let! scnd = popOne Code.Me.MyType
-                    let! frst = popOne Code.Me.MyType
-                    let res = 
-                        match scnd, frst with
-                        | (_, PushList top) -> 
-                            let index = Code.getIndex (top.Length)
-                            if index = 0 then scnd
-                            else PushList(insert top (index - 1) scnd)
-                        | _ -> scnd
-                    return! result Code.Me.MyType res
+                let! scnd = popOne Code.Me.MyType
+                let! frst = popOne Code.Me.MyType
+                let! index = popOne Integer.Me.MyType
+                let res = 
+                    match scnd, frst with
+                    | (_, PushList top) -> 
+                        let index = Code.getIndex index (top.Length)
+                        if index = 0 then scnd
+                        else PushList(Code.insert top (index - 1) scnd)
+                    | _ -> scnd
+                return! result Code.Me.MyType res
             }
              
         [<PushOperation("INSTRUCTIONS", Description = "Pushes a list of all active instructions")>]
@@ -253,30 +262,34 @@ module StockTypesCode =
         static member Noop() =
             ()
 
-        static member private getNth (code : Push list) =
-            let index = Code.getIndex (code.Length)
-            if index = 0 then pushResult (Code(PushList(code)))
+        static member private getNth index (code : Push list) =
+            let index = Code.getIndex index (code.Length)
+            if index = 0 then PushList(code)
             else
-                pushResult (Code(code.[index - 1]))
+                code.[index - 1]
 
         [<PushOperation("NTH", Description = "Pushes the n-th member of the top element onto the stack")>]
         static member Nth() =
-            if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType]
-            then
-                Code.getNth ((processArgs1 Code.Me.MyType).Raw<Push>().toList)
+            push {
+                let! index = popOne Integer.Me.MyType
+                let! code = popOne<Push> Code.Me.MyType
+                return! result Code.Me.MyType (Code.getNth index (code.toList))
+            }
 
         [<PushOperation("NTHCDR", Description = "Pushes the nth \"rest\" of the top of the stack. If top of the stack is an atom pushes ()")>]
         [<PushOperation("NTHREST", Description = "This is a more explicit name for the NTHCDR operation")>]
         static member NthRest() =
-            if areAllStacksNonEmpty [Integer.Me.MyType; Code.Me.MyType] then
-                let arg = (processArgs1 Code.Me.MyType).Raw<Push>()
+            push {
+                let! index = popOne Integer.Me.MyType
+                let! arg = popOne Code.Me.MyType
                 match arg with
                 | PushList l ->
                         match l with
-                        | hd::tl -> Code.getNth tl
-                        | _ -> Code.getNth l
+                        | hd::tl -> return! result Code.Me.MyType (Code.getNth index tl)
+                        | _ -> return! result Code.Me.MyType (Code.getNth index l)
 
-                | _ -> pushResult(Code(PushList []))
+                | _ -> return! result Code.Me.MyType (PushList [])
+            }
 
         [<PushOperation("NULL", Description = "Pushes TRUE into the BOOLEAN stack if the top code item is an empty list. FALSE otherwise")>]
         static member Null() =

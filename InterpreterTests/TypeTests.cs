@@ -80,7 +80,7 @@ namespace InterpreterTests
         [Description("Extract operations from a type")]
         public void GetOperationsForTypeTest()
         {
-            var integer = new StockTypesInteger.Integer(35L);
+            var integer = new Integer(35L);
             FSharpMap<string, MethodInfo> ops = TypeFactory.stockTypes.Operations["INTEGER"];
             Assert.IsTrue(ops.ContainsKey("+"));
             Assert.AreEqual("Add", ops["+"].Name);
@@ -100,10 +100,10 @@ namespace InterpreterTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
 
-            TypeFactory.pushResult(new StockTypesInteger.Integer(50L));
-            TypeFactory.pushResult(new StockTypesInteger.Integer(30L));
+            TypeFactory.pushResult(new Integer(50L));
+            TypeFactory.pushResult(new Integer(30L));
 
-            StockTypesInteger.Integer.Subtract();
+            Integer.Subtract();
             var res = push.stack.Stack.peek(TypeFactory.stockTypes.stacks["INTEGER"]);
             Assert.AreEqual(20L, (long)res.Value);
             Assert.AreEqual(1, TypeFactory.stockTypes.stacks["INTEGER"].length);
@@ -131,9 +131,9 @@ namespace InterpreterTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
 
-            TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
+            TypeFactory.pushResult(new Integer(32L));
 
-            StockTypesInteger.Integer.Subtract();
+            Integer.Subtract();
 
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed
@@ -147,7 +147,7 @@ namespace InterpreterTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
 
-            StockTypesInteger.Integer.Subtract();
+            Integer.Subtract();
 
             // make sure that whatever is on the stack still remains there after
             // the operation has been executed

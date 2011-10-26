@@ -48,6 +48,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FSharpTypesExtensions.fs" />
     <Compile Include="exception.fs" />
     <Compile Include="stack.fs" />
     <Compile Include="TypeAttributes.fs" />

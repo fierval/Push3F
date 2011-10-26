@@ -78,6 +78,44 @@ type Genetics (config : GenConfig, population : Push list) =
                 else
                     population <- t.Mutate ()
 
+    member t.CrossOver () =
+            // pick a cross-over population, memorizing their indices
+        let pickedForXover = 
+            population
+            |> List.filteredList(fun p -> shouldPickForCrossover ())
+        
+        // if an odd number was selected we throw one of them away since we cannot pair them all up this way.
+        let pickedForXoverLength = if pickedForXover.Length &&& 1 > 0 then pickedForXover.Length - 1 else pickedForXover.Length
+        let pickedForXover = if pickedForXover.Length <> pickedForXoverLength then pickedForXover.Tail else pickedForXover
+        let partitionBoundary = pickedForXoverLength / 2
+
+        // split them in two lists of parents
+        let one, two = 
+            pickedForXover 
+            |> List.mapi(fun i e -> i, e) 
+            |> List.partition(fun (i, e) -> i < partitionBoundary)
+            ||> (fun l1 l2 -> l1 |> List.map (fun (i, e) -> e), l2 |> List.map (fun (i, e) -> e))
+
+        // cross them over, creating a list of (child1, child2)
+        let crossedOver = 
+            [
+                for i in 0.. (partitionBoundary - 1) -> xoverSubtree (snd one.[i]) (snd two.[partitionBoundary + i])
+            ]
+
+        // split the list into two lists of the crossed-over children and the original indicies
+        let crossedOne = crossedOver |> List.map(fun (p1, p2) -> p1) |> List.map2(fun (i, e) p -> (i, p)) one
+        let crossedTwo = crossedOver |> List.map(fun (p1, p2) -> p2) |> List.map2(fun (i, e) p -> (i, p)) two
+        
+        //...and merge it with the original list
+        let crossedOverAll = crossedOne @ crossedTwo
+
+        // return the children back into the population
+        for (i, e) in crossedOverAll do 
+            population <- population |> List.replace i  e
+
+        population
+
     // stubbed out for the moment
     member t.Mutate () =
+        population <- t.CrossOver()
         population

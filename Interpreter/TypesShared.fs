@@ -17,16 +17,6 @@ module TypesShared =
     | Quote = 0
     | Exec = 1
 
-    // map extensions
-    type Microsoft.FSharp.Collections.Map<'Key, 'Value when 'Key : comparison>  with
-        member t.Replace (key, value) =
-            t.Remove(key).Add(key, value)
-
-        member t.Append (map) =
-            ((t |> Map.toList) @ (map |> Map.toList)) |> Map.ofList    
-
-        member t.KeyCollection = t |> Map.toList |> List.map (fun (key,value) -> key)
-
     // loads types from the specified assembly
     // or from the current one by default
     let internal loadTypes assembly = 

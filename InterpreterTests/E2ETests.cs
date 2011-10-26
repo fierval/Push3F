@@ -46,7 +46,7 @@ namespace InterpreterTests
         [Description("Compute Fibonacci sequence")]
         public void FibonacciSequence2Test()
         {
-            TypeFactory.pushResult(new StockTypesInteger.Integer(8L));
+            TypeFactory.pushResult(new Integer(8L));
 
             var prog = @"(EXEC.DO*TIMES (CODE.LENGTH EXEC.S)
                             INTEGER.STACKDEPTH CODE.YANKDUP)";
@@ -59,7 +59,7 @@ namespace InterpreterTests
         [Description("Compute Fibonacci sequence")]
         public void FibonacciSequence3Test()
         {
-            TypeFactory.pushResult(new StockTypesInteger.Integer(8L));
+            TypeFactory.pushResult(new Integer(8L));
 
             var prog = @"(EXEC.DO*COUNT EXEC.S CODE.QUOTE NAME.=
                             CODE.DO*COUNT CODE.YANKDUP CODE.DO*COUNT

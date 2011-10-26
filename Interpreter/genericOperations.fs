@@ -58,7 +58,7 @@ module GenericOperations =
 
         [<GenericPushOperation("ROT", Description = "Rotates 3 top stack entries")>]
         static member rot tp =
-            pushResult (new StockTypesInteger.Integer(2L))
+            pushResult (new Integer(2L))
             Ops.yank tp
 
         [<GenericPushOperation("SHOVE", Description = "Pushes the top of the stack deep into the stack. The depth is designated by the top of INTEGER stack")>]
@@ -88,7 +88,7 @@ module GenericOperations =
         [<GenericPushOperation("STACKDEPTH", Description = "Pushes the number of items of the stack on top of the INTEGER stack.")>]
         static member stackdepth tp =
             let len = int64 (stockTypes.Stacks.[tp].length)
-            stockTypes.pushResult (new StockTypesInteger.Integer(len))
+            stockTypes.pushResult (new Integer(len))
 
         [<GenericPushOperation("YANK", Description = "Tears an item out of the stack. The index is designated by the top of the INTEGER stack")>]
         static member yank tp =

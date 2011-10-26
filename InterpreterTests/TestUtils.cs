@@ -19,29 +19,29 @@ namespace InterpreterTests
         /// <param name="val">actual value</param>
         internal static void PushVal<T>(object val)
         {
-            if (typeof(T) == typeof(StockTypesBool.Bool))
+            if (typeof(T) == typeof(Bool))
             {
-                TypeFactory.pushResult(new StockTypesBool.Bool((bool)val));
+                TypeFactory.pushResult(new Bool((bool)val));
             }
 
-            if (typeof(T) == typeof(StockTypesInteger.Integer))
+            if (typeof(T) == typeof(Integer))
             {
-                TypeFactory.pushResult(new StockTypesInteger.Integer(unchecked((long)val)));
+                TypeFactory.pushResult(new Integer(unchecked((long)val)));
             }
 
-            if (typeof(T) == typeof(StockTypesFloat.Float))
+            if (typeof(T) == typeof(Float))
             {
-                TypeFactory.pushResult(new StockTypesFloat.Float((double)val));
+                TypeFactory.pushResult(new Float((double)val));
             }
 
-            if (typeof(T) == typeof(StockTypesName.Name))
+            if (typeof(T) == typeof(Name))
             {
-                TypeFactory.pushResult(new StockTypesName.Name((string)val));
+                TypeFactory.pushResult(new Name((string)val));
             }
 
-            if (typeof(T) == typeof(StockTypesCode.Code))
+            if (typeof(T) == typeof(Code))
             {
-                TypeFactory.pushResult(new StockTypesCode.Code((Ast.Push)val));
+                TypeFactory.pushResult(new Code((Ast.Push)val));
             }
 
         }

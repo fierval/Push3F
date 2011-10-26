@@ -62,8 +62,8 @@ namespace InterpreterTests
         [TestMethod]
         public void FlushTest()
         {
-            TypeFactory.pushResult(new StockTypesInteger.Integer(32L));
-            TypeFactory.pushResult(new StockTypesInteger.Integer(64L));
+            TypeFactory.pushResult(new Integer(32L));
+            TypeFactory.pushResult(new Integer(64L));
 
             TypeFactory.exec("INTEGER", "FLUSH");
             var res = TypeFactory.stockTypes.Stacks["INTEGER"];
@@ -74,8 +74,8 @@ namespace InterpreterTests
         [TestMethod]
         public void DefineTest()
         {
-            TypeFactory.pushResult(new StockTypesFloat.Float(345.67));
-            TypeFactory.pushResult(new StockTypesName.Name("SomeFloat"));
+            TypeFactory.pushResult(new Float(345.67));
+            TypeFactory.pushResult(new Name("SomeFloat"));
 
             TypeFactory.exec("FLOAT", "DEFINE");
             Assert.AreEqual(345.67, TypeFactory.stockTypes.Bindings["SomeFloat"].Raw<double>());
@@ -84,7 +84,7 @@ namespace InterpreterTests
         [TestMethod]
         public void DupTest()
         {
-            TypeFactory.pushResult(new StockTypesName.Name("SomeId"));
+            TypeFactory.pushResult(new Name("SomeId"));
 
             TypeFactory.exec("NAME", "DUP");
             Assert.AreEqual(2, TypeFactory.stockTypes.Stacks["NAME"].length);
@@ -96,7 +96,7 @@ namespace InterpreterTests
         [TestMethod]
         public void PopTest()
         {
-            TypeFactory.pushResult(new StockTypesName.Name("SomeId"));
+            TypeFactory.pushResult(new Name("SomeId"));
 
             TypeFactory.exec("NAME", "POP");
             Assert.IsTrue(TestUtils.IsEmpty("NAME"));
@@ -107,9 +107,9 @@ namespace InterpreterTests
         [TestMethod]
         public void RotTest()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(35L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(34L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(33L);
+            TestUtils.PushVal<Integer>(35L);
+            TestUtils.PushVal<Integer>(34L);
+            TestUtils.PushVal<Integer>(33L);
 
             TypeFactory.exec("INTEGER", "ROT");
 
@@ -131,8 +131,8 @@ namespace InterpreterTests
         [TestMethod]
         public void SwapTest()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(35L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(34L);
+            TestUtils.PushVal<Integer>(35L);
+            TestUtils.PushVal<Integer>(34L);
 
             TypeFactory.exec("INTEGER", "SWAP");
             Assert.AreEqual(35, TestUtils.Top<long>("INTEGER"));
@@ -141,23 +141,23 @@ namespace InterpreterTests
         [TestMethod]
         public void StackDepth()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(35L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(34L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(33L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(32L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(31L);
-            TestUtils.PushVal<StockTypesInteger.Integer>(3L);
+            TestUtils.PushVal<Integer>(35L);
+            TestUtils.PushVal<Integer>(34L);
+            TestUtils.PushVal<Integer>(33L);
+            TestUtils.PushVal<Integer>(32L);
+            TestUtils.PushVal<Integer>(31L);
+            TestUtils.PushVal<Integer>(3L);
 
             TypeFactory.exec("INTEGER", "STACKDEPTH");
 
             Assert.AreEqual(7, TestUtils.LengthOf("INTEGER"));
 
-            TestUtils.PushVal<StockTypesFloat.Float>(35.0);
-            TestUtils.PushVal<StockTypesFloat.Float>(34.1);
-            TestUtils.PushVal<StockTypesFloat.Float>(33.2);
-            TestUtils.PushVal<StockTypesFloat.Float>(32.3);
-            TestUtils.PushVal<StockTypesFloat.Float>(31.5);
-            TestUtils.PushVal<StockTypesFloat.Float>(3.8);
+            TestUtils.PushVal<Float>(35.0);
+            TestUtils.PushVal<Float>(34.1);
+            TestUtils.PushVal<Float>(33.2);
+            TestUtils.PushVal<Float>(32.3);
+            TestUtils.PushVal<Float>(31.5);
+            TestUtils.PushVal<Float>(3.8);
 
             TypeFactory.exec("FLOAT", "STACKDEPTH");
 
@@ -168,14 +168,14 @@ namespace InterpreterTests
         [TestMethod]
         public void YankOperationTest()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(3L);
+            TestUtils.PushVal<Integer>(3L);
 
-            TestUtils.PushVal<StockTypesFloat.Float>(35.0);
-            TestUtils.PushVal<StockTypesFloat.Float>(34.1);
-            TestUtils.PushVal<StockTypesFloat.Float>(33.2);
-            TestUtils.PushVal<StockTypesFloat.Float>(32.3);
-            TestUtils.PushVal<StockTypesFloat.Float>(31.5);
-            TestUtils.PushVal<StockTypesFloat.Float>(3.8);
+            TestUtils.PushVal<Float>(35.0);
+            TestUtils.PushVal<Float>(34.1);
+            TestUtils.PushVal<Float>(33.2);
+            TestUtils.PushVal<Float>(32.3);
+            TestUtils.PushVal<Float>(31.5);
+            TestUtils.PushVal<Float>(3.8);
 
             TypeFactory.exec("FLOAT", "YANK");
 
@@ -187,14 +187,14 @@ namespace InterpreterTests
         [TestMethod]
         public void YankDupTest()
         {
-            TestUtils.PushVal<StockTypesInteger.Integer>(3L);
+            TestUtils.PushVal<Integer>(3L);
 
-            TestUtils.PushVal<StockTypesFloat.Float>(35.0);
-            TestUtils.PushVal<StockTypesFloat.Float>(34.1);
-            TestUtils.PushVal<StockTypesFloat.Float>(33.2);
-            TestUtils.PushVal<StockTypesFloat.Float>(32.3);
-            TestUtils.PushVal<StockTypesFloat.Float>(31.5);
-            TestUtils.PushVal<StockTypesFloat.Float>(3.8);
+            TestUtils.PushVal<Float>(35.0);
+            TestUtils.PushVal<Float>(34.1);
+            TestUtils.PushVal<Float>(33.2);
+            TestUtils.PushVal<Float>(32.3);
+            TestUtils.PushVal<Float>(31.5);
+            TestUtils.PushVal<Float>(3.8);
 
             TypeFactory.exec("FLOAT", "YANKDUP");
 

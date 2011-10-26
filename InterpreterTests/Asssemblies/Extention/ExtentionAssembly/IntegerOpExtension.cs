@@ -22,7 +22,7 @@ namespace ExtensionAssembly
 
             long val = TypeFactory.processArgs1("INTEGER").Raw<long>();
 
-            TypeFactory.pushResult (new StockTypesLiteral.Literal(val.ToString()));
+            TypeFactory.pushResult (new Literal(val.ToString()));
         }
 
     }

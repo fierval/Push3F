@@ -18,7 +18,7 @@ type Code =
     inherit PushTypeBase
 
     [<DefaultValue>] static val mutable private maxCodePoints : int
-    [<DefaultValue>] static val mutable private randomOpsSet : Lazy<Map<string, Map<string, MethodInfo>>>
+    [<DefaultValue>] static val mutable private randomOpsSet : Map<string, Map<string, MethodInfo>>
 
     new () = {inherit PushTypeBase ()} 
     new (p : Push) = {inherit PushTypeBase(p)} 
@@ -338,13 +338,13 @@ type Code =
     
     static member rand maxPoints =
         let initRandom = Type.Random
-        if Code.randomOpsSet = Unchecked.defaultof<Lazy<Map<string, Map<string, MethodInfo>>>> then
-            Code.randomOpsSet <- lazy(getRandomOps stockTypes.Operations)
+        if Code.randomOpsSet = Unchecked.defaultof<Map<string, Map<string, MethodInfo>>> then
+            Code.randomOpsSet <- getRandomOps stockTypes.Operations
 
         // given a choice, generate a random name, random code, random const
         let pickRandomConst () = 
             let randomType = initRandom.Next(1, int Types.Max + 1)
-            let randomOpsSet = Code.randomOpsSet.Force ()
+            let randomOpsSet = Code.randomOpsSet
             
             let keyFromIndex index map = (map |> Map.toList).[index]
 

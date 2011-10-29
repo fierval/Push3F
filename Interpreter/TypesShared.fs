@@ -84,6 +84,16 @@ module TypesShared =
                 value.Append(filterdGenerics))
 
 
-
-
+    // returns a set of operations eligible for random picking
+    let internal getRandomOps (operations : Map<string, Map<string, MethodInfo>>) =
+        operations 
+        |> Map.map
+             (fun ptype mapOfOps -> 
+                mapOfOps |> 
+                Map.filter
+                    (fun name op -> 
+                        let attr = (op.GetCustomAttributes(typeof<PushOperationAttribute>, false)).[0] :?> PushOperationAttribute
+                        attr.ShouldPickAtRandom
+                        ))
+            
 

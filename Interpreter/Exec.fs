@@ -63,6 +63,6 @@ type Exec =
         Ops.shove Exec.Me.MyType
 
 
-    [<PushOperation("DUMPALLSTACKS", Description= "Writes out all the stacks to the console")>]
+    [<PushOperation("DUMPALLSTACKS", Description= "Writes out all the stacks to the console", ShouldPickAtRandom = false)>]
     static member DumpAllStacks () =
         stockTypes.Stacks |> Map.iter (fun key value -> Ops.DumpStack key)

@@ -193,13 +193,13 @@ module GenericOperations =
                 return! zero
             }
 
-        [<GenericPushOperation("WRITE", Description="Write the top value out to the console")>]
+        [<GenericPushOperation("WRITE", Description="Write the top value out to the console", ShouldPickAtRandom = false)>]
         static member Write tp =
             if isEmptyStack tp then ()
             else
                 Console.WriteLine(peekStack tp)
 
-        [<GenericPushOperation("DUMPSTACK", Description="")>]
+        [<GenericPushOperation("DUMPSTACK", Description="", ShouldPickAtRandom = false)>]
         static member DumpStack (tp : string) =
             Console.WriteLine(tp)
             Console.WriteLine("-------------")
@@ -210,7 +210,8 @@ module GenericOperations =
 
         [<GenericPushOperation("OPEN", 
             Description= "Opens a file, the name of which is given by the top of the LITERAL stack, pushes the result to the EXEC (or CODE) stack.",
-            AppliesTo=[|"EXEC"; "CODE"|])>]
+            AppliesTo=[|"EXEC"; "CODE"|],
+            ShouldPickAtRandom = false)>]
         static member OpenFile (tp : string) =
             if not (isEmptyStack "LITERAL") then
                 let file = (processArgs1 "LITERAL").Raw<string>()
@@ -223,7 +224,8 @@ module GenericOperations =
 
         [<GenericPushOperation("SAVE", 
             Description = "Saves top of the EXEC (or CODE) stack in a file",
-            AppliesTo=[|"EXEC"; "CODE"|])>]
+            AppliesTo=[|"EXEC"; "CODE"|],
+            ShouldPickAtRandom = false)>]
         static member SaveFile (tp : string) =
             if areAllStacksNonEmpty ["LITERAL"; tp] then
                 let file = (processArgs1 "LITERAL").Raw<string>()

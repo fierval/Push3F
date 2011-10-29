@@ -18,11 +18,11 @@ type Genetics (config : GenConfig, population : Push list) =
         with get () =
             if evolvedProgramIndex > 0 then Some population.[evolvedProgramIndex] else None
 
-    member t.evalMember (popMember : Push) =
+    member private t.evalMember (popMember : Push) =
         pushToExec popMember
         eval Exec.Me.MyType
 
-    member t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
+    member private t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
         stockTypes.cleanAllStacks ()
         pushToExec fitnessCriterion.argument
         evalCode getArgument Exec.Me.MyType
@@ -31,7 +31,7 @@ type Genetics (config : GenConfig, population : Push list) =
         Math.Abs(result - fitnessCriterion.value)
 
 
-    member t.pickNextPopulation (i : int) =
+    member private t.pickNextPopulation (i : int) =
         let fitnessValues : float list = 
             population
             |> List.map(fun e -> fitnessCriteria |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum  )
@@ -71,15 +71,20 @@ type Genetics (config : GenConfig, population : Push list) =
             else
                 let pop, minValue, minIndex = t.pickNextPopulation i
                 population <- pop
+                i <- i + 1
                 if minValue = 0. 
                 then 
                     stop <- true
                     evolvedProgramIndex <- minIndex
                 else
-                    population <- t.Mutate ()
+                    t.mutate ()
 
-    member t.CrossOver () =
-            // pick a cross-over population, memorizing their indices
+    member private t.replacePopulation (newPopulation : (int * Push) list) =
+        for (i, e) in newPopulation do 
+            population <- population |> List.replace i  e
+
+    member private t.crossOver () =
+        // pick a cross-over population, memorizing their indices
         let pickedForXover = 
             population
             |> List.filteredList(fun p -> shouldPickForCrossover ())
@@ -89,33 +94,29 @@ type Genetics (config : GenConfig, population : Push list) =
         let pickedForXover = if pickedForXover.Length <> pickedForXoverLength then pickedForXover.Tail else pickedForXover
         let partitionBoundary = pickedForXoverLength / 2
 
-        // split them in two lists of parents
-        let one, two = 
-            pickedForXover 
-            |> List.mapi(fun i e -> i, e) 
-            |> List.partition(fun (i, e) -> i < partitionBoundary)
-            ||> (fun l1 l2 -> l1 |> List.map (fun (i, e) -> e), l2 |> List.map (fun (i, e) -> e))
-
-        // cross them over, creating a list of (child1, child2)
+        // cross them over, creating a list of ((child1, child2), index1, index2)
         let crossedOver = 
             [
-                for i in 0.. (partitionBoundary - 1) -> xoverSubtree (snd one.[i]) (snd two.[partitionBoundary + i])
+                for i in 0.. (partitionBoundary - 1) -> 
+                    xoverSubtree (snd pickedForXover.[i]) (snd pickedForXover.[partitionBoundary + i]),
+                    fst pickedForXover.[i], fst pickedForXover.[partitionBoundary + i]
             ]
 
         // split the list into two lists of the crossed-over children and the original indicies
-        let crossedOne = crossedOver |> List.map(fun (p1, p2) -> p1) |> List.map2(fun (i, e) p -> (i, p)) one
-        let crossedTwo = crossedOver |> List.map(fun (p1, p2) -> p2) |> List.map2(fun (i, e) p -> (i, p)) two
-        
-        //...and merge it with the original list
-        let crossedOverAll = crossedOne @ crossedTwo
+        let crossedOverAll = crossedOver |> List.collect(fun ((p1, p2), i1, i2) -> [(i1, p1); (i2, p2)]) 
 
         // return the children back into the population
-        for (i, e) in crossedOverAll do 
-            population <- population |> List.replace i  e
+        t.replacePopulation crossedOverAll 
 
-        population
-
-    // stubbed out for the moment
-    member t.Mutate () =
-        population <- t.CrossOver()
-        population
+    member private t.mutatePopulation() =
+        let pickedForMutation = 
+            population
+            |> List.filteredList(fun p -> shouldPickForMutation ())
+            |> List.map(fun (i, e) -> i, if Rand.NextDouble() < 0.5 then removeRandomPiece e else insertRandomPiece e)
+            
+        t.replacePopulation pickedForMutation 
+                    
+    member t.mutate () =
+        t.crossOver()
+        t.mutatePopulation ()
+        

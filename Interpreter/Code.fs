@@ -17,7 +17,8 @@ type Types =
 type Code =
     inherit PushTypeBase
 
-    [<DefaultValue>]static val mutable private maxCodePoints : int
+    [<DefaultValue>] static val mutable private maxCodePoints : int
+    [<DefaultValue>] static val mutable private randomOpsSet : Lazy<Map<string, Map<string, MethodInfo>>>
 
     new () = {inherit PushTypeBase ()} 
     new (p : Push) = {inherit PushTypeBase(p)} 
@@ -39,7 +40,7 @@ type Code =
 
     static member MaxCodePoints 
         with get () = 
-            if (Code.maxCodePoints = Unchecked.defaultof<int>) then Code.maxCodePoints <- 100
+            if (Code.maxCodePoints = Unchecked.defaultof<int>) then Code.maxCodePoints <- 200
             Code.maxCodePoints 
         and set value = Code.maxCodePoints <- value
 
@@ -337,29 +338,31 @@ type Code =
     
     static member rand maxPoints =
         let initRandom = Type.Random
+        if Code.randomOpsSet = Unchecked.defaultof<Lazy<Map<string, Map<string, MethodInfo>>>> then
+            Code.randomOpsSet <- lazy(getRandomOps stockTypes.Operations)
 
         // given a choice, generate a random name, random code, random const
         let pickRandomConst () = 
             let randomType = initRandom.Next(1, int Types.Max + 1)
+            let randomOpsSet = Code.randomOpsSet.Force ()
             
             let keyFromIndex index map = (map |> Map.toList).[index]
 
             // generate a random operation
             match enum<Types>(randomType) with 
             | Types.Code | Types.Max -> 
-                let indexTypes = initRandom.Next(0, stockTypes.Operations.Count)
-                let typeName = fst (stockTypes.Operations |> keyFromIndex indexTypes)
-                let indexOps = initRandom.Next(0, (stockTypes.Operations.[typeName].Count))
-                let op = snd (stockTypes.Operations.[typeName] |> keyFromIndex indexOps)
+                let indexTypes = initRandom.Next(0, randomOpsSet.Count)
+                let typeName = fst (randomOpsSet |> keyFromIndex indexTypes)
+                let indexOps = initRandom.Next(0, (randomOpsSet.[typeName].Count))
+                let op = snd (randomOpsSet.[typeName] |> keyFromIndex indexOps)
                 Operation(typeName, op)
 
             // generate a random constant
             | Types.Const -> 
-                match initRandom.Next(0, 4) with
+                match initRandom.Next(0, 3) with
                 | 0 -> Value(Integer(int64(initRandom.Next())))
                 | 1 -> Value (Float(initRandom.NextDouble()))
                 | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
-                | 3 -> Value(Literal (Name.GetRandomString 20))
                 | _ -> failwith "unknown constant type"
                     
             // either generates a random name or gets a random definition

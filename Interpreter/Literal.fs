@@ -27,11 +27,11 @@ type Literal =
 
     override t.isQuotable with get() = false
 
-    [<PushOperation("+", Description="Concatenate two top literals")>]
+    [<PushOperation("+", Description="Concatenate two top literals", ShouldPickAtRandom = false)>]
     static member Concat() =
         simpleOp (fun (a:string) b -> a + b) Literal.Me.MyType
 
-    [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack")>]
+    [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack", ShouldPickAtRandom = false)>]
     static member Rand() =
         push {
             return! result Literal.Me.MyType (Name.GetRandomString 15)

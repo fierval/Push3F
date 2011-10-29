@@ -22,14 +22,16 @@ module Eval =
             let newRunningStack = append (updatedStack |> mapToPushTypeBaseStack) (stockTypes.Stacks.[exec])
             stockTypes.Stacks <- stockTypes.Stacks.Replace(exec, newRunningStack)
 
+    let mutable maxSteps = 100000
+
     let internal eval exec =
         let mutable executionSteps = 0
 
-        while not (isEmptyStack exec || executionSteps >= 100000) do
+        while not (isEmptyStack exec || executionSteps >= maxSteps) do
             executionSteps <- executionSteps + 1
             let top = (processArgs1 exec).Raw<Push>()
             evalCode top exec
-
+        
     let internal pushToStack name (pushObj : Push) = 
         let execObj = makePushBaseType pushObj name 
         pushResult execObj

@@ -3,6 +3,7 @@ using push.types;
 using Push = push.types.Ast.Push;
 using push.core;
 using System.Threading;
+using push.parser;
 
 namespace InterpreterTests
 {
@@ -20,11 +21,16 @@ namespace InterpreterTests
         [Description ("Tests Container operation: most basic test")]
         public void SimpleRandTest()
         {
-            var prog = "(CODE.POP CODE.RAND)";
+            var prog = "CODE.RAND";
             for (int i = 0; i < 1000; i++)
             {
-                Program.ExecPush(prog);
+                Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
             }
+
+            Eval.maxSteps = 1000; // don't linger
+
+            prog = "(CODE.STACKDEPTH CODE.DO*COUNT)";
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
         }
     }
 }

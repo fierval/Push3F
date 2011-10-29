@@ -39,8 +39,12 @@ namespace InterpreterTests
         // public static void MyClassCleanup() { }
         //
         // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
+        [TestInitialize()]
+        public void TypeTestInitialize()
+        {
+            TypeFactory.stockTypes.cleanAllStacks();
+        }
+
         //
         // Use TestCleanup to run code after each test has run
         //[TestCleanup()]
@@ -98,8 +102,6 @@ namespace InterpreterTests
         [Description("execute a simple operation")]
         public void PerformOperationTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.pushResult(new Integer(50L));
             TypeFactory.pushResult(new Integer(30L));
 
@@ -113,7 +115,6 @@ namespace InterpreterTests
         [Description("execute a simple operation")]
         public void PerformOperationFloatTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
             var ops = TypeFactory.stockTypes.Operations["INTEGER"];
             var opsFloat = TypeFactory.stockTypes.Operations["FLOAT"];
 
@@ -129,8 +130,6 @@ namespace InterpreterTests
         [Description("execute a simple operation")]
         public void PerformOperationOneArgMissingTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.pushResult(new Integer(32L));
 
             Integer.Subtract();
@@ -145,8 +144,6 @@ namespace InterpreterTests
         [Description("execute a simple operation")]
         public void PerformOperationArgsMissingTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             Integer.Subtract();
 
             // make sure that whatever is on the stack still remains there after
@@ -159,8 +156,6 @@ namespace InterpreterTests
         [Description("Add types from an assembly")]
         public void AddTypesFromAssembly()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.appendStacksFromAssembly("ExtensionAssembly.dll");
 
             var res = TestUtils.StackOf("URL");
@@ -175,8 +170,6 @@ namespace InterpreterTests
         [Description("Extend a basic type from an assembly")]
         public void ExtendTypeFromAssembly()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.appendStacksFromAssembly("ExtensionAssembly.dll");
 
             var prog = "(5 INTEGER.TOSTRING)";
@@ -191,8 +184,6 @@ namespace InterpreterTests
         [ExpectedException(typeof(push.exceptions.PushExceptions.PushException))]
         public void BadTypeTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.appendStacksFromAssembly("BadClass.dll");
         }
 
@@ -201,10 +192,16 @@ namespace InterpreterTests
         [ExpectedException(typeof(push.exceptions.PushExceptions.PushException))]
         public void BadOpTest()
         {
-            TypeFactory.stockTypes.cleanAllStacks();
-
             TypeFactory.appendStacksFromAssembly("NonstaticOp.dll");
         }
 
+        [TestMethod]
+        [Description("Returns the set of operations eligible for random pickings")]
+        public void ShouldPickAtRandomTest()
+        {
+            var result = TypesShared.getRandomOps(TypeFactory.stockTypes.Operations);
+            Assert.AreEqual(23, TypeFactory.stockTypes.Operations["EXEC"].Count);
+            Assert.AreEqual(18, result["EXEC"].Count);
+        }
     }
 }

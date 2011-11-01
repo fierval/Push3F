@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Genetic>
+  <PopulationSize>100</PopulationSize>
+  <MaxCodePoints>300</MaxCodePoints>
+  <NumGenerations>100</NumGenerations>
+  <ProbCrossover>.3</ProbCrossover>
+  <ProbMutation>.7</ProbMutation>
+  <GetArgument>CODE.NOOP</GetArgument>
+  <GetResult>
+    (INTEGER.- FLOAT.FROMINTEGER)
+  </GetResult>
+
+  <Samples>
+    <Sample>
+      <In>2</In>
+      <Out>2</Out>
+    </Sample>
+    <Sample>
+      <In>3</In>
+      <Out>6</Out>
+    </Sample>
+    <Sample>
+      <In>5</In>
+      <Out>120</Out>
+    </Sample>
+  </Samples>
+  
+</Genetic>

@@ -35,6 +35,7 @@
     <Reference Include="FSharp.PowerPack">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
@@ -45,6 +46,11 @@
     <ProjectReference Include="..\Interpreter\Push.Core.fsproj">
       <Name>Push.Core</Name>
       <Project>{90365ab0-39d6-4217-9056-aa3d18147e30}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Push.Config\Push.Config.csproj">
+      <Name>Push.Config</Name>
+      <Project>{ef2ffd35-4767-461a-a200-941db6303f45}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

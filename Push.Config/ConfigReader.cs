@@ -14,6 +14,8 @@ namespace push.config
         XElement root;
         dynamic config;
 
+        public int CountSamples {get; set;}
+
         public ConfigReader(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
@@ -40,7 +42,7 @@ namespace push.config
             config.getArgument = GetString("GetArgument");
             config.getResult = GetString("GetResult");
             config.samples = GetSampleCollection();
-
+            this.CountSamples = config.samples.Length;
             return config;
         }
 
@@ -81,5 +83,9 @@ namespace push.config
             return dict[val];
         }
 
+        public object GetSampleValue(IDictionary<String, object> dict, string val)
+        {
+            return dict[val];
+        }
     }
 }

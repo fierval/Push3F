@@ -6,13 +6,9 @@ open push.types.stock
 open System
 
 type Genetics (config : GenConfig, population : Push list) =
-    let populSize = config.populSize
-    let numGenerations = config.numGenerations
-    let getArgument = config.getArgument 
-    let getResult = config.getResult
-    let fitnessCriteria = config.fitnessValues
     let mutable population = population
     let mutable evolvedProgramIndex = -1
+    let config = config 
 
     member t.EvolvedProgram 
         with get () =
@@ -24,17 +20,19 @@ type Genetics (config : GenConfig, population : Push list) =
 
     member private t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
         stockTypes.cleanAllStacks ()
-        pushToExec fitnessCriterion.argument
-        evalCode getArgument Exec.Me.MyType
+        evalCode fitnessCriterion.argument Exec.Me.MyType
+        evalCode config.getArgument Exec.Me.MyType
         t.evalMember populMember
-        let result = fitnessCriterion.evalFunc getResult
-        Math.Abs(result - fitnessCriterion.value)
+        evalCode fitnessCriterion.value Exec.Me.MyType
+        evalCode config.getResult Exec.Me.MyType
+        let result = (peekStack Float.Me.MyType).Raw<float>()
+        Math.Abs(result)
 
 
     member private t.pickNextPopulation (i : int) =
         let fitnessValues : float list = 
             population
-            |> List.map(fun e -> fitnessCriteria |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum  )
+            |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum  )
 
         let totalFitness = List.sum fitnessValues
         let minFitness = List.min fitnessValues
@@ -67,7 +65,7 @@ type Genetics (config : GenConfig, population : Push list) =
         let mutable stop = false
         let mutable i = 0
         while (not stop) do
-            if i = populSize then stop <- true
+            if i = config.populSize then stop <- true
             else
                 let pop, minValue, minIndex = t.pickNextPopulation i
                 population <- pop
@@ -87,7 +85,7 @@ type Genetics (config : GenConfig, population : Push list) =
         // pick a cross-over population, memorizing their indices
         let pickedForXover = 
             population
-            |> List.filteredList(fun p -> shouldPickForCrossover ())
+            |> List.filteredList(fun p -> (shouldPickForOp config.probCrossover))
         
         // if an odd number was selected we throw one of them away since we cannot pair them all up this way.
         let pickedForXoverLength = if pickedForXover.Length &&& 1 > 0 then pickedForXover.Length - 1 else pickedForXover.Length
@@ -98,7 +96,7 @@ type Genetics (config : GenConfig, population : Push list) =
         let crossedOver = 
             [
                 for i in 0.. (partitionBoundary - 1) -> 
-                    xoverSubtree (snd pickedForXover.[i]) (snd pickedForXover.[partitionBoundary + i]),
+                    xoverSubtree (snd pickedForXover.[i]) (snd pickedForXover.[partitionBoundary + i]) config.maxCodePoints,
                     fst pickedForXover.[i], fst pickedForXover.[partitionBoundary + i]
             ]
 
@@ -111,8 +109,8 @@ type Genetics (config : GenConfig, population : Push list) =
     member private t.mutatePopulation() =
         let pickedForMutation = 
             population
-            |> List.filteredList(fun p -> shouldPickForMutation ())
-            |> List.map(fun (i, e) -> i, if Rand.NextDouble() < 0.5 then removeRandomPiece e else insertRandomPiece e)
+            |> List.filteredList(fun p -> shouldPickForOp config.probMutation)
+            |> List.map(fun (i, e) -> i, if Rand.NextDouble() < 0.5 then removeRandomPiece e else (insertRandomPiece e config.maxCodePoints))
             
         t.replacePopulation pickedForMutation 
                     

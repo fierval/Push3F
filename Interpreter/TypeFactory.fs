@@ -65,6 +65,8 @@ module TypeFactory =
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
         let mutable states = internalStates ptypes
 
+        let mutable randomOpsSet = lazy(getRandomOps operations)
+
         // stores the stacks currently in use
         member t.Stacks 
             with get() = stacks
@@ -88,6 +90,9 @@ module TypeFactory =
             with get () = states
             and set value = states <- value
 
+        member t.RandomOps
+            with get () = randomOpsSet.Force()
+
         // appends types from the specified assembly
         member t.appendStacksFromAssembly (assembly : string) =
             let newTypes = discoverPushTypes (Some assembly)
@@ -97,6 +102,7 @@ module TypeFactory =
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes genericTypes
             states <- internalStates ptypes
+            randomOpsSet <- lazy(getRandomOps operations)
 
         // retrieves arguments from the appropriate stack
         member t.popArguments key n =
@@ -124,6 +130,7 @@ module TypeFactory =
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes genericTypes
             bindings <- Map.empty
+            randomOpsSet <- lazy(getRandomOps operations)
 
 
     let internal stockTypes = new StockTypes()         

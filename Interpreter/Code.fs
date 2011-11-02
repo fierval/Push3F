@@ -17,8 +17,7 @@ type Types =
 type Code =
     inherit PushTypeBase
 
-    [<DefaultValue>] static val mutable private maxCodePoints : int
-    [<DefaultValue>] static val mutable private randomOpsSet : Map<string, Map<string, MethodInfo>>
+    [<DefaultValue>] val mutable private maxCodePoints : int
 
     new () = {inherit PushTypeBase ()} 
     new (p : Push) = {inherit PushTypeBase(p)} 
@@ -38,11 +37,11 @@ type Code =
         with get() = 
             Unchecked.defaultof<ExtendedTypeParser>
 
-    static member MaxCodePoints 
+    member t.MaxCodePoints 
         with get () = 
-            if (Code.maxCodePoints = Unchecked.defaultof<int>) then Code.maxCodePoints <- 200
-            Code.maxCodePoints 
-        and set value = Code.maxCodePoints <- value
+            if (t.maxCodePoints = Unchecked.defaultof<int>) then t.maxCodePoints <- 200
+            t.maxCodePoints 
+        and set value = t.maxCodePoints <- value
 
     static member internal pushArgsBack (args : PushTypeBase list) =
         pushResult args.Head
@@ -338,13 +337,11 @@ type Code =
     
     static member rand maxPoints =
         let initRandom = Type.Random
-        if Code.randomOpsSet = Unchecked.defaultof<Map<string, Map<string, MethodInfo>>> then
-            Code.randomOpsSet <- getRandomOps stockTypes.Operations
 
         // given a choice, generate a random name, random code, random const
         let pickRandomConst () = 
             let randomType = initRandom.Next(1, int Types.Max + 1)
-            let randomOpsSet = Code.randomOpsSet
+            let randomOpsSet = stockTypes.RandomOps
             
             let keyFromIndex index map = (map |> Map.toList).[index]
 
@@ -396,6 +393,6 @@ type Code =
     [<PushOperation("RAND", Description = "Generates random code")>]
     static member Rand() = 
             
-        let points = Type.Random.Next(1, Code.MaxCodePoints)
+        let points = Type.Random.Next(1, Code.Me.MaxCodePoints)
 
         pushResult (Code (Code.rand points))

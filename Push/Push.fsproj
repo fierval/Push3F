@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Arguments.fs" />
+    <Compile Include="Genetic.fs" />
     <Compile Include="PushCmd.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config">
@@ -70,6 +71,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
@@ -78,9 +80,19 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GeneticLib\GeneticLib.fsproj">
+      <Name>GeneticLib</Name>
+      <Project>{afd3be28-fb61-4c9b-ab87-b21241b179f7}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Interpreter\Push.Core.fsproj">
       <Name>Push.Core</Name>
       <Project>{90365ab0-39d6-4217-9056-aa3d18147e30}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Push.Config\Push.Config.csproj">
+      <Name>Push.Config</Name>
+      <Project>{ef2ffd35-4767-461a-a200-941db6303f45}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

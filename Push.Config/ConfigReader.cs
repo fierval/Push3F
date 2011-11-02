@@ -42,7 +42,7 @@ namespace push.config
             config.getArgument = GetString("GetArgument");
             config.getResult = GetString("GetResult");
             config.samples = GetSampleCollection();
-            this.CountSamples = config.samples.Length;
+            this.CountSamples = config.samples.Count;
             return config;
         }
 

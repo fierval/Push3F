@@ -81,6 +81,7 @@ module internal Genetic =
     let launchGeneticMode configFileName =
         try
             let config = readConfig configFileName
+            Code.Me.SetMaxCodePoints.Add(fun _ -> Code.Me.MaxCodePoints <- config.maxCodePoints)
             let population = List.init (config.populSize - 1) (fun i -> Code.rand config.maxCodePoints)
             Genetics(config, population).Run()
         with

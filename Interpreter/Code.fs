@@ -18,11 +18,12 @@ type Code =
     inherit PushTypeBase
 
     [<DefaultValue>] val mutable private maxCodePoints : int
+    [<DefaultValue>] val mutable setMaxCodePoints : Event<unit>
 
-    new () = {inherit PushTypeBase ()} 
-    new (p : Push) = {inherit PushTypeBase(p)} 
+    new () as t= {inherit PushTypeBase ()} then t.setMaxCodePoints <- new Event<unit>()
+    new (p : Push) as t = {inherit PushTypeBase(p)} then t.setMaxCodePoints <- new Event<unit>() 
 
-    static member private Me = new Code()
+    static member Me = new Code()
     static member simpleOp (f : Push -> Push -> Push) = simpleOp f Code.Me.MyType
 
     override t.ToString() =
@@ -37,9 +38,15 @@ type Code =
         with get() = 
             Unchecked.defaultof<ExtendedTypeParser>
 
+    member t.SetMaxCodePoints = t.setMaxCodePoints.Publish
+
     member t.MaxCodePoints 
         with get () = 
-            if (t.maxCodePoints = Unchecked.defaultof<int>) then t.maxCodePoints <- 200
+            if (t.maxCodePoints = Unchecked.defaultof<int>) 
+            then 
+                let maxCodePoints = t.setMaxCodePoints.Trigger()  // try to retrieve the number of code points from somebody else
+                if (t.maxCodePoints = Unchecked.defaultof<int>) then
+                    t.maxCodePoints <- 200
             t.maxCodePoints 
         and set value = t.maxCodePoints <- value
 

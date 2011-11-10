@@ -54,6 +54,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FitnessCriteria.fs" />
     <Compile Include="GenConfig.fs" />
     <Compile Include="Mutations.fs" />

@@ -26,7 +26,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GeneticLib", "..\GeneticLib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Push.Config", "..\Push.Config\Push.Config.csproj", "{EF2FFD35-4767-461A-A200-941DB6303F45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigTests", "..\InterpreterTests\ConfigTests\ConfigTests.csproj", "{DEB90541-671F-490A-A2C5-A13E119F0F3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticTests", "..\InterpreterTests\ConfigTests\GeneticTests.csproj", "{DEB90541-671F-490A-A2C5-A13E119F0F3E}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

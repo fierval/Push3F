@@ -51,9 +51,9 @@ namespace push.config
             return int.Parse((from p in root.Descendants(name) select p).First().Value.Trim());
         }
 
-        float GetFloat(string name)
+        double GetFloat(string name)
         {
-            return float.Parse((from p in root.Descendants(name) select p).First().Value.Trim());
+            return double.Parse((from p in root.Descendants(name) select p).First().Value.Trim());
         }
 
         string GetString(string name)

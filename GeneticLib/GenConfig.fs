@@ -2,7 +2,7 @@
 
 [<AutoOpen>]
 module GenConfig =
-
+    open System.Runtime.CompilerServices
     open System
     open push.parser
     open push.types

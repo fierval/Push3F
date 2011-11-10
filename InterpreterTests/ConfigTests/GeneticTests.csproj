@@ -9,8 +9,8 @@
     <ProjectGuid>{DEB90541-671F-490A-A2C5-A13E119F0F3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConfigTests</RootNamespace>
-    <AssemblyName>ConfigTests</AssemblyName>
+    <RootNamespace>GeneticTests</RootNamespace>
+    <AssemblyName>GeneticTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -48,11 +49,24 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConfigTests.cs" />
+    <Compile Include="MutationTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GeneticLib\GeneticLib.fsproj">
+      <Project>{AFD3BE28-FB61-4C9B-AB87-B21241B179F7}</Project>
+      <Name>GeneticLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interpreter\Push.Core.fsproj">
+      <Project>{90365AB0-39D6-4217-9056-AA3D18147E30}</Project>
+      <Name>Push.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Push.Config\Push.Config.csproj">
       <Project>{EF2FFD35-4767-461A-A200-941DB6303F45}</Project>
       <Name>Push.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Push\Push.fsproj">
+      <Project>{802A6258-3745-47C3-BF14-6C27CC4E6392}</Project>
+      <Name>Push</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

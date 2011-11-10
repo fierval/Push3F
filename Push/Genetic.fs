@@ -6,6 +6,7 @@ open System.Linq.Expressions
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Collections.Generic
+open System.Runtime.CompilerServices
 open Microsoft.CSharp.RuntimeBinder
 open Microsoft.FSharp.Reflection
 open Arguments
@@ -69,7 +70,7 @@ module internal Genetic =
             numGenerations = conf?numGenerations
             getArgument = parseGetCode (conf?getArgument)
             getResult = parseGetCode (conf?getResult)
-            probCrossover = conf?probCrossOver
+            probCrossover = conf?probCrossover
             probMutation = conf?probMutation
             fitnessValues = 
                 [for i = 0 to reader.CountSamples - 1 do 

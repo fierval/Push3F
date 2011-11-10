@@ -39,7 +39,7 @@
       <HintPath>..\..\..\Parser\fparsec-main-default\Build\VS10\bin\Debug\FParsecCS.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.PowerPack">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />

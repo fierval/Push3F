@@ -9,6 +9,7 @@ module TypesShared =
 
     [<assembly: InternalsVisibleTo ("InterpreterTests")>]
     [<assembly: InternalsVisibleTo ("GeneticLib")>]
+    [<assembly: InternalsVisibleTo ("GeneticTests")>]
 
     do 
         ()

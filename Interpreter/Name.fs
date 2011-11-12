@@ -7,7 +7,7 @@ open push.parser
 open System.Reflection
 open System
 
-[<PushType("NAME")>]
+[<PushType("NAME", ShouldPickAtRandom = false)>]
 type Name =
     inherit PushTypeBase
 

@@ -5,7 +5,7 @@ open push.parser
 open push.types.stock
 open System
 
-type Genetics (config : GenConfig, population : Push list) =
+type internal Genetics (config : GenConfig, population : Push list) =
     let mutable population = population
     let mutable evolvedProgramIndex = -1
     let config = config 
@@ -14,11 +14,11 @@ type Genetics (config : GenConfig, population : Push list) =
         with get () =
             if evolvedProgramIndex > 0 then Some population.[evolvedProgramIndex] else None
 
-    member private t.evalMember (popMember : Push) =
+    member t.evalMember (popMember : Push) =
         pushToExec popMember
         eval Exec.Me.MyType
 
-    member private t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
+    member t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
         stockTypes.cleanAllStacks ()
         evalCode fitnessCriterion.argument Exec.Me.MyType
         evalCode config.getArgument Exec.Me.MyType
@@ -29,7 +29,7 @@ type Genetics (config : GenConfig, population : Push list) =
         Math.Abs(result)
 
 
-    member private t.pickNextPopulation (i : int) =
+    member t.pickNextPopulation (i : int) =
         let fitnessValues : float list = 
             population
             |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum  )
@@ -77,11 +77,11 @@ type Genetics (config : GenConfig, population : Push list) =
                 else
                     t.mutate ()
 
-    member private t.replacePopulation (newPopulation : (int * Push) list) =
+    member t.replacePopulation (newPopulation : (int * Push) list) =
         for (i, e) in newPopulation do 
             population <- population |> List.replace i  e
 
-    member private t.crossOver () =
+    member t.crossOver () =
         // pick a cross-over population, memorizing their indices
         let pickedForXover = 
             population
@@ -106,7 +106,7 @@ type Genetics (config : GenConfig, population : Push list) =
         // return the children back into the population
         t.replacePopulation crossedOverAll 
 
-    member private t.mutatePopulation() =
+    member t.mutatePopulation() =
         let pickedForMutation = 
             population
             |> List.filteredList(fun p -> shouldPickForOp config.probMutation)

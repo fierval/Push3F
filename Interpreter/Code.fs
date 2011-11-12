@@ -9,9 +9,8 @@ open System
 // emumeration used in random code generation
 type Types =
 | Const = 1
-| Name = 2
-| Code = 3
-| Max = 3
+| Code = 2
+| Max = 2
 
 [<PushType("CODE")>]
 type Code =
@@ -369,16 +368,6 @@ type Code =
                 | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
                 | _ -> failwith "unknown constant type"
                     
-            // either generates a random name or gets a random definition
-            | Types.Name -> 
-                if stockTypes.Bindings.IsEmpty then Value(Name (Name.GetRandomString 15)) 
-                else
-                    let index = initRandom.Next(0, stockTypes.Bindings.Count)
-                    let key = fst (stockTypes.Bindings |> keyFromIndex index)
-                    let binding = stockTypes.Bindings.[key]
-                    match binding.Value with
-                    | :? Push as code -> code
-                    | _ -> Value(binding)
             | _ -> failwith "unknown type"
 
         // gets a list or random values

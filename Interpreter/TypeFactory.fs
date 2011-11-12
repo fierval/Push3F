@@ -48,6 +48,14 @@ module TypeFactory =
     let internal internalStates (ptypes : Map<string, #PushTypeBase>) = 
         ptypes |> Map.filter(fun key value -> value.isQuotable) |> Map.map(fun key value -> State.Exec)
 
+    let internal getRandomOps (ptypes : Map<string, PushTypeBase>) (operations : Map<string, Map<string, MethodInfo>>) =
+        let filteredOps = 
+            operations |> 
+                Map.filter
+                    (fun key value -> 
+                        (ptypes.[key].GetType().GetCustomAttributes(typeof<PushTypeAttribute>, false).[0] :?> PushTypeAttribute).ShouldPickAtRandom)
+        getRandomOps filteredOps
+
     // keeps the actual stock types.
     // internal to this module only, so nobody externally
     // can instantiate it.
@@ -65,7 +73,7 @@ module TypeFactory =
         let mutable bindings : Map<string, PushTypeBase> = Map.empty
         let mutable states = internalStates ptypes
 
-        let mutable randomOpsSet = lazy(getRandomOps operations)
+        let mutable randomOpsSet = lazy(getRandomOps ptypes operations)
 
         // stores the stacks currently in use
         member t.Stacks 
@@ -102,7 +110,7 @@ module TypeFactory =
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes genericTypes
             states <- internalStates ptypes
-            randomOpsSet <- lazy(getRandomOps operations)
+            randomOpsSet <- lazy(getRandomOps ptypes operations)
 
         // retrieves arguments from the appropriate stack
         member t.popArguments key n =
@@ -130,7 +138,7 @@ module TypeFactory =
             stacks <- typeStacks ptypes
             operations <- getOperations ptypes genericTypes
             bindings <- Map.empty
-            randomOpsSet <- lazy(getRandomOps operations)
+            randomOpsSet <- lazy(getRandomOps ptypes operations)
 
 
     let internal stockTypes = new StockTypes()         

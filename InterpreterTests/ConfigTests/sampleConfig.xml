@@ -23,6 +23,23 @@
       <In>5</In>
       <Out>120</Out>
     </Sample>
+    <Sample>
+      <In>6</In>
+      <Out>720</Out>
+    </Sample>
+    <Sample>
+      <In>7</In>
+      <Out>5040</Out>
+    </Sample>
+    <Sample>
+      <In>8</In>
+      <Out>40320</Out>
+    </Sample>
+    <Sample>
+      <In>9</In>
+      <Out>362880</Out>
+    </Sample>
+
   </Samples>
   
 </Genetic>

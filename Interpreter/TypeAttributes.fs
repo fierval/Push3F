@@ -9,6 +9,11 @@ type PushTypeAttribute(name : string)  =
         
     let mutable name = name
     let mutable description = System.String.Empty
+    let mutable shouldPickAtRandom = true
+
+    member x.ShouldPickAtRandom 
+        with get() = shouldPickAtRandom
+        and set value = shouldPickAtRandom <- value
 
     member x.Name 
         with get() = name
@@ -23,11 +28,6 @@ type PushTypeAttribute(name : string)  =
 type PushOperationAttribute(name:string)  =
     inherit PushTypeAttribute(name)
 
-    let mutable shouldPickAtRandom = true
-
-    member x.ShouldPickAtRandom 
-        with get() = shouldPickAtRandom
-        and set value = shouldPickAtRandom <- value
             
 // types that only contain generic operations are decorated with this attribute.
 // it can be used to extend regular types by defining operations with GenericPushOperationAttribute

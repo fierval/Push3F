@@ -6,7 +6,7 @@ open System.Reflection
 open System
 open push.types
 
-[<PushType("LITERAL", Description = "Double-quoted literals")>]
+[<PushType("LITERAL", Description = "Double-quoted literals", ShouldPickAtRandom = false)>]
 type Literal =
     inherit PushTypeBase
 
@@ -27,11 +27,11 @@ type Literal =
 
     override t.isQuotable with get() = false
 
-    [<PushOperation("+", Description="Concatenate two top literals", ShouldPickAtRandom = false)>]
+    [<PushOperation("+", Description="Concatenate two top literals")>]
     static member Concat() =
         simpleOp (fun (a:string) b -> a + b) Literal.Me.MyType
 
-    [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack", ShouldPickAtRandom = false)>]
+    [<PushOperation("RAND", Description = "Pushes a random literal on top of the literal stack")>]
     static member Rand() =
         push {
             return! result Literal.Me.MyType (Name.GetRandomString 15)

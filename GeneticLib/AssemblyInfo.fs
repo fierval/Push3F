@@ -15,6 +15,8 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyCopyright("Copyright © Boris Kogan 2011")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: InternalsVisibleTo("GeneticTests")>]
+[<assembly: InternalsVisibleTo("Push")>]
+
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

@@ -15,6 +15,7 @@ module GenConfig =
             populSize : int
             maxCodePoints : int
             numGenerations : int
+            maxSteps : int
             getArgument : Push
             getResult : Push
             probCrossover : float

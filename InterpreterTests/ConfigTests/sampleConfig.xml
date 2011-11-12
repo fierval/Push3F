@@ -6,6 +6,7 @@
   <ProbCrossover>.3</ProbCrossover>
   <ProbMutation>.7</ProbMutation>
   <GetArgument>CODE.NOOP</GetArgument>
+  <MaxSteps>5000</MaxSteps>
   <GetResult>
     (INTEGER.- FLOAT.FROMINTEGER)
   </GetResult>

@@ -72,6 +72,7 @@ module internal Genetic =
             getResult = parseGetCode (conf?getResult)
             probCrossover = conf?probCrossover
             probMutation = conf?probMutation
+            maxSteps = conf?maxSteps
             fitnessValues = 
                 [for i = 0 to reader.CountSamples - 1 do 
                     yield

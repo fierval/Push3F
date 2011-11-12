@@ -64,6 +64,7 @@ type internal Genetics (config : GenConfig, population : Push list) =
     member t.Run () =
         let mutable stop = false
         let mutable i = 0
+        maxSteps <- config.maxSteps
         while (not stop) do
             if i = config.populSize then stop <- true
             else

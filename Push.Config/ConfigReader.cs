@@ -37,6 +37,7 @@ namespace push.config
             config.popSize = GetInt("PopulationSize");
             config.maxCodePoints = GetInt("MaxCodePoints");
             config.numGenerations = GetInt("NumGenerations");
+            config.maxSteps = GetInt("MaxSteps");
             config.probCrossover = GetFloat("ProbCrossover");
             config.probMutation = GetFloat("ProbMutation");
             config.getArgument = GetString("GetArgument");

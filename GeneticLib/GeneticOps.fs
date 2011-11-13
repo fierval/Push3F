@@ -20,11 +20,11 @@ type internal Genetics (config : GenConfig, population : Push list) =
 
     member t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =
         stockTypes.cleanAllStacks ()
-        evalCode fitnessCriterion.argument Exec.Me.MyType
-        evalCode config.getArgument Exec.Me.MyType
+        pushAndEval fitnessCriterion.argument
+        pushAndEval config.getArgument
         t.evalMember populMember
-        evalCode fitnessCriterion.value Exec.Me.MyType
-        evalCode config.getResult Exec.Me.MyType
+        pushAndEval fitnessCriterion.value
+        pushAndEval config.getResult
         let result = (peekStack Float.Me.MyType).Raw<float>()
         Math.Abs(result)
 
@@ -32,14 +32,15 @@ type internal Genetics (config : GenConfig, population : Push list) =
     member t.pickNextPopulation (i : int) =
         let fitnessValues : float list = 
             population
-            |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum  )
+            |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum)
+            |> List.map(fun v -> if v = 0. then v else 1./v)
 
-        let totalFitness = List.sum fitnessValues
-        let minFitness = List.min fitnessValues
-        let minFitnessIndex = List.findIndex (fun e -> e = minFitness) fitnessValues
-        t.Describe(i, totalFitness, minFitness)
+        let totalReverseFitness = List.sum fitnessValues
+        let minReverseFitness = List.max fitnessValues
+        let minFitnessIndex = List.findIndex (fun e -> e = minReverseFitness) fitnessValues
+        t.Describe(i, totalReverseFitness, if minReverseFitness = 0. then minReverseFitness else 1./minReverseFitness)
                         
-        let selectionProbs = fitnessValues |> List.map(fun e -> 1.0 - e / totalFitness)
+        let selectionProbs = fitnessValues |> List.map(fun e -> e / totalReverseFitness)
 
         // Cumulative sum of probabilities, reverse the result and chop off the first 0.
         let cumulativeProbs = fitnessValues |> List.fold(fun cum e -> (e + cum.Head)::cum) [0.] |> List.rev |> List.tail
@@ -50,9 +51,9 @@ type internal Genetics (config : GenConfig, population : Push list) =
         population
         |> List.map 
             (fun p ->
-                let nextSelected = cumulativeProbs |> List.findIndex(fun e -> e < spin)
+                let nextSelected = cumulativeProbs |> List.findIndex(fun e -> e >= spin)
                 population.[nextSelected]
-            ), minFitness, minFitnessIndex
+            ), minReverseFitness, minFitnessIndex
         
     member t.Describe (i, totalFitness, minFitness) =
         printfn "Generation: %d" i

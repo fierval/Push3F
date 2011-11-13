@@ -39,5 +39,9 @@ module Eval =
     // pushes an item on to the EXEC stack to be evaluated
     let internal pushToExec = pushToStack "EXEC"
 
+    let internal pushAndEval (code : Push) =
+        pushToExec code
+        eval "EXEC"
+
     let makeOperation typeName operationName =
         Operation(typeName, stockTypes.Operations.[typeName].[operationName])

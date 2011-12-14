@@ -153,10 +153,8 @@ type Code =
         dualOp (fun (a : Push) (b : Push) -> Push.discrepancy a b) Code.Me.MyType Integer.Me.MyType
 
             
-    static member getIndex index ofBase =
-        match index with
-        | v when v = 0L -> 0
-        | x ->  Math.Abs(int x) % (ofBase + 1)
+    static member getIndex (index : int64) ofBase =
+        int (Math.Abs(index) % ofBase)
 
     [<PushOperation("DO", Description = "Pop the CODE stack & execute the top")>]
     static member Do () =
@@ -170,10 +168,10 @@ type Code =
             return! result "EXEC" (PushList[code; pop])
         }
 
-    static member extract (code : Push) (index : int) =
+    static member extractShallow (code : Push) (index : int) =
         match code with
         | PushList l -> 
-            let index = Code.getIndex (int64 index) (l.Length)
+            let index = Code.getIndex (int64 index) (int64 l.Length)
             if index = 0 then code else l.[index - 1]
         | _ -> code
             
@@ -187,8 +185,8 @@ type Code =
                 let res = 
                     match topCode with
                     | PushList l -> 
-                        let index = Code.getIndex index (l.Length)
-                        if index = 0 then topCode else l.[index - 1]
+                        let index = Code.getIndex index (Code.getSize (PushList(l)))
+                        Code.extract topCode index
                     | _ -> topCode
                 return! result Code.Me.MyType res
         }
@@ -215,15 +213,63 @@ type Code =
     static member FromName() =
         Code.toCode Name.Me.MyType
 
+    static member extract (code : Push) i =
+        if i = 0 || List.isEmpty code.toList then code
+        else
+            let index = ref (i - 1)
+            let rec extractInDepth (tail : Push list) =
+                if !index = 0 && not tail.IsEmpty then List.head tail
+                else
+                    if List.isEmpty tail then PushList([])
+                    else
+                        index := !index - 1
+                        let next = List.head tail
+                        let tl = List.tail tail
+                        match next with
+                        | PushList l -> 
+                            let res = extractInDepth l
+                            if List.isEmpty res.toList then extractInDepth tl else res
+                            //if we have reached the end of the list - just pop.
+                        | _ -> extractInDepth tl
+
+
+            extractInDepth code.toList
+
+    static member internal makePushList3 l1 (l2 : Push option) l3 =
+        match l2 with
+        | Some p -> l1 @ p.toList @ l3
+        | None -> l1 @ l3
+
+    static member internal traverse (code : Push, i, ?x : Push) =
+        let index = ref i
+        let rec traverseCode (head : Push list) (tail : Push list) (code : Push option) =
+            let tl = if tail.Length > 0 then List.tail tail else tail
+            if !index = 0 
+            then 
+                match code with
+                | Some c -> if head.IsEmpty && tail.IsEmpty then c.toList else head  @ c :: tl
+                | _ -> head @ tl 
+            else
+                index := !index - 1
+                if List.isEmpty tail then head
+                else
+                    let next = List.head tail
+                    match next with
+                    | PushList l -> 
+                        let res = traverseCode List.empty l code
+                        if !index > 0 then
+                            Code.makePushList3 head (Some (PushList(res)))  (traverseCode List.empty tl code)
+                            else 
+                               head @ PushList(res) :: tl
+                    | _ -> traverseCode (head @ next.toList) tl code
+        
+        traverseCode [] code.toList x
+        
     static member insert (lst : Push) i x = 
-        let rec insert lst acc = 
-            match lst with 
-            | []   -> acc 
-            | h::t -> if acc |> List.length = i then 
-                            acc @ [x] @ lst 
-                        else 
-                            insert t (acc @ [h]) 
-        insert lst.toList [] 
+        Code.traverse (lst, i,  x)
+
+    static member remove (lst : Push) i =
+        PushList(Code.traverse (lst, i))
 
     [<PushOperation("INSERT", Description = "Insert the second item of the code stack at the position of the first")>]
     static member Insert() =
@@ -235,7 +281,7 @@ type Code =
             let res = 
                 match scnd, frst with
                 | (_, PushList top) -> 
-                    let index = Code.getIndex index (top.Length)
+                    let index = Code.getIndex index (Code.getSize (PushList(top)))
                     if index = 0 then scnd
                     else PushList(Code.insert frst (index - 1) scnd)
                 | _ -> scnd
@@ -273,10 +319,10 @@ type Code =
         ()
 
     static member private getNth index (code : Push list) =
-        let index = Code.getIndex index (code.Length)
-        if index = 0 then PushList(code)
+        if code.Length = 0 then PushList(code)
         else
-            code.[index - 1]
+            let index = Code.getIndex index (int64 code.Length)
+            code.[index]
 
     [<PushOperation("NTH", Description = "Pushes the n-th member of the top element onto the stack")>]
     static member Nth() =

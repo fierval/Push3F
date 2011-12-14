@@ -7,7 +7,7 @@ module internal Mutations =
     open System
 
     let Rand = Type.Random
-    let length (code : Push) = code.toList.Length
+    let length (code : Push) = int (Code.getSize code)
     let randWithinRange (code : Push) = Rand.Next(1, length code)
     let shouldPickForOp prob =
         Rand.NextDouble() < prob
@@ -25,11 +25,11 @@ module internal Mutations =
 
     let removeRandomPiece (code : Push) =
         let r = randWithinRange code
-        PushList(code.toList |> List.remove r)
-        
+        Code.remove code r
+                
     let trimExtraCodePoints maxCodePoints (code : Push)  =
         let rec trimExtraCodePointsTailRec (code : Push) =
-            if code.toList.Length <= maxCodePoints then code
+            if length code <= maxCodePoints then code
             else
                 trimExtraCodePointsTailRec (removeRandomPiece code)
 

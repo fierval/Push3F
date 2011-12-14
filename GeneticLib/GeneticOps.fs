@@ -16,6 +16,7 @@ type internal Genetics (config : GenConfig, population : Push list) =
 
     member t.evalMember (popMember : Push) =
         pushToExec popMember
+        pushToStack "CODE" popMember
         eval Exec.Me.MyType
 
     member t.runMemberAndEvalFitness (populMember : Push) (fitnessCriterion : CodeFitnessCriterion)  =

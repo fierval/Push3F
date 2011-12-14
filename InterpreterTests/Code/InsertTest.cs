@@ -19,7 +19,16 @@ namespace InterpreterTests
             var prog = "(CODE.QUOTE (a b c d e f) CODE.QUOTE (k l) 2 CODE.INSERT)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(a (k l) b c d e f)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("(a (k l) c d e f)", TestUtils.GetTopCodeString());
+        }
+
+        [TestMethod]
+        public void InsertLayerd()
+        {
+            var prog = "(CODE.QUOTE (a b (c d e) f) CODE.QUOTE (k l) 5 CODE.INSERT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("(a b (c (k l) e) f)", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
@@ -44,7 +53,7 @@ namespace InterpreterTests
         public void InsertNoSecondArgumentTest()
         {
             var prog = "(CODE.QUOTE (a b c d e f) 5 CODE.INSERT)";
-            Program.ExecPush(prog);
+            Program.ExecPushProgram(prog, Program.ExecutionFlags.None);
 
             Assert.AreEqual("(a b c d e f)", TestUtils.GetTopCodeString());
         }

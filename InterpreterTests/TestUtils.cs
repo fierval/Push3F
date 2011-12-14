@@ -10,14 +10,14 @@ using PushTypeBase = push.types.Type.PushTypeBase;
 
 namespace InterpreterTests
 {
-    class TestUtils
+    public class TestUtils
     {
         /// <summary>
         /// Pushes a value on the stack
         /// </summary>
         /// <typeparam name="T">Push type</typeparam>
         /// <param name="val">actual value</param>
-        internal static void PushVal<T>(object val)
+        public static void PushVal<T>(object val)
         {
             if (typeof(T) == typeof(Bool))
             {
@@ -51,7 +51,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="item">Name of the Push type</param>
         /// <returns>The stack</returns>
-        internal static Stack.Stack<PushTypeBase> StackOf(string item)
+        public static Stack.Stack<PushTypeBase> StackOf(string item)
         {
             return TypeFactory.stockTypes.Stacks[item];
         }
@@ -61,7 +61,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="item">Name of push type</param>
         /// <returns>List representing the stack</returns>
-        internal static List<push.types.Type.PushTypeBase> ListOf(string item)
+        public static List<push.types.Type.PushTypeBase> ListOf(string item)
         {
             return StackOf(item).ToList();
         }
@@ -71,7 +71,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="item">Name of push type</param>
         /// <returns>true if the stack is empty</returns>
-        internal static bool IsEmpty(string item)
+        public static bool IsEmpty(string item)
         {
             return LengthOf(item) == 0;
         }
@@ -82,7 +82,7 @@ namespace InterpreterTests
         /// <typeparam name="T">Underlying .NET type of the expected item</typeparam>
         /// <param name="item">Name of push type</param>
         /// <returns>The value of the top item</returns>
-        internal static T Top<T>(string item)
+        public static T Top<T>(string item)
         {
             if (IsEmpty(item))
             {
@@ -96,7 +96,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="item">Name of push type</param>
         /// <returns>Integer length of the stack</returns>
-        internal static int LengthOf(string item)
+        public static int LengthOf(string item)
         {
             return StackOf(item).length;
         }
@@ -104,7 +104,7 @@ namespace InterpreterTests
         /// <summary>
         /// Returns the top of the CODE stack in string representation
         /// </summary>
-        internal static string GetTopCodeString(string name = "CODE")
+        public static string GetTopCodeString(string name = "CODE")
         {
             if (IsEmpty(name))
             {
@@ -117,7 +117,7 @@ namespace InterpreterTests
         /// </summary>
         /// <param name="str">Push program</param>
         /// <returns>Parsed program or error tuple: (str, error)</returns>
-        internal static dynamic RunParser(string str)
+        public static dynamic RunParser(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -137,7 +137,7 @@ namespace InterpreterTests
         /// <param name="stack">Name of the stack</param>
         /// <param name="index">Index of the element from the top of the stack</param>
         /// <returns>Contained value</returns>
-        internal static T Elem<T>(string stack, int index)
+        public static T Elem<T>(string stack, int index)
         {
             return ListOf(stack)[index].Raw<T>();
         }

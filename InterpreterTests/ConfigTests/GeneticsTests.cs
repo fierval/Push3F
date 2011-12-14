@@ -11,6 +11,7 @@ using push.core;
 using push.genetics;
 using Push;
 using push.parser;
+using InterpreterTests;
 
 namespace GeneticTests
 {
@@ -20,6 +21,10 @@ namespace GeneticTests
     [TestClass]
     public class GeneticsTests
     {
+        GenConfig.GenConfig config = null;
+        FSharpList<Ast.Push> population = null;
+        Genetics genetics = null;
+
         public GeneticsTests()
         {
             //
@@ -34,6 +39,11 @@ namespace GeneticTests
         {
             TypeFactory.stockTypes.cleanAllStacks();
             Eval.maxSteps = 1000; // don't linger
+
+            this.config = Push.Genetic.readConfig("sampleConfig.xml");
+            Code.Me.MaxCodePoints = config.maxCodePoints;
+            this.population = Microsoft.FSharp.Collections.ListModule.Initialize<Ast.Push>(config.populSize, FSharpFunc<int, Ast.Push>.FromConverter(i => Code.rand(config.maxCodePoints)));
+            this.genetics = new Genetics(this.config, this.population);
         }
 
         /// <summary>
@@ -78,10 +88,20 @@ namespace GeneticTests
         [DeploymentItem("sampleConfig.xml")]
         public void InitializationTest()
         {
-            var config = Push.Genetic.readConfig("sampleConfig.xml");
-            Code.Me.MaxCodePoints = config.maxCodePoints;
-            var population = Microsoft.FSharp.Collections.ListModule.Initialize<Ast.Push>(config.populSize,  FSharpFunc<int, Ast.Push>.FromConverter(i => Code.rand(config.maxCodePoints)));
 
+        }
+
+        [TestMethod]
+        [DeploymentItem("sampleConfig.xml")]
+        public void RunMemberEvalFitnessTest()
+        {
+            var prog = Parser.parseGetCode(@"( CODE.QUOTE ( INTEGER.POP 1 )  
+                            CODE.QUOTE ( CODE.DUP INTEGER.DUP 1 INTEGER.- CODE.DO INTEGER.* )  
+                        INTEGER.DUP 2 INTEGER.< CODE.IF )");
+
+            this.genetics.runMemberAndEvalFitness(prog, this.config.fitnessValues[3]);
+
+            Assert.AreEqual(0D, TestUtils.Top<double>("FLOAT"));
         }
     }
 }

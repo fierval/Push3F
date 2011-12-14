@@ -69,6 +69,10 @@
       <Project>{802A6258-3745-47C3-BF14-6C27CC4E6392}</Project>
       <Name>Push</Name>
     </ProjectReference>
+    <ProjectReference Include="..\InterpreterTests.csproj">
+      <Project>{31DC08E4-A665-4ABF-A36C-1DE1AB46A9CA}</Project>
+      <Name>InterpreterTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="sampleConfig.xml">

@@ -19,7 +19,7 @@ namespace InterpreterTests
         [Description ("Tests Container operation: most basic test")]
         public void SimpleNthRestTest()
         {
-            var prog = "(CODE.QUOTE(a b (c d) e) 3 CODE.NTHREST)";
+            var prog = "(CODE.QUOTE(a b (c d) e) 2 CODE.NTHREST)";
             Program.ExecPush(prog);
             Assert.AreEqual("e", TestUtils.GetTopCodeString());
         }

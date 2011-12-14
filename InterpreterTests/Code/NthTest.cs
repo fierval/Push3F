@@ -21,7 +21,7 @@ namespace InterpreterTests
         {
             var prog = "(CODE.QUOTE(a b (c d) e) 3 CODE.NTH)";
             Program.ExecPush(prog);
-            Assert.AreEqual("(c d)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("e", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]    
@@ -38,7 +38,7 @@ namespace InterpreterTests
         {
             var prog = "(CODE.QUOTE a 10 CODE.NTH)";
             Program.ExecPush(prog);
-            Assert.AreEqual("(a)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("a", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]

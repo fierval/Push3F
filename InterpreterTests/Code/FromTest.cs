@@ -56,7 +56,7 @@ namespace InterpreterTests
             var prog = "(-10 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("f", TestUtils.GetTopCodeString());
+            Assert.AreEqual("c", TestUtils.GetTopCodeString());
         }
 
     }

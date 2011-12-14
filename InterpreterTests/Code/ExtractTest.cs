@@ -37,7 +37,7 @@ namespace InterpreterTests
             var prog = "(9 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("(d e)", TestUtils.GetTopCodeString());
+            Assert.AreEqual("b", TestUtils.GetTopCodeString());
 
         }
 
@@ -51,12 +51,49 @@ namespace InterpreterTests
         }
 
         [TestMethod]
-        public void ExtractWithNegativeArgumentTest()
+        public void ExtractAllWithNegativeArgumentTest()
+        {
+            var prog = "(-8 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("(b c (d e) f g)", TestUtils.GetTopCodeString());
+        }
+
+        [TestMethod]
+        public void ExtractElementWithNegativeArgumentTest()
         {
             var prog = "(-10 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
             Program.ExecPush(prog);
 
-            Assert.AreEqual("f", TestUtils.GetTopCodeString());
+            Assert.AreEqual("c", TestUtils.GetTopCodeString());
+        }
+
+
+        [TestMethod]
+        public void ExtractListArgumentTest()
+        {
+            var prog = "(3 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("(d e)", TestUtils.GetTopCodeString());
+        }
+
+        [TestMethod]
+        public void ExtractInDepthArgumentTest()
+        {
+            var prog = "(4 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("d", TestUtils.GetTopCodeString());
+        }
+
+        [TestMethod]
+        public void ExtractPostInDepthArgumentTest()
+        {
+            var prog = "(7 CODE.QUOTE (b c (d e) f g) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("g", TestUtils.GetTopCodeString());
         }
 
         [TestMethod]
@@ -67,5 +104,36 @@ namespace InterpreterTests
 
             Assert.AreEqual("(b c)", TestUtils.GetTopCodeString());
         }
+
+        [TestMethod]
+        public void ExtractCompound()
+        {
+            var prog = "(7 CODE.QUOTE (a (b (c (d e) f) g) h) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("d", TestUtils.GetTopCodeString());
+            
+        }
+
+        [TestMethod]
+        public void ExtractCompoundList()
+        {
+            var prog = "(6 CODE.QUOTE (a (b (c (d e) f) g) h) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("(d e)", TestUtils.GetTopCodeString());
+
+        }
+
+        [TestMethod]
+        public void ExtractCompoundLast()
+        {
+            var prog = "(7 CODE.QUOTE (a (b (c d) e)) CODE.EXTRACT)";
+            Program.ExecPush(prog);
+
+            Assert.AreEqual("e", TestUtils.GetTopCodeString());
+
+        }
+
     }
 }

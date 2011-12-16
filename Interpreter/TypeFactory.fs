@@ -6,6 +6,7 @@ module TypeFactory =
     open System.Reflection
     open push.exceptions
     open push.stack
+    open System
 
     let internal createPushObject (t:System.Type) (args : obj []) : #PushTypeBase * string =
         let ci =
@@ -140,6 +141,8 @@ module TypeFactory =
             bindings <- Map.empty
             randomOpsSet <- lazy(getRandomOps ptypes operations)
 
+        member t.cleanStack  name =
+            stacks <- stacks.Replace(name, StackNode([]))
 
     let internal stockTypes = new StockTypes()         
 
@@ -167,12 +170,15 @@ module TypeFactory =
     // given the MethodInfo of the operation, execute it.
     let execOperation (args : obj []) (mi : MethodInfo) =
         // if this is an operation, requiring type parameter
-        if mi.GetParameters().Length >= 1
-        then
-            mi.Invoke(null, args)
-        else
-            mi.Invoke(null, Array.empty)
-        |> ignore
+        try
+            if mi.GetParameters().Length >= 1
+            then
+                mi.Invoke(null, args)
+            else
+                mi.Invoke(null, Array.empty)
+            |> ignore
+        with 
+            e -> Console.WriteLine(e.ToString())
 
     // given the push type name and the operation name, 
     // execute the operation

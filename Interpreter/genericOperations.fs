@@ -63,7 +63,8 @@ module GenericOperations =
 
         [<GenericPushOperation("SHOVE", Description = "Pushes the top of the stack deep into the stack. The depth is designated by the top of INTEGER stack")>]
         static member shove tp =
-            if isEmptyStack tp || isEmptyStack "INTEGER" then ()
+            if (isEmptyStack tp || (tp <> "INTEGER" && (isEmptyStack "INTEGER"))
+                || (stockTypes.Stacks.["INTEGER"].length <= 1)) then ()
             else
                 let arg = Ops.getIntArgument tp
                 let argVal = int (arg.Raw<int64>())

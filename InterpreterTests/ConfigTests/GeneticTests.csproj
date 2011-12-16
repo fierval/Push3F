@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneticsTests.cs" />
+    <Compile Include="ListExtensionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="MutationTests.cs" />

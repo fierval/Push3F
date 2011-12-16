@@ -387,34 +387,29 @@ type Code =
     [<PushOperation("SUBST", Description = "Lisp \"subst\" function. Not implemented")>]
     static member Subst() = Code.Noop()
     
-    static member rand maxPoints =
+    static member rand (maxPoints, ?bias : string) =
         let initRandom = Type.Random
+        let pickOpsFrom = ["EXEC"; "CODE"; "NAME"]
+        let biasedOps =
+            match bias with
+            | Some s -> s::pickOpsFrom
+            | _ -> pickOpsFrom
 
         // given a choice, generate a random name, random code, random const
         let pickRandomConst () = 
-            let randomType = initRandom.Next(1, int Types.Max + 1)
-            let randomOpsSet = stockTypes.RandomOps
-            
+            let randomOpsSet = 
+                match bias with
+                | Some s -> stockTypes.RandomOps |> Map.filter(fun key value -> List.exists (fun e -> key = e ) biasedOps)
+                | None -> stockTypes.RandomOps
             let keyFromIndex index map = (map |> Map.toList).[index]
 
             // generate a random operation
-            match enum<Types>(randomType) with 
-            | Types.Code | Types.Max -> 
-                let indexTypes = initRandom.Next(0, randomOpsSet.Count)
-                let typeName = fst (randomOpsSet |> keyFromIndex indexTypes)
-                let indexOps = initRandom.Next(0, (randomOpsSet.[typeName].Count))
-                let op = snd (randomOpsSet.[typeName] |> keyFromIndex indexOps)
-                Operation(typeName, op)
+            let indexTypes = initRandom.Next(0, randomOpsSet.Count)
+            let typeName = fst (randomOpsSet |> keyFromIndex indexTypes)
+            let indexOps = initRandom.Next(0, (randomOpsSet.[typeName].Count))
+            let op = snd (randomOpsSet.[typeName] |> keyFromIndex indexOps)
+            Operation(typeName, op)
 
-            // generate a random constant
-            | Types.Const -> 
-                match initRandom.Next(0, 3) with
-                | 0 -> Value(Integer(int64(initRandom.Next())))
-                | 1 -> Value (Float(initRandom.NextDouble()))
-                | 2 -> Value (Bool(initRandom.Next(0, 2) = 0))
-                | _ -> failwith "unknown constant type"
-                    
-            | _ -> failwith "unknown type"
 
         // gets a list or random values
         let rec decompose num maxParts acc =

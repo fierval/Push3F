@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.FSharp.Core;
 using push.core;
 using push.types;
 using push.types.stock;
@@ -80,7 +81,7 @@ namespace GeneticTests
         [TestMethod]
         public void RemoveRandomPieceTest()
         {
-            var prog = Code.rand(300);
+            var prog = Code.rand(300, FSharpOption<string>.None);
             int len = Mutations.length(prog);
             prog = Mutations.removeRandomPiece(prog);
             Assert.IsTrue(len >= Mutations.length(prog));
@@ -91,7 +92,7 @@ namespace GeneticTests
         public void TrimExtraCodeTest()
         {
             int len = 0;
-            var prog = Code.rand(300);
+            var prog = Code.rand(300, FSharpOption<string>.None);
             len = Mutations.length(prog);
             len = len - 5;
 
@@ -103,7 +104,7 @@ namespace GeneticTests
         [TestMethod]
         public void InsertRandomCodeTest()
         {
-            var prog = Code.rand(30);
+            var prog = Code.rand(30, FSharpOption<string>.None);
             int len = Mutations.length(prog);
             prog = Mutations.insertRandomPiece(prog, 30);
             Assert.IsTrue(len <= 30);
@@ -113,8 +114,8 @@ namespace GeneticTests
         [TestMethod]
         public void XoverSubtreeTest()
         {
-            var mom = Code.rand(20);
-            var dad = Code.rand(20);
+            var mom = Code.rand(20, FSharpOption<string>.None);
+            var dad = Code.rand(20, FSharpOption<string>.None);
             var progTuple = Mutations.xoverSubtree(mom, dad, 20);
 
             Program.execProgram(progTuple.Item1, false);

@@ -42,7 +42,7 @@ namespace GeneticTests
 
             this.config = Push.Genetic.readConfig("sampleConfig.xml");
             Code.Me.MaxCodePoints = config.maxCodePoints;
-            this.population = Microsoft.FSharp.Collections.ListModule.Initialize<Ast.Push>(config.populSize, FSharpFunc<int, Ast.Push>.FromConverter(i => Code.rand(config.maxCodePoints)));
+            this.population = Microsoft.FSharp.Collections.ListModule.Initialize<Ast.Push>(config.populSize, FSharpFunc<int, Ast.Push>.FromConverter(i => Code.rand(config.maxCodePoints, FSharpOption<string>.None)));
             this.genetics = new Genetics(this.config, this.population);
         }
 

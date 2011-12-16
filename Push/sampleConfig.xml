@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Genetic>
+  <PopulationSize>50</PopulationSize>
+  <MaxCodePoints>50</MaxCodePoints>
+  <NumGenerations>50</NumGenerations>
+  <ProbCrossover>.8</ProbCrossover>
+  <ProbMutation>.99</ProbMutation>
+  <GetArgument>CODE.NOOP</GetArgument>
+  <MaxSteps>800</MaxSteps>
+  <GetResult>
+    (INTEGER.- FLOAT.FROMINTEGER)
+  </GetResult>
+
+  <Samples>
+    <Sample>
+      <In>12</In>
+      <Out>479001600</Out>
+    </Sample>
+    <Sample>
+      <In>8</In>
+      <Out>40320</Out>
+    </Sample>
+    <Sample>
+      <In>9</In>
+      <Out>362880</Out>
+    </Sample>
+    <Sample>
+      <In>10</In>
+      <Out>3628800</Out>
+    </Sample>
+    <Sample>
+      <In>11</In>
+      <Out>39916800</Out>
+    </Sample>
+  </Samples>
+  
+</Genetic>

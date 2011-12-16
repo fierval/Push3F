@@ -24,6 +24,7 @@ type internal Genetics (config : GenConfig, population : Push list) =
         pushAndEval fitnessCriterion.argument
         pushAndEval config.getArgument
         t.evalMember populMember
+        stockTypes.cleanStack "EXEC"
         pushAndEval fitnessCriterion.value
         pushAndEval config.getResult
         let result = (peekStack Float.Me.MyType).Raw<float>()
@@ -33,27 +34,29 @@ type internal Genetics (config : GenConfig, population : Push list) =
     member t.pickNextPopulation (i : int) =
         let fitnessValues : float list = 
             population
-            |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> t.runMemberAndEvalFitness e c) |> List.sum)
-            |> List.map(fun v -> if v = 0. then v else 1./v)
+            |> List.map(fun e -> config.fitnessValues |> List.map (fun c -> -(t.runMemberAndEvalFitness e c)) |> List.sum)
 
         let totalReverseFitness = List.sum fitnessValues
         let minReverseFitness = List.max fitnessValues
         let minFitnessIndex = List.findIndex (fun e -> e = minReverseFitness) fitnessValues
-        t.Describe(i, totalReverseFitness, if minReverseFitness = 0. then minReverseFitness else 1./minReverseFitness)
+        t.Describe(i, totalReverseFitness, minReverseFitness)
                         
-        let selectionProbs = fitnessValues |> List.map(fun e -> e / totalReverseFitness)
+        let selectionProbs = fitnessValues |> List.map(fun e -> (-e) / totalReverseFitness)
 
         // Cumulative sum of probabilities, reverse the result and chop off the first 0.
-        let cumulativeProbs = fitnessValues |> List.fold(fun cum e -> (e + cum.Head)::cum) [0.] |> List.rev |> List.tail
+        let cumulativeProbs = selectionProbs |> List.fold(fun cum e -> (e + cum.Head)::cum) [0.] |> List.rev |> List.tail
             
-        let spin = Type.Random.NextDouble()
+        let spin() = -Type.Random.NextDouble()
 
         // spin the roulette as many times as we have members in our population.
         population
         |> List.map 
             (fun p ->
-                let nextSelected = cumulativeProbs |> List.findIndex(fun e -> e >= spin)
-                population.[nextSelected]
+                let prob = spin()
+                if cumulativeProbs.[cumulativeProbs.Length - 1] >= prob then population.[population.Length - 1] 
+                else
+                    let nextSelected = (cumulativeProbs.Length - 1) - (cumulativeProbs |> List.rev |> List.findIndex(fun e -> e <= prob))
+                    population.[nextSelected]
             ), minReverseFitness, minFitnessIndex
         
     member t.Describe (i, totalFitness, minFitness) =

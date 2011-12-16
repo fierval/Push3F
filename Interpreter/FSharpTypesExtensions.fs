@@ -34,3 +34,10 @@ module TypeExensions =
         static member replace index (elem : 'T) (lst : 'T list) =
             lst |> List.mapi(fun i e -> (i, e)) |> List.partition (fun (i, e) -> i < index) 
             ||> (fun a b -> (a |> List.map(fun (i, e) -> e)) @ (elem :: (b.Tail |> List.map (fun (i, e) -> e))))
+
+    //test use
+    let replace = List.replace
+    let remove = List.remove
+    let filteredIndices = List.filteredIndices
+    let filteri = List.filteri
+    let filteredList = List.filteredList

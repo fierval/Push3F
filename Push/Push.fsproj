@@ -45,7 +45,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\Push.XML</DocumentationFile>
-    <StartArguments>-startFile aliases.push</StartArguments>
+    <StartArguments>-startFile aliases.push -genetic C:\Users\BKogan\Dropbox\Algorithms\Genetic\Push3F\Push\sampleConfig.xml</StartArguments>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -69,6 +69,7 @@
     <None Include="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="sampleConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -78,8 +79,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GeneticLib\GeneticLib.fsproj">
       <Name>GeneticLib</Name>
       <Project>{afd3be28-fb61-4c9b-ab87-b21241b179f7}</Project>

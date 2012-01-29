@@ -54,6 +54,7 @@ namespace ExtensionAssembly
 
             var uri = arg.Raw<Uri>();
             var newUri = new UrlPushType(new Uri(uri.Host));
+            TypeFactory.pushResult(newUri);
         }
 
         public override string ToString()

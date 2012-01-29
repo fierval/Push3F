@@ -46,14 +46,20 @@ namespace ExtensionAssembly
         [PushOperation("DOMAIN", Description="Extract domain name from the URL")]
         static void ExtractDomain()
         {
+            // pop the URL from the URL stack, if anything is there
             var arg = TypeFactory.processArgs1("URL");
             if (arg == null)
             {
                 return;
             }
 
+            // extract the underlying data
             var uri = arg.Raw<Uri>();
+
+            //create the new URI
             var newUri = new UrlPushType(new Uri(uri.Host));
+            
+            // push it back to the URL stack.
             TypeFactory.pushResult(newUri);
         }
 

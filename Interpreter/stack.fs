@@ -34,10 +34,6 @@ module Stack =
         | StackNode([]) -> Unchecked.defaultof<'a>
         | StackNode(hd::tl) -> hd
  
-    let tl = function
-        | StackNode([]) -> []
-        | StackNode(hd::tl) -> tl
- 
     let pushStack hd tl = 
         match tl with
         |StackNode(x) -> StackNode(hd::x)
